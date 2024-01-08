@@ -47,6 +47,9 @@ public class Product {
     private LocalDateTime createAt;
 
     @Column
+    private LocalDateTime modifiedAt;
+
+    @Column
     private LocalDateTime startedAt;
 
     @Column
@@ -62,7 +65,7 @@ public class Product {
 
     @Builder
     private Product(Long id, User user, Category category, String title, String content,
-                     List<Reward> rewardList, LocalDateTime createAt, LocalDateTime startedAt, LocalDateTime closedAt,
+                     List<Reward> rewardList, LocalDateTime createAt, LocalDateTime modifiedAt, LocalDateTime startedAt, LocalDateTime closedAt,
                     List<Comment> commentList, List<Feedback> feedbackList) {
 
         this.id = id;
@@ -72,9 +75,34 @@ public class Product {
         this.content = content;
         this.rewardList = rewardList;
         this.createAt = createAt;
+        this.modifiedAt = modifiedAt;
         this.startedAt = startedAt;
         this.closedAt = closedAt;
         this.commentList = commentList;
         this.feedbackList = feedbackList;
+    }
+
+    public void updateTitle(String title) {
+        if(title != null){
+            this.title = title;
+        }
+    }
+    public void updateContent(String content) {
+        if(content != null){
+            this.content = content;
+        }
+    }
+    public void updateModifiedAt(LocalDateTime modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
+    public void updateStartAt(LocalDateTime startedAt) {
+        if(startedAt != null){
+            this.startedAt = startedAt;
+        }
+    }
+    public void updateClosedAt(LocalDateTime closedAt) {
+        if(closedAt != null){
+            this.closedAt = closedAt;
+        }
     }
 }
