@@ -2,7 +2,8 @@ package com.example.testypie.product.dto;
 
 import java.time.LocalDateTime;
 
-public record ProductRequestDTO (
+public record ProductCreateRequestDTO (
+
         String title,
         String content,
         LocalDateTime startAt,

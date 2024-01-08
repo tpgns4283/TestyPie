@@ -1,6 +1,7 @@
 package com.example.testypie.product.service;
 
-import com.example.testypie.product.dto.ProductRequestDTO;
+import com.example.testypie.product.dto.ProductCreateRequestDTO;
+import com.example.testypie.product.dto.ProductCreateResponseDTO;
 import com.example.testypie.product.entity.Product;
 import com.example.testypie.product.repositoy.ProductRepository;
 import com.example.testypie.user.entity.User;
@@ -17,11 +18,13 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public Product createPost(User user, ProductRequestDTO req) {
+    public ProductCreateResponseDTO createPost(User user, ProductCreateRequestDTO req) {
 
         Product product = Product.builder().user(user).title(req.title()).content(req.content()).createAt(LocalDateTime.now())
                 .startedAt(req.startAt()).closedAt(req.closedAt()).build();
 
-        return productRepository.save(product);
+        Product saveProduct = productRepository.save(product);
+
+        return ProductCreateResponseDTO.of(saveProduct);
     }
 }

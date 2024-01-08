@@ -1,11 +1,14 @@
 package com.example.testypie.product.controller;
 
-import com.example.testypie.product.dto.ProductRequestDTO;
-import com.example.testypie.product.entity.Product;
+import com.example.testypie.product.dto.ProductCreateRequestDTO;
+import com.example.testypie.product.dto.ProductCreateResponseDTO;
+
 import com.example.testypie.product.service.ProductService;
 import com.example.testypie.security.UserDetailsImpl;
 import com.example.testypie.user.entity.User;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +23,9 @@ public class ProductController {
     }
 
     @PostMapping("/product")
-    public Product createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody ProductRequestDTO req) {
+    public ResponseEntity<ProductCreateResponseDTO> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody ProductCreateRequestDTO req) {
         User user = userDetails.getUser();
-        return productService.createPost(user, req);
+        ProductCreateResponseDTO res = productService.createPost(user, req);
+        return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 }
