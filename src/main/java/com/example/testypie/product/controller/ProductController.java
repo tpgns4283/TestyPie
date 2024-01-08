@@ -11,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/product")
 public class ProductController {
@@ -23,6 +21,7 @@ public class ProductController {
         this.productService = productService;
     }
 
+    //Product 생성
     @PostMapping
     public ResponseEntity<ProductCreateResponseDTO> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody ProductCreateRequestDTO req) {
         User user = userDetails.getUser();
@@ -30,18 +29,28 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 
+    //Product 단일 조회
     @GetMapping("/{productId}")
     public ResponseEntity<ProductReadResponseDTO> getProduct(@PathVariable Long productId) {
         ProductReadResponseDTO res = productService.getProduct(productId);
         return ResponseEntity.ok().body(res);
     }
 
+    //Product 수정
     @PatchMapping("/{productId}")
     public ResponseEntity<ProductUpdateResponseDTO> updateProduct(@PathVariable Long productId,
                                                                   @RequestBody ProductUpdateRequestDTO req,
                                                                   @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         ProductUpdateResponseDTO res = productService.updateProduct(productId, req, userDetails.getUser());
+        return ResponseEntity.ok().body(res);
+    }
+
+    //Product 삭제
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<ProductDeleteResponseDTO> deleteProduct(@PathVariable Long productId,
+                                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ProductDeleteResponseDTO res = productService.deleteProduct(productId, userDetails.getUser());
         return ResponseEntity.ok().body(res);
     }
 }

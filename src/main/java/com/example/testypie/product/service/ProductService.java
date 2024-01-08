@@ -50,13 +50,21 @@ public class ProductService {
         return ProductUpdateResponseDTO.of(product);
     }
 
+    //DELETE
+    public ProductDeleteResponseDTO deleteProduct(Long productId, User user) {
+        Product product = getUserProduct(productId, user);
+        productRepository.delete(product);
+        return ProductDeleteResponseDTO.of(product);
+    }
 
+    //Product 존재여부 확인
     public Product findProduct(Long productId) {
         //RuntimeException으로 변경 예정
         return productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 Product입니다."));
     }
 
+    //Product 본인 인증
     public Product getUserProduct(Long productId, User user) {
         Product product = findProduct(productId);
         //RuntimeException으로 변경 예정
