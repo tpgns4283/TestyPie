@@ -1,9 +1,9 @@
 package com.example.testypie.filter;
 
-import com.example.testypie.CommonResponseDTO;
 import com.example.testypie.jwt.JwtUtil;
 import com.example.testypie.security.UserDetailsImpl;
 import com.example.testypie.security.UserDetailsServiceImpl;
+import com.example.testypie.user.dto.MessageDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -52,10 +52,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
             } else {
                 // 인증정보가 존재하지 않을때
-                CommonResponseDTO commonResponseDto = new CommonResponseDTO("토큰이 유효하지 않습니다.", HttpStatus.BAD_REQUEST.value());
+                MessageDTO messageDTO = new MessageDTO("토큰이 유효하지 않습니다.", HttpStatus.BAD_REQUEST.value());
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.setContentType("application/json; charset=UTF-8");
-                response.getWriter().write(objectMapper.writeValueAsString(commonResponseDto));
+                response.getWriter().write(objectMapper.writeValueAsString(messageDTO));
                 return;
             }
         }
