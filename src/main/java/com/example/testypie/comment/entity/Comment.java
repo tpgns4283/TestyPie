@@ -1,7 +1,9 @@
 package com.example.testypie.comment.entity;
 
+import com.example.testypie.comment.dto.CommentRequestDTO;
 import com.example.testypie.product.entity.Product;
 import com.example.testypie.user.entity.User;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +19,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private String content;
 
     @Column
@@ -26,11 +28,11 @@ public class Comment {
     @Column
     private LocalDateTime modifiedAt;
 
-    @JoinColumn
+    @JoinColumn(name = "user_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @JoinColumn
+    @JoinColumn(name = "product_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
