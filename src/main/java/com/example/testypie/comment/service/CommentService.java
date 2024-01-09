@@ -21,59 +21,55 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ProductService productService;
 
-    public CommentResponseDTO productComment(Long productId, CommentRequestDTO req, User user) {
-        Product product = productService.findProduct(productId);
+    public CommentResponseDTO productComment(Long product_id, CommentRequestDTO req, User user) {
+        Product product = productService.findProduct(product_id);
         Comment comment = new Comment(req, user, product);
         Comment saveComment = commentRepository.save(comment);
         return new CommentResponseDTO(saveComment);
     }
 
-    public List<CommentResponseDTO> getComments(Long productId) {
-        Product product = productService.findProduct(productId);
-
-        List<Comment> comments = product.getCommentList();
-        System.out.println("================================="  + comments);
-
+    public List<CommentResponseDTO> getComments(Long product_id) {
+        Product product = productService.findProduct(product_id);
         return commentRepository.findAllByProduct(product)
                 .stream().map(CommentResponseDTO::new).toList();
     }
 
     @Transactional
-    public CommentResponseDTO updateComment(Long productId, Long commentId, CommentRequestDTO req, User user) {
-        Comment comment = getCommentEntity(commentId);
-        checkProduct(comment, productId);
+    public CommentResponseDTO updateComment(Long product_id, Long comment_id, CommentRequestDTO req, User user) {
+        Comment comment = getCommentEntity(comment_id);
+        checkProduct(comment, product_id);
         checkUser(comment, user.getId());
 
-        Product product = productService.findProduct(productId);
+        Product product = productService.findProduct(product_id);
         comment.update(req, product);
         return new CommentResponseDTO(comment);
     }
 
-    public void deleteComment(Long productId, Long commentId, User user) {
-        Comment comment = getCommentEntity(commentId);
-        checkProduct(comment, productId);
+    public void deleteComment(Long product_id, Long comment_id, User user) {
+        Comment comment = getCommentEntity(comment_id);
+        checkProduct(comment, product_id);
         checkUser(comment, user.getId());
         commentRepository.delete(comment);
     }
 
     // comment id로 댓글 조회
     @Transactional(readOnly = true)
-    public Comment getCommentEntity(Long commentId) {
-        return commentRepository.findById(commentId).orElseThrow(
+    public Comment getCommentEntity(Long comment_id) {
+        return commentRepository.findById(comment_id).orElseThrow(
             () -> new IllegalArgumentException("comment id")
         );
     }
 
     // 게시글에 달린 댓글이 맞는지 확인
-    public void checkProduct(Comment comment, Long productId) {
-        if (!comment.getProduct().getId().equals(productId)) {
-            throw new IllegalArgumentException("comment's productId");
+    public void checkProduct(Comment comment, Long product_id) {
+        if (!comment.getProduct().getId().equals(product_id)) {
+            throw new IllegalArgumentException("comment's product_id");
         }
     }
 
     // 수정 삭제 user 일치 확인
-    public void checkUser(Comment comment, Long id) {
-        if(!comment.getUser().getId().equals(id)) {
+    public void checkUser(Comment comment, Long user_id) {
+        if(!comment.getUser().getId().equals(user_id)) {
             throw new IllegalArgumentException("comment's modifier");
         }
     }

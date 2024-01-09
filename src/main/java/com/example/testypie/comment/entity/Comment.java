@@ -48,14 +48,15 @@ public class Comment {
     }
 
     public Comment(CommentRequestDTO req, User user, Product product) {
-        this.content = req.getContent();
+        this.content = req.content();
         this.createAt = LocalDateTime.now();
         this.user = user;
         this.product = product;
     }
 
     public void update(CommentRequestDTO req, Product product) {
-        this.content = req.getContent();
+        this.content = req.content();
         this.product = product;
+        this.modifiedAt = LocalDateTime.now();
     }
 }

@@ -5,12 +5,11 @@ import com.example.testypie.feedback.dto.FeedbackResponseDTO;
 import com.example.testypie.feedback.entity.Feedback;
 import com.example.testypie.feedback.repository.FeedbackRepository;
 import com.example.testypie.product.entity.Product;
+import com.example.testypie.product.service.ProductService;
 import com.example.testypie.user.entity.User;
-import com.example.testypie.user.service.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,64 +18,74 @@ import org.springframework.transaction.annotation.Transactional;
 public class FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
-    private final UserService userService;
     private final ProductService productService;
 
-    public FeedbackResponseDTO addFeedback(FeedbackRequestDTO req, User user)
-        throws NotFoundException {
+    public FeedbackResponseDTO addFeedback(FeedbackRequestDTO req, Long product_id, User user) {
         // 해당 product 존재 여부 검증
-        validateProductsExistence(req.getProducts());
+        Product product = productService.findProduct(product_id);
 
-        Product product = new Product(req, user);
-        Product saveProduct = ProductRepository.save(product);
-        return new ProductResponseDTO;
-    }
-
-    void validateProductsExistence(Product products) throws NotFoundException {
-        for (Product product : products) {
-            productService.validateProductExistence(product);
-        }
+        Feedback feedback = new Feedback(req, product, user);
+        Feedback saveFeedback = feedbackRepository.save(feedback);
+        return new FeedbackResponseDTO(saveFeedback);
     }
 
     @Transactional(readOnly = true)
-    public FeedbackResponseDTO getFeedback(Long id) {
-        Feedback feedback = getFeedbackById(id);
+    public FeedbackResponseDTO getFeedback(Long feedback_id, Long product_id) {
+        Feedback feedback = getFeedbackById(feedback_id);
+        checkFeedback(feedback, product_id);
+
         return new FeedbackResponseDTO(feedback);
     }
 
     @Transactional(readOnly = true)
-    public List<FeedbackResponseDTO> getFeedbacks() {
+    public List<FeedbackResponseDTO> getFeedbacks(Long product_id) {
+        productService.findProduct(product_id);
         return feedbackRepository.findAllByOrderByCreatedAtDesc().stream()
             .map(FeedbackResponseDTO::new)
             .collect(Collectors.toList());
     }
 
     @Transactional
-    public FeedbackResponseDTO updateFeedback(Long id, FeedbackRequestDTO req, User user)
-        throws InvalidFeedbackModifierException {
-        Feedback feedback = getFeedbackById(id);
-        validateUserIsTester(feedback.getUser().getId(), user.getId());
-        feedback.update(req);
+    public FeedbackResponseDTO updateFeedback(Long product_id, FeedbackRequestDTO req, User user, Long feedback_id) {
+        Feedback feedback = getFeedbackById(feedback_id);
+        checkFeedback(feedback, product_id);
+        checkUser(feedback, user.getId());
+
+        Product product = productService.findProduct(product_id);
+        feedback.update(product, req);
         return new FeedbackResponseDTO(feedback);
     }
 
-    public void deleteFeedback(Long id, User user) {
-        Feedback feedback = getFeedbackById(id);
+    @Transactional
+    public void deleteFeedback(Long product_id, User user, Long feedback_id) {
+        Feedback feedback = getFeedbackById(feedback_id);
+        checkFeedback(feedback, product_id);
+        checkUser(feedback, user.getId());
         feedbackRepository.delete(feedback);
     }
 
+    //=======================================================================//
+    //    에러클래스 수정함
+    //=======================================================================//
+
+    //feedback_id로 feedback 조회
     @Transactional(readOnly = true)
     public Feedback getFeedbackById(Long id) {
         return feedbackRepository.findById(id)
-            .orElseThrow(() -> new NotFoundFeedbackException("feedbackId", id.toString(),
-                "주어진 id에 해당하는 게시글이 존재하지 않음"));
+            .orElseThrow(() -> new IllegalArgumentException("feedbackId"));
     }
 
-    void validateUserIsTester(Long testerId, Long loggedInUserId)
-        throws InvalidFeedbackModifierException {
-        if (!testerId.equals(loggedInUserId)) {
-            throw new InvalidFeedBackModfierException("tester", testerId.toString(),
-                "이 게시물을 업데이트/삭제할 권한이 없습니다.");
+    //product의 feedback인지 확인
+    public void checkFeedback(Feedback feedback, Long product_id) {
+        if (!feedback.getProduct().getId().equals(product_id)) {
+            throw new IllegalArgumentException("feedback's productId");
+        }
+    }
+
+    //feedback 작성 유저인지 확인
+    public void checkUser(Feedback feedback, Long user_id) {
+        if(!feedback.getUser().getId().equals(user_id)) {
+            throw new IllegalArgumentException("feedback's modifier");
         }
     }
 

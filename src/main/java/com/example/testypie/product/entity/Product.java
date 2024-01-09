@@ -2,6 +2,7 @@ package com.example.testypie.product.entity;
 
 import com.example.testypie.category.entity.Category;
 import com.example.testypie.comment.entity.Comment;
+import com.example.testypie.feedback.dto.FeedbackRequestDTO;
 import com.example.testypie.feedback.entity.Feedback;
 import com.example.testypie.reward.entity.Reward;
 import com.example.testypie.user.entity.User;

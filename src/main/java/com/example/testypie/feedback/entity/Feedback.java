@@ -1,5 +1,6 @@
 package com.example.testypie.feedback.entity;
 
+import com.example.testypie.feedback.dto.FeedbackRequestDTO;
 import com.example.testypie.product.entity.Product;
 import com.example.testypie.user.entity.User;
 import jakarta.persistence.*;
@@ -50,6 +51,22 @@ public class Feedback {
         this.modifiedAt = modifiedAt;
         this.content = content;
         this.user = user;
+        this.product = product;
+    }
+
+    public Feedback(FeedbackRequestDTO req, Product product, User user) {
+        this.title = req.title();
+        this.content = req.content();
+        this.grade = req.grade();
+        this.createdAt = LocalDateTime.now();
+        this.user = user;
+        this.product = product;
+    }
+
+    public void update(Product product, FeedbackRequestDTO req) {
+        this.grade = req.grade();
+        this.modifiedAt = LocalDateTime.now();
+        this.content = req.content();
         this.product = product;
     }
 }

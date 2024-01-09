@@ -4,7 +4,6 @@ import com.example.testypie.feedback.dto.FeedbackRequestDTO;
 import com.example.testypie.feedback.dto.FeedbackResponseDTO;
 import com.example.testypie.feedback.service.FeedbackService;
 import com.example.testypie.security.UserDetailsImpl;
-import com.example.testypie.user.entity.User;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,41 +27,41 @@ public class FeedbackController {
 
     @GetMapping("/{feedback_id}")
     public ResponseEntity<FeedbackResponseDTO> getFeedback(
-        @PathVariable Long feedback_id
-    ) {
-        FeedbackResponseDTO res = feedbackService.getFeedback(feedback_id);
+        @PathVariable Long feedback_id,
+        @PathVariable Long product_id) {
+        FeedbackResponseDTO res = feedbackService.getFeedback(feedback_id, product_id);
         return ResponseEntity.ok(res);
     }
 
     @GetMapping
-    public ResponseEntity<List<FeedbackResponseDTO>> getFeedbacks() {
-        List<FeedbackResponseDTO> res = FeedbackService.getFeedbacks();
-        return ResponseEntity.ok(res);
+    public ResponseEntity<List<FeedbackResponseDTO>> getFeedbacks(@PathVariable Long product_id) {
+        List<FeedbackResponseDTO> resList = feedbackService.getFeedbacks(product_id);
+        return ResponseEntity.ok(resList);
     }
 
     @PostMapping
     public ResponseEntity<FeedbackResponseDTO> addFeedback(@RequestBody FeedbackRequestDTO req, @AuthenticationPrincipal
-        UserDetailsImpl userDetails) {
-        FeedbackResponseDTO res = feedbackService.addFeedback(req, userDetails.getUser());
+        UserDetailsImpl userDetails, @PathVariable Long product_id) {
+        FeedbackResponseDTO res = feedbackService.addFeedback(req, product_id, userDetails.getUser());
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 
     @PatchMapping("/{feedback_id}")
     public ResponseEntity<FeedbackResponseDTO> updateFeedback(
-        @PathVariable Long id,
+        @PathVariable Long product_id,
         @Valid @RequestBody FeedbackRequestDTO req,
-        @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
-        FeedbackResponseDTO res = feedbackService.updateFeedback(id, req, User.builder().build());
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long feedback_id) {
+        FeedbackResponseDTO res = feedbackService.updateFeedback(product_id, req, userDetails.getUser(), feedback_id);
         return ResponseEntity.ok(res);
     }
 
     @DeleteMapping("/{feedback_id}")
     public ResponseEntity<Void> deleteFeedback(
-        @PathVariable Long id,
-        @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
-        feedbackService.deleteFeedback(id, User.builder().build());
+            @PathVariable Long product_id,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long feedback_id) {
+        feedbackService.deleteFeedback(product_id, userDetails.getUser(), feedback_id);
         return ResponseEntity.noContent().build();
     }
 }

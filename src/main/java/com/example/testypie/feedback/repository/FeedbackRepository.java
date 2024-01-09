@@ -3,6 +3,8 @@ package com.example.testypie.feedback.repository;
 import com.example.testypie.feedback.entity.Feedback;
 import java.util.List;
 import java.util.Optional;
+
+import com.example.testypie.product.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
