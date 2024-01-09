@@ -24,7 +24,7 @@ public class Feedback {
     private String title;
 
     @Column
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @Column
     private LocalDateTime modifiedAt;
@@ -41,12 +41,12 @@ public class Feedback {
     private Product product;
 
     @Builder
-    private Feedback(Long id, Double grade, String title, LocalDateTime createAt, LocalDateTime modifiedAt,
+    private Feedback(Long id, Double grade, String title, LocalDateTime createdAt, LocalDateTime modifiedAt,
                      String content, User user, Product product) {
         this.id = id;
         this.grade = grade;
         this.title = title;
-        this.createAt = createAt;
+        this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.content = content;
         this.user = user;
