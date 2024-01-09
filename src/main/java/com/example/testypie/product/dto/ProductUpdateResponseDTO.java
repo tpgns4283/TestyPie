@@ -8,6 +8,7 @@ public record ProductUpdateResponseDTO(
         Long id,
         String title,
         String content,
+        String category,
         LocalDateTime modifiedAt,
         LocalDateTime startAt,
         LocalDateTime closedAt
@@ -17,6 +18,7 @@ public record ProductUpdateResponseDTO(
                 product.getId(),
                 product.getTitle(),
                 product.getContent(),
+                product.getCategory().getName(),
                 product.getModifiedAt(),
                 product.getStartedAt(),
                 product.getClosedAt()

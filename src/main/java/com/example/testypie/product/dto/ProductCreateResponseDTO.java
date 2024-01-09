@@ -1,6 +1,5 @@
 package com.example.testypie.product.dto;
 
-import com.example.testypie.category.entity.Category;
 import com.example.testypie.product.entity.Product;
 
 import java.time.LocalDateTime;
@@ -9,6 +8,7 @@ public record ProductCreateResponseDTO (
         Long id,
         String title,
         String content,
+        String category,
         LocalDateTime createAt,
         LocalDateTime startAt,
         LocalDateTime closedAt
@@ -18,6 +18,7 @@ public record ProductCreateResponseDTO (
                 product.getId(),
                 product.getTitle(),
                 product.getContent(),
+                product.getCategory().getName(),
                 product.getCreateAt(),
                 product.getStartedAt(),
                 product.getClosedAt()

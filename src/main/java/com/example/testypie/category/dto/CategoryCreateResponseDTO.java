@@ -2,9 +2,6 @@ package com.example.testypie.category.dto;
 
 import com.example.testypie.category.entity.Category;
 
-import java.util.List;
-
-
 public record CategoryCreateResponseDTO(
         Long id,
         String name,

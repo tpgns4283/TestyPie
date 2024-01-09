@@ -1,5 +1,7 @@
 package com.example.testypie.product.service;
 
+import com.example.testypie.category.entity.Category;
+import com.example.testypie.category.repository.CategoryRepository;
 import com.example.testypie.product.dto.*;
 import com.example.testypie.product.entity.Product;
 import com.example.testypie.product.repositoy.ProductRepository;
@@ -10,21 +12,25 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.RejectedExecutionException;
 
 @Service
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     //CREATE
     public ProductCreateResponseDTO createPost(User user, ProductCreateRequestDTO req) {
+        Category category = categoryRepository.findByName(req.category());
 
-        Product product = Product.builder().user(user).title(req.title()).content(req.content()).createAt(LocalDateTime.now())
+        Product product = Product.builder().user(user).title(req.title()).content(req.content()).category(category).createAt(LocalDateTime.now())
                 .startedAt(req.startAt()).closedAt(req.closedAt()).build();
 
         Product saveProduct = productRepository.save(product);
@@ -41,9 +47,11 @@ public class ProductService {
     //UPDATE
     public ProductUpdateResponseDTO updateProduct(Long productId, ProductUpdateRequestDTO req, User user) {
         Product product = getUserProduct(productId, user);
+        Category category = categoryRepository.findByName(req.category());
 
         product.updateTitle(req.title());
         product.updateContent(req.content());
+        product.updateCategory(category);
         product.updateModifiedAt(LocalDateTime.now());
         product.updateStartAt(req.startAt());
         product.updateClosedAt(req.closedAt());

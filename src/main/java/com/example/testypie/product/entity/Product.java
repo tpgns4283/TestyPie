@@ -45,6 +45,10 @@ public class Product {
     @JsonIgnore
     private List<Reward> rewardList = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Category category;
+
     @Column
     private LocalDateTime createAt;
 
@@ -56,13 +60,13 @@ public class Product {
 
     @Column
     private LocalDateTime closedAt;
-    ;
+
     @OneToMany(mappedBy = "product", targetEntity = Feedback.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Feedback> feedbackList = new ArrayList<>();
 
     @Builder
-    private Product(Long id, User user, String title, String content,
+    private Product(Long id, User user, String title, String content, Category category,
                      List<Reward> rewardList, LocalDateTime createAt, LocalDateTime modifiedAt, LocalDateTime startedAt, LocalDateTime closedAt,
                     List<Comment> commentList, List<Feedback> feedbackList) {
 
@@ -70,6 +74,7 @@ public class Product {
         this.user = user;
         this.title = title;
         this.content = content;
+        this.category = category;
         this.rewardList = rewardList;
         this.createAt = createAt;
         this.modifiedAt = modifiedAt;
@@ -100,6 +105,12 @@ public class Product {
     public void updateClosedAt(LocalDateTime closedAt) {
         if(closedAt != null){
             this.closedAt = closedAt;
+        }
+    }
+
+    public void updateCategory(Category category) {
+        if(category != null){
+            this.category = category;
         }
     }
 }
