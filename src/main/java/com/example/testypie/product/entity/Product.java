@@ -4,12 +4,10 @@ import com.example.testypie.category.entity.Category;
 import com.example.testypie.comment.entity.Comment;
 import com.example.testypie.feedback.entity.Feedback;
 import com.example.testypie.reward.entity.Reward;
-import com.example.testypie.reward.entity.RewardImage;
 import com.example.testypie.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.awt.Image;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +39,15 @@ public class Product {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-
     @OneToMany(mappedBy = "product", targetEntity = Reward.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Reward> rewardList = new ArrayList<>();
+
+    @Column
+    private LocalDateTime createAt;
+
+    @Column
+    private LocalDateTime modifiedAt;
 
     @Column
     private LocalDateTime startedAt;
@@ -62,7 +65,7 @@ public class Product {
 
     @Builder
     private Product(Long id, User user, Category category, String title, String content,
-                     List<Reward> rewardList, LocalDateTime startedAt, LocalDateTime closedAt,
+                     List<Reward> rewardList, LocalDateTime createAt, LocalDateTime modifiedAt, LocalDateTime startedAt, LocalDateTime closedAt,
                     List<Comment> commentList, List<Feedback> feedbackList) {
 
         this.id = id;
@@ -71,9 +74,35 @@ public class Product {
         this.title = title;
         this.content = content;
         this.rewardList = rewardList;
+        this.createAt = createAt;
+        this.modifiedAt = modifiedAt;
         this.startedAt = startedAt;
         this.closedAt = closedAt;
         this.commentList = commentList;
         this.feedbackList = feedbackList;
+    }
+
+    public void updateTitle(String title) {
+        if(title != null){
+            this.title = title;
+        }
+    }
+    public void updateContent(String content) {
+        if(content != null){
+            this.content = content;
+        }
+    }
+    public void updateModifiedAt(LocalDateTime modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
+    public void updateStartAt(LocalDateTime startedAt) {
+        if(startedAt != null){
+            this.startedAt = startedAt;
+        }
+    }
+    public void updateClosedAt(LocalDateTime closedAt) {
+        if(closedAt != null){
+            this.closedAt = closedAt;
+        }
     }
 }
