@@ -1,10 +1,7 @@
 package com.example.testypie.user.controller;
 
 import com.example.testypie.jwt.JwtUtil;
-import com.example.testypie.user.dto.LoginRequestDTO;
-import com.example.testypie.user.dto.MessageDTO;
-import com.example.testypie.user.dto.ProfileResponseDTO;
-import com.example.testypie.user.dto.SignUpRequestDTO;
+import com.example.testypie.user.dto.*;
 import com.example.testypie.user.entity.User;
 import com.example.testypie.user.service.UserInfoService;
 import com.example.testypie.user.service.UserService;
@@ -15,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.NoSuchElementException;
 
 @Slf4j
 @RestController
@@ -49,7 +48,21 @@ public class UserController {
     //프로필 조회
     @GetMapping("/{account}")
     public ResponseEntity<ProfileResponseDTO> getProfile(@PathVariable String account) {
-        User user = userInfoService.getUserByAccount(account);
+        User user = userInfoService.findProfile(account);
         return ResponseEntity.ok().body(ProfileResponseDTO.of(user));
+    }
+
+    //프로필 수정
+    @PatchMapping("/{account}")
+    public ResponseEntity<?> updateProfile(@PathVariable String account, @RequestBody ProfileRequestDTO req) {
+
+        try {
+            ProfileResponseDTO res = userInfoService.updateProfile(account, req);
+            return ResponseEntity.ok(res);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new MessageDTO("업데이트에 실패했습니다.", HttpStatus.BAD_REQUEST.value()));
+        }
     }
 }
