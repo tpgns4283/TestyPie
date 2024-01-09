@@ -1,5 +1,6 @@
 package com.example.testypie.product.dto;
 
+import com.example.testypie.category.entity.Category;
 import com.example.testypie.product.entity.Product;
 
 import java.time.LocalDateTime;

@@ -2,7 +2,6 @@ package com.example.testypie.product.entity;
 
 import com.example.testypie.category.entity.Category;
 import com.example.testypie.comment.entity.Comment;
-import com.example.testypie.feedback.dto.FeedbackRequestDTO;
 import com.example.testypie.feedback.entity.Feedback;
 import com.example.testypie.reward.entity.Reward;
 import com.example.testypie.user.entity.User;
@@ -38,9 +37,6 @@ public class Product {
     @Column
     private String content;
 
-    @Enumerated(EnumType.STRING)
-    private Category category;
-
     @OneToMany(mappedBy = "product", targetEntity = Comment.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Comment> commentList = new ArrayList<>();
@@ -66,13 +62,12 @@ public class Product {
     private List<Feedback> feedbackList = new ArrayList<>();
 
     @Builder
-    private Product(Long id, User user, Category category, String title, String content,
+    private Product(Long id, User user, String title, String content,
                      List<Reward> rewardList, LocalDateTime createAt, LocalDateTime modifiedAt, LocalDateTime startedAt, LocalDateTime closedAt,
                     List<Comment> commentList, List<Feedback> feedbackList) {
 
         this.id = id;
         this.user = user;
-        this.category = category;
         this.title = title;
         this.content = content;
         this.rewardList = rewardList;

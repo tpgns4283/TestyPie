@@ -3,8 +3,6 @@ package com.example.testypie.comment.entity;
 import com.example.testypie.comment.dto.CommentRequestDTO;
 import com.example.testypie.product.entity.Product;
 import com.example.testypie.user.entity.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
