@@ -1,5 +1,6 @@
 package com.example.testypie.user.entity;
 
+import com.example.testypie.user.dto.ProfileRequestDTO;
 import com.example.testypie.userrole.entity.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,17 +24,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false, unique = true)
     private String account;
 
     @Column
     private String password;
 
-    @Column
+    @Column(nullable = false, unique = true)
     @Email
     private String email;
 
-    @Column
+    @Column(nullable = false, unique = true)
     private String nickname;
 
     @Column
@@ -53,5 +54,14 @@ public class User {
         this.nickname = nickname;
         this.description = description;
         this.userRole = userRole;
+    }
+
+    public void update(ProfileRequestDTO req) {
+        if(req.password() != null && !req.password().isEmpty())
+            this.password = req.password();
+        if(req.nickname() != null && !req.nickname().isEmpty())
+            this.nickname = req.nickname();
+        if(req.description() != null && !req.description().isEmpty())
+            this.description = req.description();
     }
 }
