@@ -4,9 +4,12 @@ import com.example.testypie.product.dto.*;
 import com.example.testypie.product.entity.Product;
 import com.example.testypie.product.repositoy.ProductRepository;
 import com.example.testypie.user.entity.User;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 
 @Service
@@ -72,5 +75,22 @@ public class ProductService {
             throw new RejectedExecutionException("본인만 수정할 수 있습니다.");
         }
         return product;
+    }
+
+    public Page<ProductReadResponseDTO> getProductPage(Pageable pageable) {
+        int page = pageable.getPageNumber()-1;
+        int pageLimit = 10; //한 페이지에 게시글 10개
+
+        //ID기준 내림차순
+        Page<Product> productPage = productRepository.findAll(PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
+
+        List<ProductReadResponseDTO> resList = new ArrayList<>();
+
+        for (Product product : productPage) {
+            ProductReadResponseDTO res = ProductReadResponseDTO.of(product);
+            resList.add(res);
+        }
+
+        return new PageImpl<>(resList, pageable, productPage.getTotalElements());
     }
 }

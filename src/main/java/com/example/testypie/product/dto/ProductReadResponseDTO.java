@@ -12,6 +12,7 @@ public record ProductReadResponseDTO (
         LocalDateTime startAt,
         LocalDateTime closedAt
 ) {
+
     public static ProductReadResponseDTO of(Product product) {
         return new ProductReadResponseDTO(
                 product.getId(),
