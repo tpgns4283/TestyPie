@@ -52,7 +52,6 @@ public class CommentController {
         @PathVariable Long comment_id,
         @AuthenticationPrincipal UserDetailsImpl userDetails
     ){
-        System.out.println("타냐?");
      commentService.deleteComment(product_id, comment_id, userDetails.getUser());
      return ResponseEntity.noContent().build();
     }
