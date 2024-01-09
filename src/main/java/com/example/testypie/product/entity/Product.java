@@ -27,6 +27,7 @@ public class Product {
     private Long id;
 
     @JoinColumn
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
@@ -38,6 +39,10 @@ public class Product {
 
     @Enumerated(EnumType.STRING)
     private Category category;
+
+    @OneToMany(mappedBy = "product", targetEntity = Comment.class, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Comment> commentList = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", targetEntity = Reward.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
@@ -54,11 +59,7 @@ public class Product {
 
     @Column
     private LocalDateTime closedAt;
-
-    @OneToMany(mappedBy = "product", targetEntity = Comment.class, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Comment> commentList = new ArrayList<>();
-
+    ;
     @OneToMany(mappedBy = "product", targetEntity = Feedback.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Feedback> feedbackList = new ArrayList<>();
