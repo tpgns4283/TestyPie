@@ -2,7 +2,6 @@ package com.example.testypie.product.entity;
 
 import com.example.testypie.category.entity.Category;
 import com.example.testypie.comment.entity.Comment;
-import com.example.testypie.feedback.dto.FeedbackRequestDTO;
 import com.example.testypie.feedback.entity.Feedback;
 import com.example.testypie.reward.entity.Reward;
 import com.example.testypie.user.entity.User;
@@ -38,9 +37,6 @@ public class Product {
     @Column
     private String content;
 
-    @Enumerated(EnumType.STRING)
-    private Category category;
-
     @OneToMany(mappedBy = "product", targetEntity = Comment.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Comment> commentList = new ArrayList<>();
@@ -48,6 +44,10 @@ public class Product {
     @OneToMany(mappedBy = "product", targetEntity = Reward.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Reward> rewardList = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Category category;
 
     @Column
     private LocalDateTime createAt;
@@ -60,21 +60,21 @@ public class Product {
 
     @Column
     private LocalDateTime closedAt;
-    ;
+
     @OneToMany(mappedBy = "product", targetEntity = Feedback.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Feedback> feedbackList = new ArrayList<>();
 
     @Builder
-    private Product(Long id, User user, Category category, String title, String content,
+    private Product(Long id, User user, String title, String content, Category category,
                      List<Reward> rewardList, LocalDateTime createAt, LocalDateTime modifiedAt, LocalDateTime startedAt, LocalDateTime closedAt,
                     List<Comment> commentList, List<Feedback> feedbackList) {
 
         this.id = id;
         this.user = user;
-        this.category = category;
         this.title = title;
         this.content = content;
+        this.category = category;
         this.rewardList = rewardList;
         this.createAt = createAt;
         this.modifiedAt = modifiedAt;
@@ -105,6 +105,12 @@ public class Product {
     public void updateClosedAt(LocalDateTime closedAt) {
         if(closedAt != null){
             this.closedAt = closedAt;
+        }
+    }
+
+    public void updateCategory(Category category) {
+        if(category != null){
+            this.category = category;
         }
     }
 }

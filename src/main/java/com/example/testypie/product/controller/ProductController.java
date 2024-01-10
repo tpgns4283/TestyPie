@@ -6,6 +6,10 @@ import com.example.testypie.product.service.ProductService;
 import com.example.testypie.security.UserDetailsImpl;
 import com.example.testypie.user.entity.User;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,12 +40,20 @@ public class ProductController {
         return ResponseEntity.ok().body(res);
     }
 
+    //Product 전체 조회(페이징)
+    @GetMapping
+    public ResponseEntity<Page<ProductReadResponseDTO>> getProductPage(
+            // (page = 1) => 1페이지부터 시작
+            @PageableDefault(page = 1) Pageable pageable) {
+        Page<ProductReadResponseDTO> res = productService.getProductPage(pageable);
+        return ResponseEntity.ok().body(res);
+    }
+
     //Product 수정
     @PatchMapping("/{productId}")
     public ResponseEntity<ProductUpdateResponseDTO> updateProduct(@PathVariable Long productId,
                                                                   @RequestBody ProductUpdateRequestDTO req,
                                                                   @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
         ProductUpdateResponseDTO res = productService.updateProduct(productId, req, userDetails.getUser());
         return ResponseEntity.ok().body(res);
     }

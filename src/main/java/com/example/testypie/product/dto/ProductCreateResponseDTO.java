@@ -8,6 +8,7 @@ public record ProductCreateResponseDTO (
         Long id,
         String title,
         String content,
+        String category,
         LocalDateTime createAt,
         LocalDateTime startAt,
         LocalDateTime closedAt
@@ -17,6 +18,7 @@ public record ProductCreateResponseDTO (
                 product.getId(),
                 product.getTitle(),
                 product.getContent(),
+                product.getCategory().getName(),
                 product.getCreateAt(),
                 product.getStartedAt(),
                 product.getClosedAt()
