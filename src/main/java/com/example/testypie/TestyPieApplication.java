@@ -1,6 +1,5 @@
 package com.example.testypie;
 
-import com.example.testypie.domain.util.S3Uploader;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
@@ -12,8 +11,9 @@ public class TestyPieApplication {
             + "classpath:aws.properties";
 
     public static void main(String[] args) {
-        new SpringApplicationBuilder(S3Uploader.class)
+        new SpringApplicationBuilder(TestyPieApplication.class)
                 .properties(APPLICATION_LOCATIONS)
                 .run(args);
     }
+
 }
