@@ -5,12 +5,15 @@ import com.example.testypie.user.dto.*;
 import com.example.testypie.user.entity.User;
 import com.example.testypie.user.service.UserInfoService;
 import com.example.testypie.user.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.NoSuchElementException;
@@ -65,4 +68,6 @@ public class UserController {
             return ResponseEntity.internalServerError().body(new MessageDTO("업데이트에 실패했습니다.", HttpStatus.BAD_REQUEST.value()));
         }
     }
+
+
 }
