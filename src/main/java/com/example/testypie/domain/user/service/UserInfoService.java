@@ -1,6 +1,8 @@
 package com.example.testypie.domain.user.service;
 
+import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.user.dto.ProfileResponseDTO;
+import com.example.testypie.domain.user.dto.RegisteredProductResponseDTO;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.domain.user.dto.ProfileRequestDTO;
