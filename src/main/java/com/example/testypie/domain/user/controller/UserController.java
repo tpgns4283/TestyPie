@@ -5,6 +5,7 @@ import com.example.testypie.domain.user.dto.*;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.service.UserInfoService;
 import com.example.testypie.domain.user.service.UserService;
+import com.example.testypie.global.security.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
