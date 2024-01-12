@@ -8,7 +8,7 @@ public class TestyPieApplication {
 
     public static final String APPLICATION_LOCATIONS = "spring.config.location="
             + "classpath:application.properties,"
-            + "classpath:aws.properties";
+            + "classpath:application-s3.properties";
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(TestyPieApplication.class)
