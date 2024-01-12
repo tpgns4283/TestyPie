@@ -1,21 +1,21 @@
 package com.example.testypie.user.controller;
 
 import com.example.testypie.jwt.JwtUtil;
+import com.example.testypie.security.UserDetailsImpl;
 import com.example.testypie.user.dto.*;
 import com.example.testypie.user.entity.User;
 import com.example.testypie.user.service.UserInfoService;
 import com.example.testypie.user.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Slf4j
@@ -57,7 +57,8 @@ public class UserController {
 
     //프로필 수정
     @PatchMapping("/{account}")
-    public ResponseEntity<?> updateProfile(@PathVariable String account, @RequestBody ProfileRequestDTO req) {
+    public ResponseEntity<?> updateProfile(@PathVariable String account, @RequestBody ProfileRequestDTO req,
+                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         try {
             ProfileResponseDTO res = userInfoService.updateProfile(account, req);
@@ -69,5 +70,21 @@ public class UserController {
         }
     }
 
+    // 2024-01-12
+    // product 등록 이력 조회
+    // user가 자신의 프로필에서 product 등록이력을 조회하는 서비스입니다.
+    // 이 메서드들은 아래와 같이 작동합니다.
+    // 1. 유효한 사용자인지 체크합니다.
+    // 2. 유효한 사용자일 경우 등록한 product를 전부 가져옵니다.
+    // 3. RegisteredProductResponstDTO객체는 productId, product title, createdAt, closedAt를 가집니다.
+    @GetMapping("/{account}/registeredProducts")
+    public ResponseEntity<List<RegisteredProductResponseDTO>> getRegisteredProducts(@PathVariable String account, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        // 1.
+        userInfoService.checkSameUser(account, userDetails.getUsername());
 
+        // 2, 3.
+        List<RegisteredProductResponseDTO> registeredProductsList = userInfoService.getUserProducts(account);
+
+        return ResponseEntity.ok().body(registeredProductsList);
+    }
 }
