@@ -8,6 +8,7 @@ public record ProfileRequestDTO(
         String password,
         @Pattern(regexp = "^[a-zA-Z0-9가-힣_]{3,20}$", message = "닉네임 형식이 올바르지 않습니다.")
         String nickname,
-        String description
+        String description,
+        String fileUrl
 ) {
 }

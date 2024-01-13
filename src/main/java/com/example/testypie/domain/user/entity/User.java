@@ -43,9 +43,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
+    @Column
+    private String fileUrl;
+
     @Builder
     private User(Long id, String account, String password, String email, String nickname,
-        String description, UserRole userRole) {
+        String description, UserRole userRole, String fileUrl) {
 
         this.id = id;
         this.account = account;
@@ -54,6 +57,7 @@ public class User {
         this.nickname = nickname;
         this.description = description;
         this.userRole = userRole;
+        this.fileUrl = fileUrl;
     }
 
     public void update(ProfileRequestDTO req) {
@@ -63,5 +67,7 @@ public class User {
             this.nickname = req.nickname();
         if(req.description() != null && !req.description().isEmpty())
             this.description = req.description();
+        if(req.fileUrl() != null && !req.fileUrl().isEmpty())
+            this.fileUrl = req.fileUrl();
     }
 }
