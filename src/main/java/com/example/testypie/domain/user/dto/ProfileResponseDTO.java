@@ -4,10 +4,9 @@ import com.example.testypie.domain.user.entity.User;
 
 public record ProfileResponseDTO(
         String nickname,
-        String description
+        String description,
 
-        // 이미지 가져오기
-        // *************
+        String fileUrl
 ) {
-    public static ProfileResponseDTO of(User user) { return new ProfileResponseDTO(user.getNickname(), user.getDescription()); }
+    public static ProfileResponseDTO of(User user) { return new ProfileResponseDTO(user.getNickname(), user.getDescription(), user.getFileUrl()); }
 }
