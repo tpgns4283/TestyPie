@@ -13,13 +13,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/{parentCategory_name}/{childCategory_id}/{product_id}/comments")
+@RequestMapping("/api")
 @RestController
 public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping
+    @PostMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments")
     public ResponseEntity<CommentResponseDTO> postComment(
             @PathVariable Long product_id,
             @Valid @RequestBody CommentRequestDTO req,
@@ -30,7 +30,7 @@ public class CommentController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping
+    @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments")
     public ResponseEntity<List<CommentResponseDTO>> getComment(@PathVariable Long product_id,
                                                                @PathVariable Long childCategory_id,
                                                                @PathVariable String parentCategory_name) {
@@ -38,7 +38,7 @@ public class CommentController {
         return ResponseEntity.ok(resList);
     }
 
-    @PatchMapping("/{comment_id}")
+    @PatchMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments/{comment_id}")
     public ResponseEntity<CommentResponseDTO> updateComment(
             @PathVariable Long product_id,
             @PathVariable Long comment_id,
@@ -50,7 +50,7 @@ public class CommentController {
         return ResponseEntity.ok(res);
     }
 
-    @DeleteMapping("/{comment_id}")
+    @DeleteMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments/{comment_id}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long product_id,
             @PathVariable Long comment_id,
