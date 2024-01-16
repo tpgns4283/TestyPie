@@ -26,7 +26,7 @@ public class ProductController {
     }
 
     //Product 생성
-    @PostMapping("/{parentCategory_name}/{childCategory_id}")
+    @PostMapping("/category/{parentCategory_name}/{childCategory_id}/products")
     public ResponseEntity<ProductCreateResponseDTO> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                @Valid @RequestBody ProductCreateRequestDTO req,
                                                                @PathVariable Long childCategory_id,
@@ -38,7 +38,7 @@ public class ProductController {
     }
 
     //Product 단일 조회
-    @GetMapping("/{parentCategory_name}/{childCategory_id}/{productId}")
+    @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
     public ResponseEntity<ProductReadResponseDTO> getProduct(@PathVariable Long productId,
                                                              @PathVariable Long childCategory_id,
                                                              @PathVariable String parentCategory_name) {
@@ -47,7 +47,7 @@ public class ProductController {
     }
 
     //Product 전체 조회 및 카테고리 조회(페이징)
-    @GetMapping(value = {"/{parentCategory_name}", "/{parentCategory_name}/{childCategory_id}"})
+    @GetMapping(value = {"/category/{parentCategory_name}", "/category/{parentCategory_name}/{childCategory_id}"})
     public ResponseEntity<Page<ProductReadResponseDTO>> getProductPage(
             // (page = 1) => 1페이지부터 시작
             @PageableDefault(page = 1) Pageable pageable,
@@ -63,7 +63,7 @@ public class ProductController {
     }
 
     //Product 수정
-    @PatchMapping("/{parentCategory_name}/{childCategory_id}/{productId}")
+    @PatchMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
     public ResponseEntity<ProductUpdateResponseDTO> updateProduct(@PathVariable Long productId,
                                                                   @RequestBody ProductUpdateRequestDTO req,
                                                                   @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -74,7 +74,7 @@ public class ProductController {
     }
 
     //Product 삭제
-    @DeleteMapping("/{parentCategory_name}/{childCategory_id}/{productId}")
+    @DeleteMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
     public ResponseEntity<ProductDeleteResponseDTO> deleteProduct(@PathVariable Long productId,
                                                                   @AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                   @PathVariable Long childCategory_id,

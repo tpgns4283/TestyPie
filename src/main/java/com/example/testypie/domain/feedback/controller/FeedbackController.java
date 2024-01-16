@@ -21,11 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/{parentCategory_name}/{childCategory_id}/{product_id}/feedback")
+@RequestMapping("/api")
 public class FeedbackController {
     private final FeedbackService feedbackService;
 
-    @GetMapping("/{feedback_id}")
+    @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/feedback/{feedback_id}")
     public ResponseEntity<FeedbackResponseDTO> getFeedback(
             @PathVariable Long feedback_id,
             @PathVariable Long product_id,
@@ -35,7 +35,7 @@ public class FeedbackController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping
+    @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/feedback")
     public ResponseEntity<List<FeedbackResponseDTO>> getFeedbacks(@PathVariable Long product_id,
                                                                   @PathVariable Long childCategory_id,
                                                                   @PathVariable String parentCategory_name) {
@@ -43,7 +43,7 @@ public class FeedbackController {
         return ResponseEntity.ok(resList);
     }
 
-    @PostMapping
+    @PostMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/feedback")
     public ResponseEntity<FeedbackResponseDTO> addFeedback(@RequestBody FeedbackRequestDTO req,
                                                            @AuthenticationPrincipal UserDetailsImpl userDetails,
                                                            @PathVariable Long product_id,
@@ -53,7 +53,7 @@ public class FeedbackController {
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 
-    @PatchMapping("/{feedback_id}")
+    @PatchMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/feedback/{feedback_id}")
     public ResponseEntity<FeedbackResponseDTO> updateFeedback(
             @PathVariable Long product_id,
             @Valid @RequestBody FeedbackRequestDTO req,
@@ -65,7 +65,7 @@ public class FeedbackController {
         return ResponseEntity.ok(res);
     }
 
-    @DeleteMapping("/{feedback_id}")
+    @DeleteMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/feedback/{feedback_id}")
     public ResponseEntity<Void> deleteFeedback(
             @PathVariable Long product_id,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
