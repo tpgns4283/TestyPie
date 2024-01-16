@@ -1,10 +1,9 @@
 package com.example.testypie.domain.user.service;
 
+import com.example.testypie.domain.feedback.entity.Feedback;
+import com.example.testypie.domain.feedback.service.FeedbackService;
 import com.example.testypie.domain.product.entity.Product;
-import com.example.testypie.domain.user.dto.ParticipatedProductResponseDTO;
-import com.example.testypie.domain.user.dto.ProfileRequestDTO;
-import com.example.testypie.domain.user.dto.ProfileResponseDTO;
-import com.example.testypie.domain.user.dto.RegisteredProductResponseDTO;
+import com.example.testypie.domain.user.dto.*;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class UserInfoService {
 
     private final UserRepository userRepository;
+    private final FeedbackService feedbackService;
 
     @Transactional
     public ProfileResponseDTO updateProfile(String account, ProfileRequestDTO req) {
@@ -59,7 +60,47 @@ public class UserInfoService {
     }
 
     //product 참여 이력 가져오기
-    public List<ParticipatedProductResponseDTO> getUserFeedback(String account) {
+    public List<ParticipatedProductResponseDTO> getUserFeedbacks(String account) {
         return userRepository.getUserFeedbacksDtoIncludingProductInfo(account);
+    }
+
+    public Feedback getValidFeedback(Long productId, Long feedbackId) {
+        // 제품 유효성 확인
+        validateProduct(productId);
+
+        // 피드백 검색 및 유효성 확인
+        Feedback feedback = validateAndGetFeedback(productId, feedbackId);
+
+        // feedback과 product의 연관성 확인
+        validateFeedbackProductAssociation(feedback, productId);
+
+        return feedback;
+    }
+
+    private void validateProduct(Long productId) {
+        boolean isProductValid = userRepository.existsProductById(productId);
+        if (!isProductValid) {
+            throw new IllegalArgumentException("유효하지 않은 product ID: " + productId);
+        }
+    }
+
+    private Feedback validateAndGetFeedback(Long productId, Long feedbackId) {
+        Feedback feedback = feedbackService.getValidFeedback(productId, feedbackId);
+
+        if (feedback == null) {
+            throw new IllegalArgumentException("유효하지 않은 feedback ID: " + feedbackId);
+        }
+
+        return feedback;
+    }
+
+    private void validateFeedbackProductAssociation(Feedback feedback, Long productId) {
+        if (!feedback.getProduct().getId().equals(productId)) {
+            throw new RejectedExecutionException("피드백 ID " + feedback.getId() + "가 제품 " + productId + "과 연관되어 있지 않습니다.");
+        }
+    }
+
+    public void assignRatingStarAtFeedback(Feedback feedback, RatingStarRequestDTO req) {
+        feedbackService.setFeedbackRatingStar(feedback, req);
     }
 }
