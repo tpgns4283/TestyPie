@@ -1,6 +1,7 @@
 package com.example.testypie.domain.feedback.entity;
 
 import com.example.testypie.domain.product.entity.Product;
+import com.example.testypie.domain.ratingstar.constant.RatingStar;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.feedback.dto.FeedbackRequestDTO;
 import jakarta.persistence.*;
@@ -41,6 +42,9 @@ public class Feedback {
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
+    @Column
+    private double rating;
+
     @Builder
     private Feedback(Long id, Double grade, String title, LocalDateTime createdAt, LocalDateTime modifiedAt,
                      String content, User user, Product product) {
@@ -68,5 +72,9 @@ public class Feedback {
         this.modifiedAt = LocalDateTime.now();
         this.content = req.content();
         this.product = product;
+    }
+
+    public void assignRating(RatingStar ratingStar) {
+        this.rating = ratingStar.getValue();
     }
 }
