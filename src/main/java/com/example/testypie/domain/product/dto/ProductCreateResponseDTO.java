@@ -19,7 +19,7 @@ public record ProductCreateResponseDTO (
                 product.getTitle(),
                 product.getContent(),
                 product.getCategory().getName(),
-                product.getCreateAt(),
+                product.getCreatedAt(),
                 product.getStartedAt(),
                 product.getClosedAt()
         );

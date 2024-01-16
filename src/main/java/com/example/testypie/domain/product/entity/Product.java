@@ -50,7 +50,7 @@ public class Product {
     private Category category;
 
     @Column
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @Column
     private LocalDateTime modifiedAt;
@@ -76,7 +76,7 @@ public class Product {
         this.content = content;
         this.category = category;
         this.rewardList = rewardList;
-        this.createAt = createAt;
+        this.createdAt = createAt;
         this.modifiedAt = modifiedAt;
         this.startedAt = startedAt;
         this.closedAt = closedAt;

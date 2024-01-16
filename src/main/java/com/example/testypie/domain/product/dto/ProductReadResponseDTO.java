@@ -20,7 +20,7 @@ public record ProductReadResponseDTO (
                 product.getTitle(),
                 product.getContent(),
                 product.getCategory().getName(),
-                product.getCreateAt(),
+                product.getCreatedAt(),
                 product.getStartedAt(),
                 product.getClosedAt()
         );
