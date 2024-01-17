@@ -4,6 +4,7 @@ import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.reward.dto.RewardCreateRequestDTO;
 import com.example.testypie.domain.reward.dto.RewardReadResponseDTO;
 import com.example.testypie.domain.reward.entity.Reward;
+import com.example.testypie.domain.user.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
