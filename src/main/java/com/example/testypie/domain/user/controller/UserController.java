@@ -107,4 +107,24 @@ public class UserController {
 
         return ResponseEntity.ok().body(res);
     }
+
+
+    // 2024-01-17
+    // 테스트 유저가 지금 까지 받은 점수를 평균내서 보여주는 기능입니다.
+    // 1. 유효한 사용자인지 확인합니다.
+    // 2. 자신이 작성한 모든 feedback을 조회한후 rating의 평균점수를 계산해옵니다.
+    // 3. 결과는 AverageRatingResponseDTO에 담겨 보내집니다.
+    @GetMapping("{account}/averageStarRating")
+    public ResponseEntity<AverageRatingResponseDTO> getAverageStarRating(@PathVariable String account,
+                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        // 1.
+        userInfoService.checkSameUser(account, userDetails.getUsername());
+
+        // 2.
+        double averageRating = userInfoService.getAverageRating(account);
+
+        // 3.
+        AverageRatingResponseDTO res = new AverageRatingResponseDTO(averageRating);
+        return ResponseEntity.ok().body(res);
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.testypie.domain.user.service;
 
+import com.example.testypie.domain.feedback.service.FeedbackService;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.user.dto.ParticipatedProductResponseDTO;
 import com.example.testypie.domain.user.dto.ProfileRequestDTO;
@@ -24,6 +25,7 @@ public class UserInfoService {
 
     private final UserRepository userRepository;
     private final S3Uploader s3Uploader;
+    private final FeedbackService feedbackService;
 
     @Transactional
     public ProfileResponseDTO updateProfile(String account, ProfileRequestDTO req) {
@@ -65,5 +67,10 @@ public class UserInfoService {
     //product 참여 이력 가져오기
     public List<ParticipatedProductResponseDTO> getUserFeedback(String account) {
         return userRepository.getUserFeedbacksDtoIncludingProductInfo(account);
+    }
+
+    public double getAverageRating(String account) {
+        User user = findProfile(account);
+        return feedbackService.getAverageRating(user);
     }
 }

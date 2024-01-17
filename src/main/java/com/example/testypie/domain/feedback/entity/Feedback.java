@@ -41,6 +41,9 @@ public class Feedback {
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
+    @Column
+    private double rating;
+
     @Builder
     private Feedback(Long id, Double grade, String title, LocalDateTime createdAt, LocalDateTime modifiedAt,
                      String content, User user, Product product) {
