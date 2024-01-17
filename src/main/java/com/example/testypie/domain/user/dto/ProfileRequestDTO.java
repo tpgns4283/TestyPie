@@ -1,5 +1,6 @@
 package com.example.testypie.domain.user.dto;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public record ProfileRequestDTO(
@@ -10,5 +11,4 @@ public record ProfileRequestDTO(
         String nickname,
         String description,
         String fileUrl
-) {
-}
+) {}
