@@ -1,6 +1,8 @@
 package com.example.testypie.domain.user.controller;
 
+
 import com.example.testypie.global.jwt.JwtUtil;
+import com.example.testypie.domain.feedback.entity.Feedback;
 import com.example.testypie.domain.user.dto.*;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.service.UserInfoService;
@@ -8,6 +10,7 @@ import com.example.testypie.domain.user.service.UserService;
 import com.example.testypie.global.security.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Slf4j
 @RestController
@@ -96,14 +98,13 @@ public class UserController {
     // 1. 유효한 사용자인지 체크합니다.
     // 2. 해당 유저가 작성한 feedback을 모두 조회합니다.
     // 3. 조회한 feedback들에서 product이름, **feedback별점(미구현), feedback 작성일시를 가져옵니다.
-
     @GetMapping("{account}/participatedProducts")
     public ResponseEntity<List<ParticipatedProductResponseDTO>> getParticipatedProducts(@PathVariable String account, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 1.
         userInfoService.checkSameUser(account, userDetails.getUsername());
 
         // 2. 3.
-        List<ParticipatedProductResponseDTO> res = userInfoService.getUserFeedback(account);
+        List<ParticipatedProductResponseDTO> res = userInfoService.getUserFeedbacks(account);
 
         return ResponseEntity.ok().body(res);
     }
@@ -126,5 +127,33 @@ public class UserController {
         // 3.
         AverageRatingResponseDTO res = new AverageRatingResponseDTO(averageRating);
         return ResponseEntity.ok().body(res);
+    }
+
+    // 2024-01-16
+    // product 등록자가 tester의 feedback에 별점을 매기는 메서드입니다.
+    // 로직은 아래와 같습니다.
+    // 1. product 등록자와 userDetails의 유저가 같은지 확인합니다.
+    // 2. productId와 FeedbackId가 유효한지 확인합니다.
+    // 3. assignRatingStarAfFeedback(Feedback, ratingstarrequestDTO)로 별점(rating)을 매깁니다. 예) 별점 3점 :: assignRating(RatingStar.THREE) -> rating = 3.0;
+    // 4. 별점을 double rating column에 넣습니다.
+    @PostMapping("/{account}/ratingStar/{productId}/{feedbackId}")
+    public ResponseEntity<MessageDTO> assignRatingStarToFeedback(@PathVariable String account, @PathVariable Long productId,
+                                                                 @PathVariable Long feedbackId,
+                                                                 @Valid @RequestBody RatingStarRequestDTO req,
+                                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+
+        // 1.
+        userInfoService.checkSameUser(account, userDetails.getUsername());
+
+        // 2.
+        Feedback feedback = userInfoService.getValidFeedback(productId, feedbackId);
+
+        // 3
+        userInfoService.assignRatingStarAtFeedback(feedback, req);
+
+        //4.
+        String message = String.format("별점이 %.1f점 매겨졌습니다.", req.rating());
+        return ResponseEntity.ok().body(new MessageDTO(message, HttpStatus.OK.value()));
     }
 }

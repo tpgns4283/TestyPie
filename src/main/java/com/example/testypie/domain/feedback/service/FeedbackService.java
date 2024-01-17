@@ -9,11 +9,12 @@ import com.example.testypie.domain.feedback.repository.FeedbackRepository;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.service.ProductService;
 import com.example.testypie.domain.user.entity.User;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -127,5 +128,17 @@ public class FeedbackService {
 
     public double getAverageRating(User user) {
         return feedbackRepository.findAverageScoreByUserId(user.getId());
+    }
+    // productId와 feedbackId로 유효한 feedback 검색
+    public Feedback getValidFeedback(Long productId, Long feedbackId) {
+        //findByProductIdAndId를 사용하여 특정 prodcutId와 feedbackId에 해당하는 feedback검색
+        return feedbackRepository.findByProductIdAndId(productId, feedbackId)
+                //검색된 feedback 없으면 예외발생
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 feedback ID:" + feedbackId));
+    }
+
+    public void setFeedbackRatingStar(Feedback feedback, RatingStarRequestDTO req) {
+        feedback.assignRating(req);
+        feedbackRepository.save(feedback);
     }
 }

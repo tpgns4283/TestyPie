@@ -1,12 +1,14 @@
 package com.example.testypie.domain.feedback.entity;
 
-import com.example.testypie.domain.product.entity.Product;
-import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.feedback.dto.FeedbackRequestDTO;
+import com.example.testypie.domain.product.entity.Product;
+import com.example.testypie.domain.user.dto.RatingStarRequestDTO;
+import com.example.testypie.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 
@@ -71,5 +73,9 @@ public class Feedback {
         this.modifiedAt = LocalDateTime.now();
         this.content = req.content();
         this.product = product;
+    }
+
+    public void assignRating(RatingStarRequestDTO req) {
+        this.rating = req.rating();
     }
 }
