@@ -27,7 +27,6 @@ public class Product {
     private Long id;
 
     @JoinColumn
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
@@ -42,7 +41,6 @@ public class Product {
     private List<Comment> commentList = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", targetEntity = Reward.class, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     private List<Reward> rewardList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
