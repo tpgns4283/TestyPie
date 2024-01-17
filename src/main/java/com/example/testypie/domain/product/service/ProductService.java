@@ -5,7 +5,7 @@ import com.example.testypie.domain.category.service.CategoryService;
 import com.example.testypie.domain.product.dto.*;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.repositoy.ProductRepository;
-import com.example.testypie.domain.reward.service.RewardService;
+import com.example.testypie.domain.reward.repository.RewardRepository;
 import com.example.testypie.domain.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -18,13 +18,14 @@ import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 
 @Service
+
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryService categoryService) {
+    public ProductService(ProductRepository productRepository, CategoryService categoryService, RewardRepository rewardRepository) {
         this.productRepository = productRepository;
         this.categoryService = categoryService;
     }
@@ -37,7 +38,13 @@ public class ProductService {
             Product product = Product.builder().user(user).rewardList(req.rewardList()).title(req.title()).content(req.content()).category(category).createAt(LocalDateTime.now())
                     .startedAt(req.startAt()).closedAt(req.closedAt()).build();
 
+        System.out.println("Product!!!!!!!!!!!!" + product.getUser().getAccount());
+        Product product1 = new Product();
+
             Product saveProduct = productRepository.save(product);
+
+        System.out.println("Product!!!!!!!!!!!!" + saveProduct.getId());
+
 
             return ProductCreateResponseDTO.of(saveProduct);
     }

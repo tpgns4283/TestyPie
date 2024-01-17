@@ -2,6 +2,7 @@ package com.example.testypie.domain.product.dto;
 
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.reward.entity.Reward;
+import com.example.testypie.domain.user.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.List;

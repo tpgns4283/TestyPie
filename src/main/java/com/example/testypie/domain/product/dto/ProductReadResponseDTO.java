@@ -2,6 +2,7 @@ package com.example.testypie.domain.product.dto;
 
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.reward.entity.Reward;
+import com.example.testypie.domain.user.entity.User;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -12,6 +13,7 @@ import java.util.List;
 
 public record ProductReadResponseDTO (
         Long id,
+        String account,
         String title,
         String content,
         String category,
@@ -20,6 +22,7 @@ public record ProductReadResponseDTO (
         LocalDateTime closedAt,
         List<Reward> rewardList,
         String message
+
 ) {
     public static ProductReadResponseDTO of(Product product) throws ParseException {
 
@@ -44,6 +47,7 @@ public record ProductReadResponseDTO (
 
         return new ProductReadResponseDTO(
                 product.getId(),
+                product.getUser().getAccount(),
                 product.getTitle(),
                 product.getContent(),
                 product.getCategory().getName(),
