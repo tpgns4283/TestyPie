@@ -114,7 +114,7 @@ public class UserController {
     // 로직은 아래와 같습니다.
     // 1. product 등록자와 userDetails의 유저가 같은지 확인합니다.
     // 2. productId와 FeedbackId가 유효한지 확인합니다.
-    // 3. assignRating(RatingStar rateStar)로 별점(rating)을 매깁니다. 예) 별점 3점 :: assignRating(RatingStar.THREE) -> rating = 3.0;
+    // 3. assignRatingStarAfFeedback(Feedback, ratingstarrequestDTO)로 별점(rating)을 매깁니다. 예) 별점 3점 :: assignRating(RatingStar.THREE) -> rating = 3.0;
     // 4. 별점을 double rating column에 넣습니다.
     @PostMapping("/{account}/ratingStar/{productId}/{feedbackId}")
     public ResponseEntity<MessageDTO> assignRatingStarToFeedback(@PathVariable String account, @PathVariable Long productId,
