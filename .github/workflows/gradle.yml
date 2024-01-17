@@ -58,9 +58,9 @@ jobs:
         if: contains(github.ref, 'develop') || contains(github.ref, 'main')
         run: |
           docker login -u ${{ secrets.DOCKER_ID }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t practice -f ./Dockerfile .
-          docker tag TestyPie:latest ${{ secrets.DOCKER_ID }}/TestyPie:latest
-          docker push ${{ secrets.DOCKER_ID }}/TestyPie:latest
+          docker build -t testy-pie -f ./Dockerfile .
+          docker tag testy-pie:latest ${{ secrets.DOCKER_ID }}/testy-pie:latest
+          docker push ${{ secrets.DOCKER_ID }}/testy-pie:latest
 
   pull_from_registry:
     name: Connect server ssh and pull from container registry
@@ -77,10 +77,10 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            docker pull ${{ secrets.DOCKER_ID }}/TestyPie:latest
-            docker stop TestyPie
-            docker rm TestyPie
-            docker run -d --network TestyPie --name TestyPie -p 8080:8080 ${{ secrets.DOCKER_ID }}/TestyPie
+            docker pull ${{ secrets.DOCKER_ID }}/testy-pie:latest
+            docker stop testy-pie
+            docker rm testy-pie
+            docker run -d --name testy-pie -p 8080:8080 ${{ secrets.DOCKER_ID }}/testy-pie
             if docker images -f "dangling=true" -q | grep . > /dev/null; then
               docker rmi $(docker images -f "dangling=true" -q)
             fi
