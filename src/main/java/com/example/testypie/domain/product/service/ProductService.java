@@ -9,8 +9,10 @@ import com.example.testypie.domain.user.entity.User;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -39,7 +41,7 @@ public class ProductService {
     }
 
     //READ
-    public ProductReadResponseDTO getProduct(Long productId, Long category_id, String parentCategory_name) {
+    public ProductReadResponseDTO getProduct(Long productId, Long category_id, String parentCategory_name) throws ParseException {
         Category category = categoryService.getCategory(category_id, parentCategory_name);
         Product product = findProduct(productId);
 
@@ -50,7 +52,7 @@ public class ProductService {
         }
     }
 
-    public Page<ProductReadResponseDTO> getProductPage(Pageable pageable, String parentCategory_name) {
+    public Page<ProductReadResponseDTO> getProductPage(Pageable pageable, String parentCategory_name) throws ParseException {
         int page = pageable.getPageNumber() - 1;
         int pageLimit = 10;
 
@@ -60,20 +62,20 @@ public class ProductService {
         return getProductReadResponseDTOS(pageable, productPage);
     }
 
-    public Page<ProductReadResponseDTO> getProductCategoryPage(Pageable pageable, Long childCategory_id, String parentCategory_name) {
+    public Page<ProductReadResponseDTO> getProductCategoryPage(Pageable pageable, Long childCategory_id, String parentCategory_name) throws ParseException {
         int page = pageable.getPageNumber() - 1;
         int pageLimit = 10;
 
         Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
 
-        Page<Product>  productPage = productRepository.findAllByCategory_id(category.getId(),
+        Page<Product> productPage = productRepository.findAllByCategory_id(category.getId(),
                 PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
 
 
         return getProductReadResponseDTOS(pageable, productPage);
     }
 
-    private Page<ProductReadResponseDTO> getProductReadResponseDTOS(Pageable pageable, Page<Product> productPage) {
+    private Page<ProductReadResponseDTO> getProductReadResponseDTOS(Pageable pageable, Page<Product> productPage) throws ParseException {
         List<ProductReadResponseDTO> resList = new ArrayList<>();
 
         for (Product product : productPage) {

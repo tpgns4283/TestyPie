@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.Objects;
 
 @RestController
@@ -41,7 +42,7 @@ public class ProductController {
     @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
     public ResponseEntity<ProductReadResponseDTO> getProduct(@PathVariable Long productId,
                                                              @PathVariable Long childCategory_id,
-                                                             @PathVariable String parentCategory_name) {
+                                                             @PathVariable String parentCategory_name) throws ParseException {
         ProductReadResponseDTO res = productService.getProduct(productId, childCategory_id, parentCategory_name);
         return ResponseEntity.ok().body(res);
     }
@@ -52,7 +53,7 @@ public class ProductController {
             // (page = 1) => 1페이지부터 시작
             @PageableDefault(page = 1) Pageable pageable,
             @PathVariable(required = false) Long childCategory_id,
-            @PathVariable String parentCategory_name) {
+            @PathVariable String parentCategory_name) throws ParseException {
         Page<ProductReadResponseDTO> res;
         if(Objects.isNull(childCategory_id)){
             res = productService.getProductPage(pageable, parentCategory_name);
