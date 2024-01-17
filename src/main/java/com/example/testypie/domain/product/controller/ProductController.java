@@ -1,5 +1,4 @@
 package com.example.testypie.domain.product.controller;
-
 import com.example.testypie.domain.product.dto.*;
 
 import com.example.testypie.domain.product.service.ProductService;
@@ -14,8 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @RestController
-@RequestMapping("/api/product")
+@RequestMapping("/api")
 public class ProductController {
 
     private final ProductService productService;
@@ -25,47 +26,60 @@ public class ProductController {
     }
 
     //Product 생성
-    @PostMapping
-    public ResponseEntity<ProductCreateResponseDTO> createPost(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Valid @RequestBody ProductCreateRequestDTO req) {
+    @PostMapping("/category/{parentCategory_name}/{childCategory_id}/products")
+    public ResponseEntity<ProductCreateResponseDTO> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                               @Valid @RequestBody ProductCreateRequestDTO req,
+                                                               @PathVariable Long childCategory_id,
+                                                               @PathVariable String parentCategory_name) {
+
         User user = userDetails.getUser();
-        ProductCreateResponseDTO res = productService.createPost(user, req);
+        ProductCreateResponseDTO res = productService.createPost(user, req, parentCategory_name,childCategory_id);
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 
     //Product 단일 조회
-    @GetMapping("/{productId}")
-    public ResponseEntity<ProductReadResponseDTO> getProduct(@PathVariable Long productId) {
-        ProductReadResponseDTO res = productService.getProduct(productId);
+    @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
+    public ResponseEntity<ProductReadResponseDTO> getProduct(@PathVariable Long productId,
+                                                             @PathVariable Long childCategory_id,
+                                                             @PathVariable String parentCategory_name) {
+        ProductReadResponseDTO res = productService.getProduct(productId, childCategory_id, parentCategory_name);
         return ResponseEntity.ok().body(res);
     }
 
-    //Product 전체 조회(페이징)
-    @GetMapping
+    //Product 전체 조회 및 카테고리 조회(페이징)
+    @GetMapping(value = {"/category/{parentCategory_name}", "/category/{parentCategory_name}/{childCategory_id}"})
     public ResponseEntity<Page<ProductReadResponseDTO>> getProductPage(
             // (page = 1) => 1페이지부터 시작
-            @PageableDefault(page = 1) Pageable pageable) {
-        Page<ProductReadResponseDTO> res = productService.getProductPage(pageable);
+            @PageableDefault(page = 1) Pageable pageable,
+            @PathVariable(required = false) Long childCategory_id,
+            @PathVariable String parentCategory_name) {
+        Page<ProductReadResponseDTO> res;
+        if(Objects.isNull(childCategory_id)){
+            res = productService.getProductPage(pageable, parentCategory_name);
+        } else {
+            res = productService.getProductCategoryPage(pageable, childCategory_id, parentCategory_name);
+        }
         return ResponseEntity.ok().body(res);
     }
 
     //Product 수정
-    @PatchMapping("/{productId}")
+    @PatchMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
     public ResponseEntity<ProductUpdateResponseDTO> updateProduct(@PathVariable Long productId,
-            @RequestBody ProductUpdateRequestDTO req,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ProductUpdateResponseDTO res = productService.updateProduct(productId, req,
-                userDetails.getUser());
+                                                                  @RequestBody ProductUpdateRequestDTO req,
+                                                                  @AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                  @PathVariable Long childCategory_id,
+                                                                  @PathVariable String parentCategory_name) {
+        ProductUpdateResponseDTO res = productService.updateProduct(productId, req, userDetails.getUser(), childCategory_id, parentCategory_name);
         return ResponseEntity.ok().body(res);
     }
 
     //Product 삭제
-    @DeleteMapping("/{productId}")
+    @DeleteMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
     public ResponseEntity<ProductDeleteResponseDTO> deleteProduct(@PathVariable Long productId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ProductDeleteResponseDTO res = productService.deleteProduct(productId,
-                userDetails.getUser());
+                                                                  @AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                  @PathVariable Long childCategory_id,
+                                                                  @PathVariable String parentCategory_name) {
+        ProductDeleteResponseDTO res = productService.deleteProduct(productId, userDetails.getUser(), childCategory_id, parentCategory_name);
         return ResponseEntity.ok().body(res);
     }
 }

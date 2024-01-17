@@ -16,14 +16,18 @@ public class Reward {
     @Column
     private String reward_item;
 
+    @Column
+    private Long item_size;
+
     @JoinColumn
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
     @Builder
-    private Reward(Long id, String reward_item, Product product) {
+    private Reward(Long id, String reward_item, Long item_size,Product product) {
         this.id = id;
         this.reward_item = reward_item;
+        this.item_size = item_size;
         this.product = product;
     }
 }

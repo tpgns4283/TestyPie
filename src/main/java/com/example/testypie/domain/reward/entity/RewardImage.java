@@ -1,4 +1,4 @@
-package com.example.testypie.domain.reward.entity;
+package com.example.testypie.reward.entity;
 
 import java.awt.*;
 import java.awt.image.ImageObserver;
