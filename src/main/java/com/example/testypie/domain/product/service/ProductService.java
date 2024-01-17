@@ -5,14 +5,15 @@ import com.example.testypie.domain.category.service.CategoryService;
 import com.example.testypie.domain.product.dto.*;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.repositoy.ProductRepository;
+import com.example.testypie.domain.reward.service.RewardService;
 import com.example.testypie.domain.user.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -22,22 +23,23 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
 
+    @Autowired
     public ProductService(ProductRepository productRepository, CategoryService categoryService) {
         this.productRepository = productRepository;
         this.categoryService = categoryService;
     }
 
     //CREATE
-    public ProductCreateResponseDTO createPost(User user, ProductCreateRequestDTO req, String parentCategory_name, Long category_id) {
+    public ProductCreateResponseDTO createProduct(User user, ProductCreateRequestDTO req, String parentCategory_name, Long category_id) {
 
         Category category = categoryService.getCategory(category_id, parentCategory_name);
 
-        Product product = Product.builder().user(user).title(req.title()).content(req.content()).category(category).createAt(LocalDateTime.now())
-                .startedAt(req.startAt()).closedAt(req.closedAt()).build();
+            Product product = Product.builder().user(user).rewardList(req.rewardList()).title(req.title()).content(req.content()).category(category).createAt(LocalDateTime.now())
+                    .startedAt(req.startAt()).closedAt(req.closedAt()).build();
 
-        Product saveProduct = productRepository.save(product);
+            Product saveProduct = productRepository.save(product);
 
-        return ProductCreateResponseDTO.of(saveProduct);
+            return ProductCreateResponseDTO.of(saveProduct);
     }
 
     //READ

@@ -34,7 +34,7 @@ public class ProductController {
                                                                @PathVariable String parentCategory_name) {
 
         User user = userDetails.getUser();
-        ProductCreateResponseDTO res = productService.createPost(user, req, parentCategory_name,childCategory_id);
+        ProductCreateResponseDTO res = productService.createProduct(user, req, parentCategory_name,childCategory_id);
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 
