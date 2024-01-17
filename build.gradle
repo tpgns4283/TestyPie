@@ -24,6 +24,7 @@ repositories {
 dependencies {
     // S3
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    testImplementation 'junit:junit:4.13.1'
 
     /*  JWT */
     compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'

@@ -1,12 +1,14 @@
 package com.example.testypie.domain.feedback.entity;
 
-import com.example.testypie.domain.product.entity.Product;
-import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.feedback.dto.FeedbackRequestDTO;
+import com.example.testypie.domain.product.entity.Product;
+import com.example.testypie.domain.user.dto.RatingStarRequestDTO;
+import com.example.testypie.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 
@@ -41,15 +43,19 @@ public class Feedback {
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
+    @Column
+    private Double rating;
+
     @Builder
     private Feedback(Long id, Double grade, String title, LocalDateTime createdAt, LocalDateTime modifiedAt,
-                     String content, User user, Product product) {
+                     String content, Double rating, User user, Product product) {
         this.id = id;
         this.grade = grade;
         this.title = title;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.content = content;
+        this.rating = rating;
         this.user = user;
         this.product = product;
     }
@@ -68,5 +74,9 @@ public class Feedback {
         this.modifiedAt = LocalDateTime.now();
         this.content = req.content();
         this.product = product;
+    }
+
+    public void assignRating(RatingStarRequestDTO req) {
+        this.rating = req.rating();
     }
 }

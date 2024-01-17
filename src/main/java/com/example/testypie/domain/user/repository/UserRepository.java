@@ -1,8 +1,8 @@
 package com.example.testypie.domain.user.repository;
 
+import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.user.dto.ParticipatedProductResponseDTO;
 import com.example.testypie.domain.user.entity.User;
-import com.example.testypie.domain.product.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -22,4 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT new com.example.testypie.domain.user.dto.ParticipatedProductResponseDTO(f.product.title, f.createdAt) FROM Feedback f LEFT JOIN f.product p WHERE f.user.account = :account ORDER BY f.createdAt DESC")
     List<ParticipatedProductResponseDTO> getUserFeedbacksDtoIncludingProductInfo(String account);
 
+    boolean existsProductById(Long productId);
 }
+
+
