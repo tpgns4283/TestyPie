@@ -8,6 +8,7 @@ import com.example.testypie.domain.feedback.entity.Feedback;
 import com.example.testypie.domain.feedback.repository.FeedbackRepository;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.service.ProductService;
+import com.example.testypie.domain.user.dto.RatingStarRequestDTO;
 import com.example.testypie.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

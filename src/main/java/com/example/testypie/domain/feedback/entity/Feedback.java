@@ -44,17 +44,18 @@ public class Feedback {
     private Product product;
 
     @Column
-    private double rating;
+    private Double rating;
 
     @Builder
     private Feedback(Long id, Double grade, String title, LocalDateTime createdAt, LocalDateTime modifiedAt,
-                     String content, User user, Product product) {
+                     String content, Double rating, User user, Product product) {
         this.id = id;
         this.grade = grade;
         this.title = title;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.content = content;
+        this.rating = rating;
         this.user = user;
         this.product = product;
     }
