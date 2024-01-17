@@ -1,5 +1,6 @@
 package com.example.testypie.domain.reward.entity;
 import com.example.testypie.domain.product.entity.Product;
+import com.example.testypie.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,11 +24,16 @@ public class Reward {
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
+    @JoinColumn
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
+
     @Builder
-    private Reward(Long id, String reward_item, Long item_size,Product product) {
+    private Reward(Long id, String reward_item, Long item_size,Product product, User user) {
         this.id = id;
         this.reward_item = reward_item;
         this.item_size = item_size;
         this.product = product;
+        this.user = user;
     }
 }
