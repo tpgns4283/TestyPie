@@ -124,10 +124,6 @@ public class FeedbackService {
         }
     }
 
-    public User getFeedbackByUser(User user) {
-        return feedbackRepository.findByUser(user)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 account입니다."));
-    }
 
     public double getAverageRating(User user) {
         return feedbackRepository.findAverageScoreByUserId(user.getId());
