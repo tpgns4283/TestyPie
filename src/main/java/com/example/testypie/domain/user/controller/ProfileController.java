@@ -4,7 +4,7 @@ package com.example.testypie.domain.user.controller;
 import com.example.testypie.domain.feedback.entity.Feedback;
 import com.example.testypie.domain.user.dto.*;
 import com.example.testypie.domain.user.entity.User;
-import com.example.testypie.domain.user.service.UserInfoService;
+import com.example.testypie.domain.user.service.ProfileService;
 import com.example.testypie.global.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +23,12 @@ import java.util.NoSuchElementException;
 @RequestMapping("/api/users")
 public class ProfileController {
 
-    private final UserInfoService userInfoService;
+    private final ProfileService profileService;
 
     //프로필 조회
     @GetMapping("/{account}")
     public ResponseEntity<ProfileResponseDTO> getProfile(@PathVariable String account) {
-        User user = userInfoService.findProfile(account);
+        User user = profileService.findProfile(account);
         return ResponseEntity.ok().body(ProfileResponseDTO.of(user));
     }
 
@@ -38,7 +38,7 @@ public class ProfileController {
                                            @RequestBody ProfileRequestDTO req) {
 
         try {
-            ProfileResponseDTO res = userInfoService.updateProfile(account, req);
+            ProfileResponseDTO res = profileService.updateProfile(account, req);
             return ResponseEntity.ok(res);
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
@@ -58,10 +58,10 @@ public class ProfileController {
     @GetMapping("/{account}/registeredProducts")
     public ResponseEntity<List<RegisteredProductResponseDTO>> getRegisteredProducts(@PathVariable String account, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 1.
-        userInfoService.checkSameUser(account, userDetails.getUsername());
+        profileService.checkSameUser(account, userDetails.getUsername());
 
         // 2, 3.
-        List<RegisteredProductResponseDTO> res = userInfoService.getUserProducts(account);
+        List<RegisteredProductResponseDTO> res = profileService.getUserProducts(account);
 
         return ResponseEntity.ok().body(res);
     }
@@ -76,10 +76,10 @@ public class ProfileController {
     @GetMapping("{account}/participatedProducts")
     public ResponseEntity<List<ParticipatedProductResponseDTO>> getParticipatedProducts(@PathVariable String account, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 1.
-        userInfoService.checkSameUser(account, userDetails.getUsername());
+        profileService.checkSameUser(account, userDetails.getUsername());
 
         // 2. 3.
-        List<ParticipatedProductResponseDTO> res = userInfoService.getUserFeedbacks(account);
+        List<ParticipatedProductResponseDTO> res = profileService.getUserFeedbacks(account);
 
         return ResponseEntity.ok().body(res);
     }
@@ -94,10 +94,10 @@ public class ProfileController {
     public ResponseEntity<AverageRatingResponseDTO> getAverageStarRating(@PathVariable String account,
                                                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 1.
-        userInfoService.checkSameUser(account, userDetails.getUsername());
+        profileService.checkSameUser(account, userDetails.getUsername());
 
         // 2.
-        double averageRating = userInfoService.getAverageRating(account);
+        double averageRating = profileService.getAverageRating(account);
 
         // 3.
         AverageRatingResponseDTO res = new AverageRatingResponseDTO(averageRating);
@@ -116,19 +116,45 @@ public class ProfileController {
                                                                  @PathVariable Long feedbackId,
                                                                  @Valid @RequestBody RatingStarRequestDTO req,
                                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
-
         // 1.
-        userInfoService.checkSameUser(account, userDetails.getUsername());
+        profileService.checkSameUser(account, userDetails.getUsername());
 
         // 2.
-        Feedback feedback = userInfoService.getValidFeedback(productId, feedbackId);
+        Feedback feedback = profileService.getValidFeedback(productId, feedbackId);
 
         // 3
-        userInfoService.assignRatingStarAtFeedback(feedback, req);
+        profileService.assignRatingStarAtFeedback(feedback, req);
 
         //4.
         String message = String.format("별점이 %.1f점 매겨졌습니다.", req.rating());
         return ResponseEntity.ok().body(new MessageDTO(message, HttpStatus.OK.value()));
+    }
+
+    // 2024-01-17
+    // tester가 지금까지 받은 reward 이력을 확인하는 메서드입니다.
+    // 로직은 아래와 같습니다.
+    // 1. pathVariable accountId의 유저와 userDetails의 유저가 같은지 확인합니다.
+    // 2. User id를 통해 user가 받은 reward를 list로 받습니다.
+    // 3. list를 userRewardResponseDTO에 담습니다.
+
+    // 2024-01-17
+    // product 등록자가 tester중에서 추첨합니다.
+    // 로직은 아래와 같습니다.
+    // 1. product 등록자와 userdetails유저가 같은지 확인합니다.
+    // 2. product의 feedback을 만든 유저들 중에서 5점을 받은 유저들중에서 추첨을 한번 돌립니다.
+    // 3. 추첨된 유저를 제외한 feedback을 만든 전체 유저들중에서 추첨을 돌립니다.
+    // 4. 0점을 받은 유저들은 제외합니다.
+    // 5. reward에 user를 넣습니다.
+    @GetMapping("/{account}/lotto/{productId}")
+    public ResponseEntity<LottoResponseDTO> chooseRewardUser(@PathVariable String account,
+                                                             @PathVariable Long productId,
+                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        // 1.
+        profileService.checkSameUser(account, userDetails.getUsername());
+
+        // 2. 3. 4. 5. drawUsers에는 5점을 받은 사람들 중에서 한명 뽑고 나머지에서 추첨을 돌립니다.
+        List<User> userList = profileService.drawUsers(productId);
+
+        return ResponseEntity.ok().body(new LottoResponseDTO(userList));
     }
 }

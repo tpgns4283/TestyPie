@@ -2,7 +2,6 @@ package com.example.testypie.domain.user.service;
 
 import com.example.testypie.domain.feedback.service.FeedbackService;
 import com.example.testypie.domain.feedback.entity.Feedback;
-import com.example.testypie.domain.feedback.service.FeedbackService;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.user.dto.*;
 import com.example.testypie.domain.user.entity.User;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UserInfoService {
+public class ProfileService {
 
     private final UserRepository userRepository;
     private final FeedbackService feedbackService;
@@ -112,5 +111,16 @@ public class UserInfoService {
     public double getAverageRating(String account) {
         User user = findProfile(account);
         return feedbackService.getAverageRating(user);
+    }
+
+    public List<User> drawUsers(Long productId) {
+        // 1. 5점을 받은 사람들의 리스트 가져오고 한명뽑기. 뽑은 user 저장 상품갯수: -1하기
+
+        // 2. 전체 리스트를 가져오고 뽑은 user 지우기, 0점 받은 사람 지우기
+        
+        // 3. 수정된 리스트에서 추첨 돌리기 상품 갯수가 0이될때까지
+        
+        // 4. 뽑힌 사람들을 리스트로 만들고 내보내기
+        return null;
     }
 }
