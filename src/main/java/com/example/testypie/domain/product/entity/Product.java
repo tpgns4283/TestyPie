@@ -111,4 +111,16 @@ public class Product {
             this.category = category;
         }
     }
+
+    public void setRewardList(List<Reward> rewardList) {
+        if (this.rewardList != null) {
+            this.rewardList.forEach(reward -> reward.setProduct(null));
+        }
+
+        this.rewardList = rewardList;
+
+        if (rewardList != null) {
+            rewardList.forEach(reward -> reward.setProduct(this));
+        }
+    }
 }

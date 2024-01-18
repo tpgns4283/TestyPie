@@ -49,12 +49,12 @@ public class ProductController {
 
     //Product 전체 조회 및 카테고리 조회(페이징)
     @GetMapping(value = {"/category/{parentCategory_name}", "/category/{parentCategory_name}/{childCategory_id}"})
-    public ResponseEntity<Page<ProductReadResponseDTO>> getProductPage(
+    public ResponseEntity<Page<ProductPageResponseDTO>> getProductPage(
             // (page = 1) => 1페이지부터 시작
             @PageableDefault(page = 1) Pageable pageable,
             @PathVariable(required = false) Long childCategory_id,
             @PathVariable String parentCategory_name) throws ParseException {
-        Page<ProductReadResponseDTO> res;
+        Page<ProductPageResponseDTO> res;
         if(Objects.isNull(childCategory_id)){
             res = productService.getProductPage(pageable, parentCategory_name);
         } else {

@@ -5,11 +5,15 @@ import com.example.testypie.domain.category.service.CategoryService;
 import com.example.testypie.domain.product.dto.*;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.repositoy.ProductRepository;
-import com.example.testypie.domain.reward.repository.RewardRepository;
+import com.example.testypie.domain.reward.dto.RewardCreateRequestDTO;
+import com.example.testypie.domain.reward.dto.RewardMapper;
+import com.example.testypie.domain.reward.dto.RewardReadResponseDTO;
+import com.example.testypie.domain.reward.entity.Reward;
 import com.example.testypie.domain.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -25,43 +29,56 @@ public class ProductService {
     private final CategoryService categoryService;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryService categoryService, RewardRepository rewardRepository) {
+    public ProductService(ProductRepository productRepository, CategoryService categoryService) {
         this.productRepository = productRepository;
         this.categoryService = categoryService;
     }
 
     //CREATE
+    @Transactional
     public ProductCreateResponseDTO createProduct(User user, ProductCreateRequestDTO req, String parentCategory_name, Long category_id) {
 
         Category category = categoryService.getCategory(category_id, parentCategory_name);
 
-            Product product = Product.builder().user(user).rewardList(req.rewardList()).title(req.title()).content(req.content()).category(category).createAt(LocalDateTime.now())
-                    .startedAt(req.startAt()).closedAt(req.closedAt()).build();
+        List<RewardCreateRequestDTO> a = req.rewardList();
 
-        System.out.println("Product!!!!!!!!!!!!" + product.getUser().getAccount());
-        Product product1 = new Product();
+        Product product = Product.builder()
+                .user(user)
+                .title(req.title())
+                .content(req.content())
+                .category(category)
+                .createAt(LocalDateTime.now())
+                .startedAt(req.startAt())
+                .closedAt(req.closedAt())
+                .build();
 
-            Product saveProduct = productRepository.save(product);
+        product.setRewardList(RewardMapper.mapToEntityList(a, product));
+        System.out.println(product.getRewardList());
 
-        System.out.println("Product!!!!!!!!!!!!" + saveProduct.getId());
+        Product saveProduct = productRepository.save(product);
 
-
+        System.out.println(product.getRewardList());
             return ProductCreateResponseDTO.of(saveProduct);
     }
 
     //READ
-    public ProductReadResponseDTO getProduct(Long productId, Long category_id, String parentCategory_name) throws ParseException {
+    public ProductReadResponseDTO getProduct(Long productId, Long category_id, String parentCategory_name)
+            throws ParseException {
         Category category = categoryService.getCategory(category_id, parentCategory_name);
         Product product = findProduct(productId);
 
+        List<Reward> rewardList = product.getRewardList();
+        List<RewardReadResponseDTO> rewardDTOList = RewardMapper.mapToDTOList(rewardList);
+
         if(category.getId().equals(product.getCategory().getId())) {
-            return ProductReadResponseDTO.of(product);
+            return ProductReadResponseDTO.of(product, rewardDTOList);
         }else{
             throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
         }
     }
 
-    public Page<ProductReadResponseDTO> getProductPage(Pageable pageable, String parentCategory_name) throws ParseException {
+    public Page<ProductPageResponseDTO> getProductPage(Pageable pageable, String parentCategory_name)
+            throws ParseException {
         int page = pageable.getPageNumber() - 1;
         int pageLimit = 10;
 
@@ -71,7 +88,9 @@ public class ProductService {
         return getProductReadResponseDTOS(pageable, productPage);
     }
 
-    public Page<ProductReadResponseDTO> getProductCategoryPage(Pageable pageable, Long childCategory_id, String parentCategory_name) throws ParseException {
+    public Page<ProductPageResponseDTO> getProductCategoryPage(Pageable pageable, Long childCategory_id,
+                                                               String parentCategory_name)
+                                                                throws ParseException {
         int page = pageable.getPageNumber() - 1;
         int pageLimit = 10;
 
@@ -84,18 +103,21 @@ public class ProductService {
         return getProductReadResponseDTOS(pageable, productPage);
     }
 
-    private Page<ProductReadResponseDTO> getProductReadResponseDTOS(Pageable pageable, Page<Product> productPage) throws ParseException {
-        List<ProductReadResponseDTO> resList = new ArrayList<>();
+    private Page<ProductPageResponseDTO> getProductReadResponseDTOS(Pageable pageable, Page<Product> productPage)
+                                                                    throws ParseException {
+
+        List<ProductPageResponseDTO> resList = new ArrayList<>();
 
         for (Product product : productPage) {
-            ProductReadResponseDTO res = ProductReadResponseDTO.of(product);
+            ProductPageResponseDTO res = ProductPageResponseDTO.of(product);
             resList.add(res);
         }
         return new PageImpl<>(resList, pageable, productPage.getTotalElements());
     }
 
     //UPDATE
-    public ProductUpdateResponseDTO updateProduct(Long productId, ProductUpdateRequestDTO req, User user, Long category_id, String parentCategory_name) {
+    public ProductUpdateResponseDTO updateProduct(Long productId, ProductUpdateRequestDTO req, User user, Long category_id,
+                                                  String parentCategory_name) {
         Product product = getUserProduct(productId, user);
         Category category = categoryService.getCategory(category_id, parentCategory_name);
 

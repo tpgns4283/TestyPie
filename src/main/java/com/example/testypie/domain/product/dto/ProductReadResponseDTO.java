@@ -1,8 +1,8 @@
 package com.example.testypie.domain.product.dto;
 
 import com.example.testypie.domain.product.entity.Product;
+import com.example.testypie.domain.reward.dto.RewardReadResponseDTO;
 import com.example.testypie.domain.reward.entity.Reward;
-import com.example.testypie.domain.user.entity.User;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -20,11 +20,11 @@ public record ProductReadResponseDTO (
         LocalDateTime createAt,
         LocalDateTime startAt,
         LocalDateTime closedAt,
-        List<Reward> rewardList,
+        List<RewardReadResponseDTO> rewardList,
         String message
 
 ) {
-    public static ProductReadResponseDTO of(Product product) throws ParseException {
+    public static ProductReadResponseDTO of(Product product, List<RewardReadResponseDTO> rewardDTOList) throws ParseException {
 
         String end = product.getClosedAt().toString();
         String now = LocalDateTime.now().toString();
@@ -45,6 +45,7 @@ public record ProductReadResponseDTO (
             message = "마감 " +diffDays+"일 전";
         }
 
+
         return new ProductReadResponseDTO(
                 product.getId(),
                 product.getUser().getAccount(),
@@ -54,7 +55,7 @@ public record ProductReadResponseDTO (
                 product.getCreatedAt(),
                 product.getStartedAt(),
                 product.getClosedAt(),
-                product.getRewardList(),
+                rewardDTOList,
                 message
         );
     }
