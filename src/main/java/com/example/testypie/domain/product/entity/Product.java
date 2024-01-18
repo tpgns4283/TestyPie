@@ -27,7 +27,6 @@ public class Product {
     private Long id;
 
     @JoinColumn
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
@@ -42,7 +41,6 @@ public class Product {
     private List<Comment> commentList = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", targetEntity = Reward.class, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     private List<Reward> rewardList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -111,6 +109,18 @@ public class Product {
     public void updateCategory(Category category) {
         if(category != null){
             this.category = category;
+        }
+    }
+
+    public void setRewardList(List<Reward> rewardList) {
+        if (this.rewardList != null) {
+            this.rewardList.forEach(reward -> reward.setProduct(null));
+        }
+
+        this.rewardList = rewardList;
+
+        if (rewardList != null) {
+            rewardList.forEach(reward -> reward.setProduct(this));
         }
     }
 }
