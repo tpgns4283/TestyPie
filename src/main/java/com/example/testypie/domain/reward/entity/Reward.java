@@ -1,14 +1,17 @@
 package com.example.testypie.domain.reward.entity;
 import com.example.testypie.domain.product.entity.Product;
+import com.example.testypie.domain.reward.dto.RewardCreateRequestDTO;
 import com.example.testypie.domain.user.entity.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
+@Setter
 @Entity
 @NoArgsConstructor
 public class Reward {
@@ -17,13 +20,13 @@ public class Reward {
     private Long id;
 
     @Column
-    private String reward_item;
+    private String rewardItem;
 
     @Column
-    private Long item_size;
+    private Long itemSize;
 
     @JoinColumn
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Product product;
 
     @JoinColumn
@@ -31,11 +34,12 @@ public class Reward {
     private User user;
 
     @Builder
-    private Reward(Long id, String reward_item, Long item_size, User user) {
+    private Reward(Long id, String reward_item, Long item_size, User user, Product product) {
         this.id = id;
-        this.reward_item = reward_item;
-        this.item_size = item_size;
+        this.rewardItem = reward_item;
+        this.itemSize = item_size;
         this.user = user;
+        this.product = product;
     }
 
     public void setProduct(Product saveProduct) {
