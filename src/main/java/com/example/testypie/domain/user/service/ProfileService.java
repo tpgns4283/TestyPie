@@ -1,12 +1,11 @@
 package com.example.testypie.domain.user.service;
 
-import com.example.testypie.domain.feedback.service.FeedbackService;
 import com.example.testypie.domain.feedback.entity.Feedback;
+import com.example.testypie.domain.feedback.service.FeedbackService;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.user.dto.*;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.repository.UserRepository;
-import com.example.testypie.domain.user.dto.ProfileRequestDTO;
 import com.example.testypie.domain.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
 
@@ -32,7 +32,7 @@ public class ProfileService {
                 .orElseThrow(NoSuchElementException::new);
         profileUser.update(req);
         return new ProfileResponseDTO(profileUser.getNickname(), profileUser.getDescription(),
-            profileUser.getFileUrl());
+                profileUser.getFileUrl());
     }
 
     public ProfileResponseDTO getProfile(String account) {
@@ -40,7 +40,7 @@ public class ProfileService {
         return new ProfileResponseDTO(user.getNickname(), user.getDescription(), user.getFileUrl());
     }
 
-   public User findProfile(String account) {
+    public User findProfile(String account) {
         return userRepository.findByAccount(account)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다."));
     }
@@ -114,13 +114,33 @@ public class ProfileService {
     }
 
     public List<User> drawUsers(Long productId) {
-        // 1. 5점을 받은 사람들의 리스트 가져오고 한명뽑기. 뽑은 user 저장 상품갯수: -1하기
+        // 1. 5점을 받은 사람들의 피드백 리스트 가져오고 한명뽑기. 뽑은 user 저장 상품갯수: -1하기
+        List<Feedback> fiveStarFeedbackList = feedbackService.findFiveStarFeedbacksByProduct(productId);
 
         // 2. 전체 리스트를 가져오고 뽑은 user 지우기, 0점 받은 사람 지우기
-        
+        List<User> feedbackUserList = userRepository.findAllUsersByProductId(productId);
+
         // 3. 수정된 리스트에서 추첨 돌리기 상품 갯수가 0이될때까지
-        
+
         // 4. 뽑힌 사람들을 리스트로 만들고 내보내기
         return null;
+    }
+
+    // 5점 피드백 작성 유저 한명 뽑기
+    public User getRandomUserFromFiveStarFeedbackLists(List<Feedback> feedbackList) {
+        // 빈 목록이나 null일 경우 예외 처리
+        if (feedbackList == null || feedbackList.isEmpty()) {
+            return null;
+        }
+
+        // 랜덤 숫자 생성을 위한 Random 객체 생성
+        Random random = new Random();
+
+        // 랜덤 인덱스 선택
+        int randomIndex = random.nextInt(feedbackList.size());
+
+        // 선택된 랜덤 인덱스의 Feedback에서 User를 얻어옴
+        Feedback randomFeedback = feedbackList.get(randomIndex);
+        return randomFeedback.getUser();
     }
 }

@@ -2,6 +2,7 @@ package com.example.testypie.domain.reward.entity;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.reward.dto.RewardCreateRequestDTO;
 import com.example.testypie.domain.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,6 +31,7 @@ public class Reward {
     private Product product;
 
     @JoinColumn
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
