@@ -1,5 +1,6 @@
 package com.example.testypie.domain.user.entity;
 
+import com.example.testypie.domain.reward.entity.Reward;
 import com.example.testypie.domain.userrole.constant.UserRole;
 import com.example.testypie.domain.user.dto.ProfileRequestDTO;
 import jakarta.persistence.*;
@@ -8,6 +9,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -38,6 +42,10 @@ public class User {
     @Column(name = "user_role")
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
+
+    @OneToMany
+    @JoinColumn
+    private List<Reward> rewardList = new ArrayList<>();
 
     @Column
     private String fileUrl;

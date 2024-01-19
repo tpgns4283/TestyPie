@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.Objects;
 
 @RestController
@@ -33,7 +34,7 @@ public class ProductController {
                                                                @PathVariable String parentCategory_name) {
 
         User user = userDetails.getUser();
-        ProductCreateResponseDTO res = productService.createPost(user, req, parentCategory_name,childCategory_id);
+        ProductCreateResponseDTO res = productService.createProduct(user, req, parentCategory_name,childCategory_id);
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 
@@ -41,19 +42,19 @@ public class ProductController {
     @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
     public ResponseEntity<ProductReadResponseDTO> getProduct(@PathVariable Long productId,
                                                              @PathVariable Long childCategory_id,
-                                                             @PathVariable String parentCategory_name) {
+                                                             @PathVariable String parentCategory_name) throws ParseException {
         ProductReadResponseDTO res = productService.getProduct(productId, childCategory_id, parentCategory_name);
         return ResponseEntity.ok().body(res);
     }
 
     //Product 전체 조회 및 카테고리 조회(페이징)
     @GetMapping(value = {"/category/{parentCategory_name}", "/category/{parentCategory_name}/{childCategory_id}"})
-    public ResponseEntity<Page<ProductReadResponseDTO>> getProductPage(
+    public ResponseEntity<Page<ProductPageResponseDTO>> getProductPage(
             // (page = 1) => 1페이지부터 시작
             @PageableDefault(page = 1) Pageable pageable,
             @PathVariable(required = false) Long childCategory_id,
-            @PathVariable String parentCategory_name) {
-        Page<ProductReadResponseDTO> res;
+            @PathVariable String parentCategory_name) throws ParseException {
+        Page<ProductPageResponseDTO> res;
         if(Objects.isNull(childCategory_id)){
             res = productService.getProductPage(pageable, parentCategory_name);
         } else {
