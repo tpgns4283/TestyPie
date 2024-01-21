@@ -3,6 +3,8 @@ package com.example.testypie.domain.user.service;
 import com.example.testypie.domain.feedback.entity.Feedback;
 import com.example.testypie.domain.feedback.service.FeedbackService;
 import com.example.testypie.domain.product.entity.Product;
+import com.example.testypie.domain.product.service.ProductService;
+import com.example.testypie.domain.reward.entity.Reward;
 import com.example.testypie.domain.user.dto.*;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.repository.UserRepository;
@@ -20,10 +22,11 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ProfileService {
+public class UserInfoService {
 
     private final UserRepository userRepository;
     private final FeedbackService feedbackService;
+    private final ProductService productService;
     private final S3Uploader s3Uploader;
 
     @Transactional
@@ -114,33 +117,52 @@ public class ProfileService {
     }
 
     public List<User> drawUsers(Long productId) {
-        // 1. 5점을 받은 사람들의 피드백 리스트 가져오고 한명뽑기. 뽑은 user 저장 상품갯수: -1하기
-        List<Feedback> fiveStarFeedbackList = feedbackService.findFiveStarFeedbacksByProduct(productId);
+        // product 찾기
+        Product product = productService.findProduct(productId);
 
-        // 2. 전체 리스트를 가져오고 뽑은 user 지우기, 0점 받은 사람 지우기
-        List<User> feedbackUserList = userRepository.findAllUsersByProductId(productId);
+        // rewardlist 찾기
+        List<Reward> rewardList = product.getRewardList();
 
-        // 3. 수정된 리스트에서 추첨 돌리기 상품 갯수가 0이될때까지
-
-        // 4. 뽑힌 사람들을 리스트로 만들고 내보내기
-        return null;
-    }
-
-    // 5점 피드백 작성 유저 한명 뽑기
-    public User getRandomUserFromFiveStarFeedbackLists(List<Feedback> feedbackList) {
         // 빈 목록이나 null일 경우 예외 처리
-        if (feedbackList == null || feedbackList.isEmpty()) {
+        if (rewardList == null || rewardList.isEmpty()) {
             return null;
         }
+
+        // 전체 reward_size 합산
+        int totalRewardSize = rewardList.stream()
+                .mapToInt(reward -> Math.toIntExact(reward.getItemSize()))
+                .sum();
 
         // 랜덤 숫자 생성을 위한 Random 객체 생성
         Random random = new Random();
 
-        // 랜덤 인덱스 선택
-        int randomIndex = random.nextInt(feedbackList.size());
+        // 전체 reward_size 만큼의 랜덤 인덱스 선택
+        List<Integer> randomIndexes = random.ints(totalRewardSize, 0, rewardList.size())
+                .boxed()
+                .toList();
 
-        // 선택된 랜덤 인덱스의 Feedback에서 User를 얻어옴
-        Feedback randomFeedback = feedbackList.get(randomIndex);
-        return randomFeedback.getUser();
+        // 선택된 랜덤 인덱스에 해당하는 User 가져오기
+
+        return randomIndexes.stream()
+                .map(index -> rewardList.get(index).getUser())
+                .toList();
     }
+
+    // 5점 피드백 작성 유저 한명 뽑기
+//    public User getRandomUserFromFiveStarFeedbackLists(List<Feedback> feedbackList) {
+//        // 빈 목록이나 null일 경우 예외 처리
+//        if (feedbackList == null || feedbackList.isEmpty()) {
+//            return null;
+//        }
+//
+//        // 랜덤 숫자 생성을 위한 Random 객체 생성
+//        Random random = new Random();
+//
+//        // 랜덤 인덱스 선택
+//        int randomIndex = random.nextInt(feedbackList.size());
+//
+//        // 선택된 랜덤 인덱스의 Feedback에서 User를 얻어옴
+//        Feedback randomFeedback = feedbackList.get(randomIndex);
+//        return randomFeedback.getUser();
+//    }
 }
