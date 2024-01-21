@@ -14,13 +14,13 @@ public class ViewController {
         return "home";
     }
 
-    @GetMapping("/loginForm")
+    @GetMapping("/login")
     public String login() {
         return "login";
     }
 
     @ResponseBody
-    @GetMapping("/signupForm")
+    @GetMapping("/signup")
     public String signup() {
         return "signup";
     }
