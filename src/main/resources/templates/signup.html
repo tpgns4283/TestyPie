@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+  <head>
+    <title>Testy Pie</title>
+  </head>
+
+  <body>	<!-- body 없어도 무방 -->
+    <div layout:fragment="content">
+      <form>
+        <div class="mb-3">
+          <label for="exampleInputText1" class="form-label">ID</label>
+          <input type="text" class="form-control" id="exampleInputText1" aria-describedby="emailHelp">
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputPassword1" class="form-label">Password</label>
+          <input type="password" class="form-control" id="exampleInputPassword1">
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">Email</label>
+          <input type="email" class="form-control" id="exampleInputEmail1">
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputText2" class="form-label">Nick Name</label>
+          <input type="text" class="form-control" id="exampleInputText2">
+        </div>
+        <div class="input-group">
+          <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+          <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Button</button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
