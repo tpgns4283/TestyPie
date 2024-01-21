@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ViewController {
 
     @GetMapping
-    public String index() {
+    public String home() {
         return "home";
     }
 
@@ -19,7 +19,6 @@ public class ViewController {
         return "login";
     }
 
-    @ResponseBody
     @GetMapping("/signup")
     public String signup() {
         return "signup";
