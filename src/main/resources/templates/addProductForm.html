@@ -38,7 +38,6 @@
 
         <div id="rewardItems">
             <button class="btn btn-dark" id="addItemBtn" type="button">보상 아이템 추가</button>
-            <button class="btn btn-dark" id="removeItemBtn" type="button">보상 아이템 제거</button>
         </div>
 
         <hr class="my-4">
@@ -67,11 +66,21 @@
                     <div class="col">
                         <input type="number" class="form-control" name="itemSize" placeholder="개수">
                     </div>
+                    <div class="col">
+                        <button class="btn btn-danger removeItemBtn" type="button">제거</button>
+                    </div>
                 </div>
             `;
                 $("#rewardItems").append(newItemForm);
                 initialItemFormCount++;
             }
+        });
+
+        // 보상 아이템 제거 버튼 클릭 시
+        $("#rewardItems").on("click", ".removeItemBtn", function () {
+            // 부모 요소인 .row를 찾고 해당 요소를 제거합니다.
+            $(this).closest(".row").remove();
+            initialItemFormCount--;
         });
 
         // 상품 등록 버튼 클릭 시
