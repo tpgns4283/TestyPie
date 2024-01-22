@@ -9,49 +9,7 @@
 
     <body>	<!-- body 없어도 무방 -->
         <div layout:fragment="content">
-            <h2>카테고리</h2>
-            <div id="categoryList"></div>
 
-            <script>
-                function fetchCategories() {
-                    fetch('/api/categories')
-                        .then(response => response.json())
-                        .then(data => {
-                            const categoryList = document.getElementById('categoryList');
-                            categoryList.appendChild(createCategoryTree(data));
-                        })
-                        .catch(error => console.error('Error:', error));
-                }
-
-                function createCategoryTree(categories, parentName = '') {
-                    let ul = document.createElement('ul');
-                    for (let category of categories.filter(c => (c.parentName === parentName) || (!parentName && !c.parentName))) {
-                        let li = document.createElement('li');
-
-                        if (!parentName) { // 최상위 카테고리 확인
-                            li.textContent = category.name; // 텍스트만 추가
-                        } else {
-                            // 하위 카테고리에 링크 추가
-                            let a = document.createElement('a');
-                            a.textContent = category.name;
-                            a.href = `/api/category/${encodeURIComponent(parentName)}/${category.id}`; // 링크 설정
-                            li.appendChild(a);
-                        }
-
-                        // 재귀적으로 하위 카테고리 처리
-                        let childrenUl = createCategoryTree(categories, category.name);
-                        if (childrenUl.children.length > 0) {
-                            li.appendChild(childrenUl);
-                        }
-                        ul.appendChild(li);
-                    }
-                    return ul;
-                }
-
-                document.addEventListener('DOMContentLoaded', function() {
-                    fetchCategories();
-                });
-            </script>
         </div>
     </body>
 </html>

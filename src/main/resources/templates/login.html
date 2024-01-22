@@ -1,27 +1,57 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/default}">
-  <head>
-    <title>Testy Pie</title>
-  </head>
+<html>
+<head>
+  <title>Testy Pie</title>
+  <!-- jQuery 라이브러리 추가 -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
 
-  <body>	<!-- body 없어도 무방 -->
-    <div layout:fragment="content">
-      <form>
-        <div class="mb-3">
-          <label for="exampleInputEmail1" class="form-label">ID</label>
-          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-        </div>
-        <div class="mb-3">
-          <label for="exampleInputPassword1" class="form-label">Password</label>
-          <input type="password" class="form-control" id="exampleInputPassword1">
-        </div>
-        <button type="submit" class="btn btn-primary">로그인</button>
-        <a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=58c7ccd47e3b71e699a7c7d0c56341e5&redirect_uri=http://localhost:8080/home/kakao-login/callback">
-          <img src="/images/kakao_login_medium.png" alt="카카오 로그인 이미지"></a>
-      </form>
+<body>
+<div>
+  <form id="loginForm">
+    <div class="mb-3">
+      <label for="account" class="form-label">ID</label>
+      <input type="text" class="form-control" id="account" name="account">
     </div>
-  </body>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" class="form-control" id="password" name="password">
+    </div>
+    <button type="submit" class="btn btn-primary">로그인</button>
+  </form>
+</div>
+
+<script>
+  $(document).ready(function() {
+    $("#loginForm").submit(function(event) {
+      event.preventDefault();
+      var account = $("#account").val();
+      var password = $("#password").val();
+
+      $.ajax({
+        type: "POST",
+        url: "/api/users/login", // 서버 측 로그인 URL
+        contentType: "application/json",
+        data: JSON.stringify({
+          account: account,
+          password: password
+        }),
+        success: function(response, textStatus, xhr) {
+          // JWT 토큰을 응답 헤더에서 추출
+          var token = xhr.getResponseHeader("Authorization");
+          if (token) {
+            // 로컬 스토리지에 토큰 저장
+            localStorage.setItem("jwtToken", token);
+          }
+          console.log("로그인 성공:", response);
+          window.location.href = "/home"; // 메인 페이지로 리디렉션
+        },
+        error: function(xhr, status, error) {
+          console.log("로그인 실패:", error);
+        }
+      });
+    });
+  });
+</script>
+</body>
 </html>

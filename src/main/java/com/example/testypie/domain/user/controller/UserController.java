@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users")
+@RequestMapping
 public class UserController {
 
     private final UserService userService;
@@ -28,7 +28,7 @@ public class UserController {
     private final JwtUtil jwtUtil;
 
     //회원가입
-    @PostMapping("/signup")
+    @PostMapping("/api/users/signup")
     public ResponseEntity<MessageDTO> signup(@Valid @RequestBody SignUpRequestDTO req) {
 
         userService.signup(req);
@@ -38,7 +38,7 @@ public class UserController {
     }
 
     //로그인
-    @PostMapping("/login")
+    @PostMapping("/api/users/login")
     public ResponseEntity<MessageDTO> login(@RequestBody LoginRequestDTO req,
                                             HttpServletResponse res) {
         userService.login(req);

@@ -9,7 +9,8 @@ public record ProductPageResponseDTO (
         String account,
         String title,
         String content,
-        String category,
+        Long childCategoryId,
+        String parentCategoryName,
         LocalDateTime createAt,
         LocalDateTime startAt,
         LocalDateTime closedAt
@@ -21,7 +22,8 @@ public record ProductPageResponseDTO (
                 product.getUser().getAccount(),
                 product.getTitle(),
                 product.getContent(),
-                product.getCategory().getName(),
+                product.getCategory().getId(),
+                product.getCategory().getParent().getName(),
                 product.getCreatedAt(),
                 product.getStartedAt(),
                 product.getClosedAt()
