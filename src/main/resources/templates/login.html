@@ -9,18 +9,19 @@
 
   <body>	<!-- body 없어도 무방 -->
     <div layout:fragment="content">
-      <form>
+      <form method="post" action="/login">
         <div class="mb-3">
-          <label for="exampleInputEmail1" class="form-label">ID</label>
-          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+          <label for="account" class="form-label">ID</label>
+          <input type="text" class="form-control" id="account" name="account">
         </div>
         <div class="mb-3">
-          <label for="exampleInputPassword1" class="form-label">Password</label>
-          <input type="password" class="form-control" id="exampleInputPassword1">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="password" name="password">
         </div>
         <button type="submit" class="btn btn-primary">로그인</button>
         <a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=58c7ccd47e3b71e699a7c7d0c56341e5&redirect_uri=http://localhost:8080/home/kakao-login/callback">
-          <img src="/images/kakao_login_medium.png" alt="카카오 로그인 이미지"></a>
+          <img src="/images/kakao_login_medium.png" alt="카카오 로그인 이미지">
+        </a>
       </form>
     </div>
   </body>
