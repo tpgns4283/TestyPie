@@ -34,15 +34,12 @@ public class ProductController {
                                                                @Valid @RequestBody ProductCreateRequestDTO req,
                                                                @PathVariable Long childCategory_id,
                                                                @PathVariable String parentCategory_name) {
-        if(req.rewardList() == null){
-            System.out.println("rewardList NULL");
-        }else{
-            System.out.println("rewardList : " + req.rewardList());
-        }
+
         User user = userDetails.getUser();
         ProductCreateResponseDTO res = productService.createProduct(user, req, parentCategory_name,childCategory_id);
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
+
 
     //Product 단일 조회
     @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
@@ -79,7 +76,7 @@ public class ProductController {
     }
 
     //Product 수정
-    @PatchMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
+    @PatchMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}/update")
     public ResponseEntity<ProductUpdateResponseDTO> updateProduct(@PathVariable Long productId,
                                                                   @RequestBody ProductUpdateRequestDTO req,
                                                                   @AuthenticationPrincipal UserDetailsImpl userDetails,

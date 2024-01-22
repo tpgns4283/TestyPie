@@ -38,5 +38,13 @@ public class ViewController {
         model.addAttribute("childId", childId);
         return "addProductForm"; // 이동할 뷰의 이름을 반환
     }
+
+    @GetMapping("/api/category/{parentName}/{childId}/products/{productId}/update")
+    public String updateProduct(@PathVariable String parentName, @PathVariable Long childId, Model model, @PathVariable Long productId) {
+        model.addAttribute("parentName", parentName);
+        model.addAttribute("childId", childId);
+        model.addAttribute("productId", productId);
+        return "updateProductForm"; // 이동할 뷰의 이름을 반환
+    }
 }
 
