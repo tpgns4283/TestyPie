@@ -34,7 +34,11 @@ public class ProductController {
                                                                @Valid @RequestBody ProductCreateRequestDTO req,
                                                                @PathVariable Long childCategory_id,
                                                                @PathVariable String parentCategory_name) {
-
+        if(req.rewardList() == null){
+            System.out.println("rewardList NULL");
+        }else{
+            System.out.println("rewardList : " + req.rewardList());
+        }
         User user = userDetails.getUser();
         ProductCreateResponseDTO res = productService.createProduct(user, req, parentCategory_name,childCategory_id);
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
