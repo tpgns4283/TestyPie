@@ -12,7 +12,7 @@
 </head>
 <body>
 <!-- section Start -->
-<div class="container">
+<div class="container" th:attr="data-parentname=${parentName}, data-childid=${childId}, data-productid=${productId}">
 
     <div class="py-5 text-center">
         <h2>상품 수정</h2>
@@ -61,17 +61,28 @@
                 startAt: $("#startAt").val(),
                 closedAt: $("#closedAt").val()
             };
-            console.log(productData)
 
-            var productId = $(this).data("productId");
-            var parentName = $(this).data("parentName");
-            var childId = $(this).data("childId");
+            // 데이터 속성을 통해 값을 가져옵니다.
+            var parentName = $(".container").data("parentname");
+            var childId = $(".container").data("childid");
+            var productId = $(".container").data("productid");
+
+            // URL을 동적으로 생성합니다.
+            var url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/update";
+
             // JSON 데이터를 서버로 전송합니다.
             $.ajax({
                 type: "PATCH", // PATCH 요청으로 변경
-                url: "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/update",
+                url: url,
                 data: JSON.stringify(productData), // JSON 데이터를 문자열로 변환하여 전송
                 contentType: "application/json; charset=utf-8", // Content-Type을 명시적으로 설정
+                beforeSend: function(xhr) {
+                    // 로컬 스토리지에서 JWT 토큰을 가져와 헤더에 추가
+                    var token = localStorage.getItem("jwtToken");
+                    if (token) {
+                        xhr.setRequestHeader("Authorization", token);
+                    }
+                },
                 success: function (response) {
                     // 성공 시 처리
                     console.log("상품 수정 성공:", response);

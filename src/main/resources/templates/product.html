@@ -1,5 +1,8 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
 <head>
     <meta charset="utf-8">
     <link th:href="@{/css/bootstrap.min.css}"
@@ -12,7 +15,7 @@
 </head>
 <body>
 <!-- section Start -->
-<div class="container">
+<div layout:fragment="content">
 
     <div class="py-5 text-center">
         <h2>상품 단일 조회</h2>
@@ -82,33 +85,39 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
-        // 삭제 버튼 클릭 시
-        $("#deleteBtn").click(function () {
+        // 문서에 대해 클릭 이벤트를 위임하고, 삭제 버튼이 클릭되었는지 확인
+        $(document).on("click", ".delete-btn", function () {
             // 삭제 버튼의 데이터 속성을 가져옴
-            var productId = $(this).data("productid"); // 소문자로 변경
-            var parentName = $(this).data("parentname"); // 소문자로 변경
-            var childId = $(this).data("childid"); // 소문자로 변경
+            var productId = $(this).data("productid");
+            var parentName = $(this).data("parentname");
+            var childId = $(this).data("childid");
 
             // 확인 다이얼로그 표시
             if (confirm("상품을 삭제하시겠습니까?")) {
                 // AJAX 요청을 통해 상품 삭제
                 $.ajax({
-                    type: "DELETE", // DELETE 메서드로 변경
+                    type: "DELETE",
                     url: "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/delete",
+                    beforeSend: function(xhr) {
+                        // JWT 토큰을 헤더에 추가
+                        var token = localStorage.getItem("jwtToken");
+                        if (token) {
+                            xhr.setRequestHeader("Authorization", token);
+                        }
+                    },
                     success: function (response) {
-                        // 성공 시 처리
                         console.log("상품 삭제 성공:", response);
-                        // 삭제 성공 메시지를 표시하고 페이지 리로드
-                        $("h1").text("상품 삭제가 완료되었습니다.");
-                        location.reload();
+                        alert("상품이 삭제되었습니다.");
+                        window.location.href = "/productList.html"; // 상품 목록 페이지로 리다이렉트
                     },
                     error: function (error) {
-                        // 오류 시 처리
                         console.error("상품 삭제 오류:", error);
+                        alert("상품 삭제에 실패했습니다.");
                     }
                 });
             }
         });
     });
 </script>
+
 </html>
