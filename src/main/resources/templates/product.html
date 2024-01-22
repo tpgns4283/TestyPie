@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <link th:href="@{/css/bootstrap.min.css}"
+          href="../../../../../../../../week2/TestyPie/src/main/resources/static/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container {
+            max-width: 800px;
+        }
+    </style>
+</head>
+<body>
+<!-- section Start -->
+<div class="container">
+
+    <div class="py-5 text-center">
+        <h2>상품 단일 조회</h2>
+    </div>
+
+    <h1 th:if="${param.save}" th:text="'상품 저장이 완료되었습니다.'"></h1>
+
+    <div>
+        <label for="productId">상품 ID</label>
+        <input type="text" id="productId" name="productId" class="form-control form-control-sm" value="1" th:value="${product.id}" disabled>
+    </div>
+    <div>
+        <label for="name">이름</label>
+        <input type="text" id="name" name="name" class="form-control form-control-sm" value="상품이름" th:value="${product.title}" disabled>
+    </div>
+    <div>
+        <label for="price">내용</label>
+        <input type="text" id="price" name="price" class="form-control form-control-sm" value="1" th:value="${product.content}" disabled>
+    </div>
+    <div>
+        <label for="quantity">작성자</label>
+        <input type="text" id="quantity" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.account}" disabled>
+    </div>
+    <div>
+        <label for="quantity">등록일</label>
+        <input type="text" id="quantity" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.createAt}" disabled>
+    </div>
+    <div>
+        <label for="quantity">시작일</label>
+        <input type="text" id="quantity" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.startAt}" disabled>
+    </div>
+    <div>
+        <label for="quantity">마감일</label>
+        <input type="text" id="quantity" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.closedAt}" disabled>
+    </div>
+    <div>
+        <label for="quantity">남은기간</label>
+        <input type="text" id="quantity" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.message}" disabled>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="row">
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <button class="btn btn-dark"
+                    onclick="location.href='updateProductForm.html'"
+                    th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/update(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${productId})}'|"
+                    type="button">상품 수정</button>
+        </div>
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <button class="btn btn-secondary delete-btn" type="button">상품 삭제</button>
+        </div>
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <button class="btn btn-secondary"
+                    onclick="location.href='productList.html'"
+                    th:onclick="|location.href='@{/api/category/{parentName}/{childId}(parentName=${parentCategory_name}, childId=${childCategory_id})}'|"
+                    type="button">상품 목록</button>
+        </div>
+    </div>
+</div>
+<!-- section END -->
+</body>
+<script>
+    $(document).ready(function () {
+        // 삭제 버튼 클릭 시
+        $(".delete-btn").click(function () {
+            // 현재 페이지에 있는 상품의 ID 값을 가져오기
+            var productId = $(this).data("productId");
+            var parentName = $(this).data("parentName");
+            var childId = $(this).data("childId");
+
+            // 확인 다이얼로그 표시
+            if (confirm("상품을 삭제하시겠습니까?")) {
+                // AJAX 요청을 통해 상품 삭제
+                $.ajax({
+                    type: "DELETE", // DELETE 메서드로 변경
+                    url: "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/delete",
+                    success: function (response) {
+                        // 성공 시 처리
+                        console.log("상품 삭제 성공:", response);
+                        // 삭제 성공 메시지를 표시하고 페이지 리로드
+                        $("h1").text("상품 삭제가 완료되었습니다.");
+                        location.reload();
+                    },
+                    error: function (error) {
+                        // 오류 시 처리
+                        console.error("상품 삭제 오류:", error);
+                    }
+                });
+            }
+        });
+    });
+</script>
+</html>
