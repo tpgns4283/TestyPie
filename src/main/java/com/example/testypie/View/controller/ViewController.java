@@ -1,5 +1,7 @@
 package com.example.testypie.View.controller;
 
+import com.example.testypie.domain.user.entity.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +14,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ViewController {
 
     @GetMapping("/home")
-    public String home() {
+    public String home(Model model, HttpServletRequest request) {
+        User user = (User) request.getSession().getAttribute("LOGGED_IN_USER");
+        // 사용자 정보가 있다면, 모델에 추가
+        if (user != null) {
+            model.addAttribute("account", user.getAccount());
+        }
         return "home";
     }
 

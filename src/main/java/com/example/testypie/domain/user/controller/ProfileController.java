@@ -12,7 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -27,9 +29,14 @@ public class ProfileController {
 
     //프로필 조회
     @GetMapping("/{account}")
-    public ResponseEntity<ProfileResponseDTO> getProfile(@PathVariable String account) {
+    public ModelAndView getProfile(@PathVariable String account, Model model) {
         User user = userInfoService.findProfile(account);
-        return ResponseEntity.ok().body(ProfileResponseDTO.of(user));
+        ProfileResponseDTO res = ProfileResponseDTO.of(user);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("profile");
+        model.addAttribute("profile", res);
+        return modelAndView;
     }
 
     //프로필 수정
