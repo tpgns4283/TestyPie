@@ -87,7 +87,7 @@ public class ProductController {
     }
 
     //Product 삭제
-    @DeleteMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
+    @DeleteMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}/delete")
     public ResponseEntity<ProductDeleteResponseDTO> deleteProduct(@PathVariable Long productId,
                                                                   @AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                   @PathVariable Long childCategory_id,

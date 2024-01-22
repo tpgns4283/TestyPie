@@ -59,11 +59,14 @@
         <div class="d-grid gap-2 col-6 mx-auto">
             <button class="btn btn-dark"
                     onclick="location.href='updateProductForm.html'"
-                    th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/update(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${productId})}'|"
+                    th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/update(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
                     type="button">상품 수정</button>
         </div>
         <div class="d-grid gap-2 col-6 mx-auto">
-            <button class="btn btn-secondary delete-btn" type="button">상품 삭제</button>
+            <button class="btn btn-secondary delete-btn" id="deleteBtn" type="button"
+                    th:attr="data-productId=${product.id}, data-parentName=${parentCategory_name}, data-childId=${childCategory_id}">
+                상품 삭제
+            </button>
         </div>
         <div class="d-grid gap-2 col-6 mx-auto">
             <button class="btn btn-secondary"
@@ -74,15 +77,17 @@
     </div>
 </div>
 <!-- section END -->
+
 </body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
         // 삭제 버튼 클릭 시
-        $(".delete-btn").click(function () {
-            // 현재 페이지에 있는 상품의 ID 값을 가져오기
-            var productId = $(this).data("productId");
-            var parentName = $(this).data("parentName");
-            var childId = $(this).data("childId");
+        $("#deleteBtn").click(function () {
+            // 삭제 버튼의 데이터 속성을 가져옴
+            var productId = $(this).data("productid"); // 소문자로 변경
+            var parentName = $(this).data("parentname"); // 소문자로 변경
+            var childId = $(this).data("childid"); // 소문자로 변경
 
             // 확인 다이얼로그 표시
             if (confirm("상품을 삭제하시겠습니까?")) {
