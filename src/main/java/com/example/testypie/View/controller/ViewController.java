@@ -18,7 +18,7 @@ public class ViewController {
 
     @GetMapping("/home/login")
     public String loginSuccess() {
-        return "home";
+        return "login";
     }
 
     @GetMapping("/home/signup")
