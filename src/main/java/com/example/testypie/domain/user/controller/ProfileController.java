@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -155,6 +156,9 @@ public class ProfileController {
         // 2. 3. 4. 5. drawUsers에는 5점을 받은 사람들 중에서 한명 뽑고 나머지에서 추첨을 돌립니다.
         List<User> userList = userInfoService.drawUsers(productId);
 
-        return ResponseEntity.ok().body(new LottoResponseDTO(userList));
+        return ResponseEntity.ok().body(new LottoResponseDTO(userList.stream()
+                .map(User::getAccount)
+                .collect(Collectors.toList())
+        ));
     }
 }

@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -28,6 +29,7 @@ public class UserInfoService {
     private final FeedbackService feedbackService;
     private final ProductService productService;
     private final S3Uploader s3Uploader;
+    private final Random random = new Random();
 
     @Transactional
     public ProfileResponseDTO updateProfile(String account, ProfileRequestDTO req) {
@@ -121,32 +123,42 @@ public class UserInfoService {
         Product product = productService.findProduct(productId);
 
         // rewardlist 찾기
-        List<Reward> rewardList = product.getRewardList();
+        List<Reward> rewardList = product != null ? product.getRewardList() : null;
 
         // 빈 목록이나 null일 경우 예외 처리
         if (rewardList == null || rewardList.isEmpty()) {
-            return null;
+            return List.of();  // 빈 리스트 반환
         }
 
+        // 선택된 랜덤 인덱스에 해당하는 User 가져오기 (중복 방지)
+        return getRandomUserList(productId, rewardList);
+    }
+
+    private List<User> getRandomUserList(Long productId, List<Reward> rewardList) {
         // 전체 reward_size 합산
         int totalRewardSize = rewardList.stream()
                 .mapToInt(reward -> Math.toIntExact(reward.getItemSize()))
                 .sum();
 
-        // 랜덤 숫자 생성을 위한 Random 객체 생성
-        Random random = new Random();
+        // user 리스트 가져오기
+        List<User> userList = userRepository.findAllFeedbackUsersByProductId(productId);
 
         // 전체 reward_size 만큼의 랜덤 인덱스 선택
-        List<Integer> randomIndexes = random.ints(totalRewardSize, 0, rewardList.size())
+        List<Integer> randomIndexes = getRandomIndexes(totalRewardSize, userList.size());
+
+        // 선택된 랜덤 인덱스에 해당하는 User 가져오기 (중복 방지)
+        return randomIndexes.stream()
+                .distinct()
+                .map(userList::get)
+                .collect(Collectors.toList());
+    }
+
+    private List<Integer> getRandomIndexes(int totalSize, int maxSize) {
+        return random.ints(totalSize, 0, maxSize)
                 .boxed()
                 .toList();
-
-        // 선택된 랜덤 인덱스에 해당하는 User 가져오기
-
-        return randomIndexes.stream()
-                .map(index -> rewardList.get(index).getUser())
-                .toList();
     }
+}
 
     // 5점 피드백 작성 유저 한명 뽑기
 //    public User getRandomUserFromFiveStarFeedbackLists(List<Feedback> feedbackList) {
@@ -165,4 +177,4 @@ public class UserInfoService {
 //        Feedback randomFeedback = feedbackList.get(randomIndex);
 //        return randomFeedback.getUser();
 //    }
-}
+
