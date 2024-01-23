@@ -2,7 +2,6 @@ package com.example.testypie.domain.user.service;
 
 import com.example.testypie.domain.feedback.service.FeedbackService;
 import com.example.testypie.domain.feedback.entity.Feedback;
-import com.example.testypie.domain.feedback.service.FeedbackService;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.user.dto.*;
 import com.example.testypie.domain.user.entity.User;
@@ -10,6 +9,7 @@ import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.domain.user.dto.ProfileRequestDTO;
 //import com.example.testypie.domain.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,13 +25,17 @@ public class UserInfoService {
 
     private final UserRepository userRepository;
     private final FeedbackService feedbackService;
+    private final PasswordEncoder passwordEncoder;
 //    private final S3Uploader s3Uploader;
 
     @Transactional
     public ProfileResponseDTO updateProfile(String account, ProfileRequestDTO req) {
         User profileUser = userRepository.findByAccount(account)
                 .orElseThrow(NoSuchElementException::new);
-        profileUser.update(req);
+        System.out.println("수정된 비밀번호"+req.password());
+        String password = passwordEncoder.encode(req.password());
+        profileUser.update(req, password);
+
         return new ProfileResponseDTO(profileUser.getAccount(),
                                         profileUser.getNickname(),
                                         profileUser.getEmail(),

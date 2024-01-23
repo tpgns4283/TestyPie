@@ -4,10 +4,7 @@ import com.example.testypie.domain.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping
@@ -52,6 +49,14 @@ public class ViewController {
         model.addAttribute("childId", childId);
         model.addAttribute("productId", productId);
         return "updateProductForm"; // 이동할 뷰의 이름을 반환
+    }
+
+    @GetMapping("/api/users/{account}/update")
+    public String updateProfile(@PathVariable String account,
+                                           Model model) {
+
+        model.addAttribute("account", account);
+        return "updateProfileForm";
     }
 }
 

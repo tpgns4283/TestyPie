@@ -1,6 +1,5 @@
 package com.example.testypie.domain.user.controller;
 
-
 import com.example.testypie.domain.feedback.entity.Feedback;
 import com.example.testypie.domain.user.dto.*;
 import com.example.testypie.domain.user.entity.User;
@@ -40,12 +39,14 @@ public class ProfileController {
     }
 
     //프로필 수정
-    @PatchMapping("/{account}")
+    @PatchMapping("/{account}/update")
     public ResponseEntity<?> updateProfile(@PathVariable String account,
-                                           @RequestBody ProfileRequestDTO req) {
+                                           @RequestBody ProfileRequestDTO req,
+                                            Model model) {
 
         try {
             ProfileResponseDTO res = userInfoService.updateProfile(account, req);
+            model.addAttribute("account", res);
             return ResponseEntity.ok(res);
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
