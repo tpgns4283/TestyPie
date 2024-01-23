@@ -6,6 +6,8 @@ import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.service.UserInfoService;
 import com.example.testypie.domain.user.service.UserService;
 import com.example.testypie.global.security.UserDetailsImpl;
+import com.example.testypie.global.security.UserDetailsImpl;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.ui.Model;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -48,6 +53,7 @@ public class UserController {
         res.setHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(req.account()));
         return ResponseEntity.ok().body(new MessageDTO("로그인 성공", HttpStatus.OK.value()));
     }
+
 
     //프로필 조회
     @GetMapping("/{account}")
@@ -108,5 +114,20 @@ public class UserController {
         List<ParticipatedProductResponseDTO> res = userInfoService.getUserFeedback(account);
 
         return ResponseEntity.ok().body(res);
+
+    @GetMapping("/api/user/profile")
+    public Map<String, String> getUserProfile(@RequestHeader("Authorization") String authorizationHeader) {
+        Map<String, String> response = new HashMap<>();
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String token = authorizationHeader.substring(7);
+            if (jwtUtil.validateToken(token)) {
+                Claims info = jwtUtil.getUserInfoFromToken(token);
+                String account = info.getSubject();
+                response.put("account", account);
+                return response;
+            }
+        }
+        response.put("error", "유효하지 않은 토큰입니다.");
+        return response;
     }
 }

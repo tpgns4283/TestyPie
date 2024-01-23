@@ -2,7 +2,6 @@ package com.example.testypie.domain.user.service;
 
 import com.example.testypie.domain.feedback.service.FeedbackService;
 import com.example.testypie.domain.feedback.entity.Feedback;
-import com.example.testypie.domain.feedback.service.FeedbackService;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.user.dto.*;
 import com.example.testypie.domain.user.entity.User;
@@ -13,6 +12,10 @@ import com.example.testypie.domain.util.S3Uploader.dirName;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+
+//import com.example.testypie.domain.util.S3Uploader;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +32,8 @@ public class UserInfoService {
 
     private final UserRepository userRepository;
     private final FeedbackService feedbackService;
-    private final S3Uploader s3Uploader;
+    private final PasswordEncoder passwordEncoder;
+//    private final S3Uploader s3Uploader;
 
     @Value("${default.image.address}")
     private String defaultProfileImageUrl;
@@ -58,11 +62,29 @@ public class UserInfoService {
             e.printStackTrace();
             throw new RuntimeException("프로필 업데이트에 실패했습니다.", e);
         }
+
+    public ProfileResponseDTO updateProfile(String account, ProfileRequestDTO req) {
+        User profileUser = userRepository.findByAccount(account)
+                .orElseThrow(NoSuchElementException::new);
+        System.out.println("수정된 비밀번호"+req.password());
+        String password = passwordEncoder.encode(req.password());
+        profileUser.update(req, password);
+
+        return new ProfileResponseDTO(profileUser.getAccount(),
+                                        profileUser.getNickname(),
+                                        profileUser.getEmail(),
+                                        profileUser.getDescription(),
+                                        profileUser.getFileUrl());
+
     }
 
     public ProfileResponseDTO getProfile(String account) {
         User user = findProfile(account);
-        return new ProfileResponseDTO(user.getNickname(), user.getDescription(), user.getFileUrl());
+        return new ProfileResponseDTO(user.getAccount(),
+                                        user.getNickname(),
+                                        user.getEmail(),
+                                        user.getDescription(),
+                                        user.getFileUrl());
     }
 
    public User findProfile(String account) {
