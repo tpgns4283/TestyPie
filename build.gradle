@@ -35,6 +35,7 @@ dependencies {
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     // THYMELEAF
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
     // VALIDATION
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     // SPRING WEB
