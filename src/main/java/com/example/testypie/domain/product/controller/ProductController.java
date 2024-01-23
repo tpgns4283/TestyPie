@@ -11,7 +11,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.text.ParseException;
 import java.util.Objects;
@@ -38,33 +40,43 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 
+
     //Product 단일 조회
     @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
-    public ResponseEntity<ProductReadResponseDTO> getProduct(@PathVariable Long productId,
-                                                             @PathVariable Long childCategory_id,
-                                                             @PathVariable String parentCategory_name) throws ParseException {
+    public ModelAndView getProduct(@PathVariable Long productId,
+                                   @PathVariable Long childCategory_id,
+                                   @PathVariable String parentCategory_name,
+                                   Model model) throws ParseException {
         ProductReadResponseDTO res = productService.getProduct(productId, childCategory_id, parentCategory_name);
-        return ResponseEntity.ok().body(res);
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("product");
+        model.addAttribute("product", res);
+        return modelAndView;
     }
 
     //Product 전체 조회 및 카테고리 조회(페이징)
     @GetMapping(value = {"/category/{parentCategory_name}", "/category/{parentCategory_name}/{childCategory_id}"})
-    public ResponseEntity<Page<ProductPageResponseDTO>> getProductPage(
+    public ModelAndView getProductPage(
             // (page = 1) => 1페이지부터 시작
             @PageableDefault(page = 1) Pageable pageable,
             @PathVariable(required = false) Long childCategory_id,
-            @PathVariable String parentCategory_name) throws ParseException {
+            @PathVariable String parentCategory_name,
+            Model model) throws ParseException {
         Page<ProductPageResponseDTO> res;
         if(Objects.isNull(childCategory_id)){
             res = productService.getProductPage(pageable, parentCategory_name);
         } else {
             res = productService.getProductCategoryPage(pageable, childCategory_id, parentCategory_name);
         }
-        return ResponseEntity.ok().body(res);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("productList");
+        model.addAttribute("productList", res);
+        return modelAndView;
     }
 
     //Product 수정
-    @PatchMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
+    @PatchMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}/update")
     public ResponseEntity<ProductUpdateResponseDTO> updateProduct(@PathVariable Long productId,
                                                                   @RequestBody ProductUpdateRequestDTO req,
                                                                   @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -75,7 +87,7 @@ public class ProductController {
     }
 
     //Product 삭제
-    @DeleteMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
+    @DeleteMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}/delete")
     public ResponseEntity<ProductDeleteResponseDTO> deleteProduct(@PathVariable Long productId,
                                                                   @AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                   @PathVariable Long childCategory_id,
