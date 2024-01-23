@@ -29,5 +29,6 @@ public class BugReportService {
         BugReport saveBugReport = bugReportRepository.save(bugReport);
 
         return BugReportResponseDTO.of(saveBugReport);
+
     }
 }

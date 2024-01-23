@@ -38,6 +38,7 @@ public class BugReportController {
         return ResponseEntity.ok().body(res);
     }
 }
+
 /*
 <버그리포트>
 프로덕트에 버그 신고하기 버튼으로 생성

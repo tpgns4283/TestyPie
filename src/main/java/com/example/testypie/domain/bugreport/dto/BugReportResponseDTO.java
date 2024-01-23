@@ -13,7 +13,7 @@ public record BugReportResponseDTO(
 //    LocalDateTime createdAt,
 //    LocalDateTime modifiedAt,
     String content,
-    //   String bugImgUrl,
+     //   String bugImgUrl,
     Long userId,
     Long productId
 ) {

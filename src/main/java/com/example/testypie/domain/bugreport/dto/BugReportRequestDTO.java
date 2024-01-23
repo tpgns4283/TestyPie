@@ -5,5 +5,4 @@ public record BugReportRequestDTO (
     String content,
     Long userId
 ) {
-
 }

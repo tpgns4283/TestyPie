@@ -34,6 +34,7 @@ public class BugReport {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
+
     @Builder
     private BugReport(Product product, User user, String content) {
         this.product = product;
