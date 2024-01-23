@@ -1,6 +1,5 @@
 package com.example.testypie.domain.user.controller;
 
-
 import com.example.testypie.domain.feedback.entity.Feedback;
 import com.example.testypie.domain.user.dto.*;
 import com.example.testypie.domain.user.entity.User;
@@ -12,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -27,18 +28,25 @@ public class ProfileController {
 
     //프로필 조회
     @GetMapping("/{account}")
-    public ResponseEntity<ProfileResponseDTO> getProfile(@PathVariable String account) {
+    public ModelAndView getProfile(@PathVariable String account, Model model) {
         User user = userInfoService.findProfile(account);
-        return ResponseEntity.ok().body(ProfileResponseDTO.of(user));
+        ProfileResponseDTO res = ProfileResponseDTO.of(user);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("profile");
+        model.addAttribute("profile", res);
+        return modelAndView;
     }
 
     //프로필 수정
-    @PatchMapping("/{account}")
+    @PatchMapping("/{account}/update")
     public ResponseEntity<?> updateProfile(@PathVariable String account,
-                                           @RequestBody ProfileRequestDTO req) {
+                                           @RequestBody ProfileRequestDTO req,
+                                            Model model) {
 
         try {
             ProfileResponseDTO res = userInfoService.updateProfile(account, req);
+            model.addAttribute("account", res);
             return ResponseEntity.ok(res);
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
