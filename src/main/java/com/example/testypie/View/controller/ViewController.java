@@ -1,5 +1,7 @@
 package com.example.testypie.View.controller;
 
+import com.example.testypie.domain.user.entity.User;
+import jakarta.servlet.http.HttpServletRequest;
 import com.example.testypie.domain.user.kakao.service.KakaoService;
 import com.example.testypie.global.jwt.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,7 +19,12 @@ public class ViewController {
     private final KakaoService kakaoService;
 
     @GetMapping("/home")
-    public String home() {
+    public String home(Model model, HttpServletRequest request) {
+        User user = (User) request.getSession().getAttribute("LOGGED_IN_USER");
+        // 사용자 정보가 있다면, 모델에 추가
+        if (user != null) {
+            model.addAttribute("account", user.getAccount());
+        }
         return "home";
     }
 
@@ -57,6 +64,14 @@ public class ViewController {
         model.addAttribute("childId", childId);
         model.addAttribute("productId", productId);
         return "updateProductForm"; // 이동할 뷰의 이름을 반환
+    }
+
+    @GetMapping("/api/users/{account}/update")
+    public String updateProfile(@PathVariable String account,
+                                           Model model) {
+
+        model.addAttribute("account", account);
+        return "updateProfileForm";
     }
 }
 

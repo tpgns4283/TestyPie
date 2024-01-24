@@ -45,6 +45,7 @@
             // 로컬 스토리지에 토큰 저장
             localStorage.setItem("jwtToken", token);
           }
+          alert("로그인 되었습니다")
           console.log("로그인 성공:", response);
           window.location.href = "/home"; // 메인 페이지로 리디렉션
         },

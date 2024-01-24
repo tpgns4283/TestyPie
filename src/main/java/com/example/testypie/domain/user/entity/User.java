@@ -68,14 +68,13 @@ public class User {
     }
 
     public void update(ProfileRequestDTO req) {
-        if(req.password() != null && !req.password().isEmpty())
-            this.password = req.password();
+        if(password != null && !password.isEmpty())
+            this.password = password;
         if(req.nickname() != null && !req.nickname().isEmpty())
             this.nickname = req.nickname();
         if(req.description() != null && !req.description().isEmpty())
             this.description = req.description();
-        if(req.fileUrl() != null && !req.fileUrl().isEmpty())
-            this.fileUrl = req.fileUrl();
+        this.fileUrl = req.fileUrl();
     }
 
     public User kakaoIdUpdate(Long kakaoId) {
