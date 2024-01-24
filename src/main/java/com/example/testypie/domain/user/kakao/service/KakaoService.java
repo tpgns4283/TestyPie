@@ -1,5 +1,6 @@
 package com.example.testypie.domain.user.kakao.service;
 
+import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.kakao.dto.KakaoUserInfoDto;
 import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.global.jwt.JwtUtil;
@@ -19,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @Slf4j(topic = "KAKAO LOGIN")
 @Service
@@ -36,7 +38,11 @@ public class KakaoService {
         // 2. 토큰으로 카카오 API호출: "액세스 토큰"으로 카카오사용자 정보 가져오기
         KakaoUserInfoDto kakaoUserInfoDto = getKakaoUserInfo(accessToken);
 
-        return null;
+        // 3. 회원가입 처리
+        User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfoDto);
+
+        // 4. jwt 토큰 반환
+        return jwtUtil.createToken(kakaoUser.getAccount());
     }
 
     private String getToken(String code) throws JsonProcessingException {
@@ -111,5 +117,43 @@ public class KakaoService {
 
         log.info("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
         return new KakaoUserInfoDto(id, nickname, email);
+    }
+
+    private User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
+        // DB 에 중복된 Kakao Id 가 있는지 확인
+        Long kakaoId = kakaoUserInfo.getId();
+        User kakaoUser = userRepository.findByKakaoId(kakaoId).orElse(null);
+
+        if (kakaoUser == null) {
+            // 카카오 사용자 email 동일한 email 가진 회원이 있는지 확인
+            String kakaoEmail = kakaoUserInfo.getEmail();
+            User sameEmailUser = userRepository.findByEmail(kakaoEmail).orElse(null);
+            if (sameEmailUser != null) {
+                kakaoUser = sameEmailUser;
+                // 기존 회원정보에 카카오 Id 추가
+                kakaoUser = kakaoUser.kakaoIdUpdate(kakaoId);
+            } else {
+                // 신규 회원가입
+                // password: random UUID
+                String password = UUID.randomUUID().toString();
+                String account = kakaoUserInfo.getNickname();
+                String encodedPassword = passwordEncoder.encode(password);
+
+                // email: kakao email
+                String email = kakaoUserInfo.getEmail();
+                String nickname = kakaoUserInfo.getNickname();
+
+                kakaoUser = User.builder()
+                        .account(account)
+                        .password(encodedPassword)
+                        .email(email)
+                        .nickname(nickname)
+                        .kakaoId(kakaoId)
+                        .build();
+            }
+
+            userRepository.save(kakaoUser);
+        }
+        return kakaoUser;
     }
 }

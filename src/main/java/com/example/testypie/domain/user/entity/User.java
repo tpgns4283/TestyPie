@@ -43,8 +43,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
-    @Column(unique = true)
-    private String kakaoId;
+    private Long kakaoId;
 
     @OneToMany
     @JoinColumn
@@ -55,7 +54,7 @@ public class User {
 
     @Builder
     private User(Long id, String account, String password, String email, String nickname,
-        String description, UserRole userRole, String fileUrl) {
+        String description, UserRole userRole, String fileUrl, Long kakaoId) {
 
         this.id = id;
         this.account = account;
@@ -65,6 +64,7 @@ public class User {
         this.description = description;
         this.userRole = userRole;
         this.fileUrl = fileUrl;
+        this.kakaoId = kakaoId;
     }
 
     public void update(ProfileRequestDTO req) {
@@ -76,5 +76,11 @@ public class User {
             this.description = req.description();
         if(req.fileUrl() != null && !req.fileUrl().isEmpty())
             this.fileUrl = req.fileUrl();
+    }
+
+    public User kakaoIdUpdate(Long kakaoId) {
+        if(kakaoId != null)
+            this.kakaoId = kakaoId;
+        return this;
     }
 }

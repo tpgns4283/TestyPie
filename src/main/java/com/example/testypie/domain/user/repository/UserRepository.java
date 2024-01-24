@@ -23,6 +23,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<ParticipatedProductResponseDTO> getUserFeedbacksDtoIncludingProductInfo(String account);
 
     boolean existsProductById(Long productId);
+
+    Optional<User> findByKakaoId(Long kakaoId);
 }
 
 

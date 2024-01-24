@@ -37,11 +37,11 @@ public class ViewController {
         String token = kakaoService.kakaoLogin(code);
 
         // jwt토큰 만들기
-        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, token);
+        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, token.substring(7));
         cookie.setPath("/");
         response.addCookie(cookie);
 
-        return "redirect:/home";
+        return "home";
     }
 
     @GetMapping("/api/category/{parentName}/{childId}/products")
