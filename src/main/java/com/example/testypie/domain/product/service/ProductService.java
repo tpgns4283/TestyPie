@@ -1,28 +1,40 @@
 package com.example.testypie.domain.product.service;
 
+import static com.example.testypie.domain.product.constant.ProductConstant.DEFAULT_LIKE_CNT;
+
 import com.example.testypie.domain.category.entity.Category;
 import com.example.testypie.domain.category.service.CategoryService;
-import com.example.testypie.domain.product.dto.*;
+import com.example.testypie.domain.product.dto.ProductCreateRequestDTO;
+import com.example.testypie.domain.product.dto.ProductCreateResponseDTO;
+import com.example.testypie.domain.product.dto.ProductDeleteResponseDTO;
+import com.example.testypie.domain.product.dto.ProductPageResponseDTO;
+import com.example.testypie.domain.product.dto.ProductReadResponseDTO;
+import com.example.testypie.domain.product.dto.ProductUpdateRequestDTO;
+import com.example.testypie.domain.product.dto.ProductUpdateResponseDTO;
 import com.example.testypie.domain.product.entity.Product;
-import com.example.testypie.domain.product.repositoy.ProductRepository;
+import com.example.testypie.domain.product.repository.ProductRepository;
 import com.example.testypie.domain.reward.dto.RewardCreateRequestDTO;
 import com.example.testypie.domain.reward.dto.RewardMapper;
 import com.example.testypie.domain.reward.dto.RewardReadResponseDTO;
 import com.example.testypie.domain.reward.entity.Reward;
 import com.example.testypie.domain.user.entity.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-
+@Slf4j
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -36,7 +48,8 @@ public class ProductService {
 
     //CREATE
     @Transactional
-    public ProductCreateResponseDTO createProduct(User user, ProductCreateRequestDTO req, String parentCategory_name, Long category_id) {
+    public ProductCreateResponseDTO createProduct(User user, ProductCreateRequestDTO req,
+            String parentCategory_name, Long category_id) {
 
         Category category = categoryService.getCategory(category_id, parentCategory_name);
 
@@ -47,6 +60,7 @@ public class ProductService {
                 .title(req.title())
                 .content(req.content())
                 .category(category)
+                .productLikeCnt(DEFAULT_LIKE_CNT)
                 .createAt(LocalDateTime.now())
                 .startedAt(req.startAt())
                 .closedAt(req.closedAt())
@@ -58,11 +72,12 @@ public class ProductService {
         Product saveProduct = productRepository.save(product);
 
         System.out.println(product.getRewardList());
-            return ProductCreateResponseDTO.of(saveProduct);
+        return ProductCreateResponseDTO.of(saveProduct);
     }
 
     //READ
-    public ProductReadResponseDTO getProduct(Long productId, Long category_id, String parentCategory_name)
+    public ProductReadResponseDTO getProduct(Long productId, Long category_id,
+            String parentCategory_name)
             throws ParseException {
         Category category = categoryService.getCategory(category_id, parentCategory_name);
         Product product = findProduct(productId);
@@ -70,14 +85,15 @@ public class ProductService {
         List<Reward> rewardList = product.getRewardList();
         List<RewardReadResponseDTO> rewardDTOList = RewardMapper.mapToDTOList(rewardList);
 
-        if(category.getId().equals(product.getCategory().getId())) {
+        if (category.getId().equals(product.getCategory().getId())) {
             return ProductReadResponseDTO.of(product, rewardDTOList);
-        }else{
+        } else {
             throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
         }
     }
 
-    public Page<ProductPageResponseDTO> getProductPage(Pageable pageable, String parentCategory_name)
+    public Page<ProductPageResponseDTO> getProductPage(Pageable pageable,
+            String parentCategory_name)
             throws ParseException {
         int page = pageable.getPageNumber() - 1;
         int pageLimit = 10;
@@ -88,9 +104,10 @@ public class ProductService {
         return getProductReadResponseDTOS(pageable, productPage);
     }
 
-    public Page<ProductPageResponseDTO> getProductCategoryPage(Pageable pageable, Long childCategory_id,
-                                                               String parentCategory_name)
-                                                                throws ParseException {
+    public Page<ProductPageResponseDTO> getProductCategoryPage(Pageable pageable,
+            Long childCategory_id,
+            String parentCategory_name)
+            throws ParseException {
         int page = pageable.getPageNumber() - 1;
         int pageLimit = 10;
 
@@ -99,12 +116,12 @@ public class ProductService {
         Page<Product> productPage = productRepository.findAllByCategory_id(category.getId(),
                 PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
 
-
         return getProductReadResponseDTOS(pageable, productPage);
     }
 
-    private Page<ProductPageResponseDTO> getProductReadResponseDTOS(Pageable pageable, Page<Product> productPage)
-                                                                    throws ParseException {
+    private Page<ProductPageResponseDTO> getProductReadResponseDTOS(Pageable pageable,
+            Page<Product> productPage)
+            throws ParseException {
 
         List<ProductPageResponseDTO> resList = new ArrayList<>();
 
@@ -116,12 +133,13 @@ public class ProductService {
     }
 
     //UPDATE
-    public ProductUpdateResponseDTO updateProduct(Long productId, ProductUpdateRequestDTO req, User user, Long category_id,
-                                                  String parentCategory_name) {
+    public ProductUpdateResponseDTO updateProduct(Long productId, ProductUpdateRequestDTO req,
+            User user, Long category_id,
+            String parentCategory_name) {
         Product product = getUserProduct(productId, user);
         Category category = categoryService.getCategory(category_id, parentCategory_name);
 
-        if(category.getId().equals(product.getCategory().getId())) {
+        if (category.getId().equals(product.getCategory().getId())) {
             product.updateTitle(req.title());
             product.updateContent(req.content());
             product.updateCategory(category);
@@ -132,20 +150,21 @@ public class ProductService {
             productRepository.save(product);
 
             return ProductUpdateResponseDTO.of(product);
-        }else{
+        } else {
             throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
         }
     }
 
     //DELETE
-    public ProductDeleteResponseDTO deleteProduct(Long productId, User user, Long category_id, String parentCategory_name) {
+    public ProductDeleteResponseDTO deleteProduct(Long productId, User user, Long category_id,
+            String parentCategory_name) {
         Category category = categoryService.getCategory(category_id, parentCategory_name);
         Product product = getUserProduct(productId, user);
 
-        if(category.getId().equals(product.getCategory().getId())) {
+        if (category.getId().equals(product.getCategory().getId())) {
             productRepository.delete(product);
             return ProductDeleteResponseDTO.of(product);
-        }else{
+        } else {
             throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
         }
     }
@@ -161,7 +180,7 @@ public class ProductService {
     public Product getUserProduct(Long productId, User user) {
         Product product = findProduct(productId);
         //RuntimeException으로 변경 예정
-        if(!user.getId().equals(product.getUser().getId())) {
+        if (!user.getId().equals(product.getUser().getId())) {
             throw new RejectedExecutionException("본인만 수정할 수 있습니다.");
         }
         return product;
