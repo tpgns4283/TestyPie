@@ -41,7 +41,7 @@ class ProductLikeServiceTest {
 
     @DisplayName("ProductLike 1번째 클릭")
     @Test
-    void firstClickLike() {
+    void firstClickProductLike() {
         // given
         User user = User.builder().id(1L).build();
 
@@ -73,7 +73,7 @@ class ProductLikeServiceTest {
 
     @DisplayName("ProductLike 2번째 클릭")
     @Test
-    void secondClickLike() {
+    void secondClickProductLike() {
         // given
         User user = User.builder().id(1L).build();
 
