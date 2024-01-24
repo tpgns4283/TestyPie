@@ -1,7 +1,7 @@
 package com.example.testypie.domain.productLike.service;
 
-import static com.example.testypie.domain.product.constant.ProductConstant.DEFAULT_LIKE_CNT;
-import static com.example.testypie.domain.product.constant.ProductConstant.DEFAULT_PRODUCT_LIKE;
+import static com.example.testypie.domain.product.constant.ProductConstant.DEFAULT_PRODUCT_LIKE_CNT;
+import static com.example.testypie.domain.productLike.constant.ProductLikeConstant.DEFAULT_PRODUCT_LIKE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -12,7 +12,7 @@ import static org.mockito.Mockito.verify;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.repository.ProductRepository;
 import com.example.testypie.domain.product.service.ProductService;
-import com.example.testypie.domain.productLike.Repository.ProductLikeRepository;
+import com.example.testypie.domain.productLike.repository.ProductLikeRepository;
 import com.example.testypie.domain.productLike.dto.ProductLikeResponseDto;
 import com.example.testypie.domain.productLike.entity.ProductLike;
 import com.example.testypie.domain.user.entity.User;
@@ -45,7 +45,7 @@ class ProductLikeServiceTest {
         // given
         User user = User.builder().id(1L).build();
 
-        Product product = Product.builder().id(1L).productLikeCnt(DEFAULT_LIKE_CNT).build();
+        Product product = Product.builder().id(1L).productLikeCnt(DEFAULT_PRODUCT_LIKE_CNT).build();
 
         ProductLike productLike = ProductLike.builder()
                 .id(1L)
@@ -58,7 +58,7 @@ class ProductLikeServiceTest {
 
         given(productService.findProduct(anyLong())).willReturn(product);
 
-        given(productLikeRepository.findByUserAndProduct(any(Product.class),
+        given(productLikeRepository.findByProductAndUser(any(Product.class),
                 any(User.class))).willReturn(optionalProductLike);
 
         given(productLikeRepository.save(any(ProductLike.class))).willReturn(productLike);
@@ -77,7 +77,7 @@ class ProductLikeServiceTest {
         // given
         User user = User.builder().id(1L).build();
 
-        Product product = Product.builder().id(1L).productLikeCnt(DEFAULT_LIKE_CNT).build();
+        Product product = Product.builder().id(1L).productLikeCnt(DEFAULT_PRODUCT_LIKE_CNT).build();
 
         ProductLike productLike = ProductLike.builder()
                 .id(1L)
@@ -88,7 +88,7 @@ class ProductLikeServiceTest {
 
         given(productService.findProduct(anyLong())).willReturn(product);
 
-        given(productLikeRepository.findByUserAndProduct(any(Product.class),
+        given(productLikeRepository.findByProductAndUser(any(Product.class),
                 any(User.class))).willReturn(Optional.ofNullable(productLike));
 
         // when
