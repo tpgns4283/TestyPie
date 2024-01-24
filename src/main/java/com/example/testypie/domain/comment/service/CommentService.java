@@ -10,10 +10,13 @@ import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.service.ProductService;
 import com.example.testypie.domain.user.entity.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.example.testypie.domain.product.constant.ProductConstant.DEFAULT_LIKE_CNT;
 
 @Transactional
 @Service
@@ -29,7 +32,12 @@ public class CommentService {
         Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
 
         if(category.getId().equals(product.getCategory().getId())) {
-            Comment comment = new Comment(req, user, product);
+            Comment comment = Comment.builder()
+                    .user(user)
+                    .content(req.content())
+                    .createAt(LocalDateTime.now())
+                    .product(product)
+                    .build();
             Comment saveComment = commentRepository.save(comment);
             return new CommentResponseDTO(saveComment);
         }else{
