@@ -7,12 +7,6 @@ import com.example.testypie.domain.user.dto.*;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.domain.user.dto.ProfileRequestDTO;
-import com.example.testypie.domain.util.S3Uploader;
-import com.example.testypie.domain.util.S3Uploader.dirName;
-import java.io.IOException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-
 //import com.example.testypie.domain.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,7 +17,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -35,61 +28,33 @@ public class UserInfoService {
     private final PasswordEncoder passwordEncoder;
 //    private final S3Uploader s3Uploader;
 
-    @Value("${default.image.address}")
-    private String defaultProfileImageUrl;
-
     @Transactional
-    public ProfileResponseDTO updateProfile(String account, ProfileRequestDTO req,
-        MultipartFile multipartfile) {
-        try {
-            User profileUser = userRepository.findByAccount(account)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 유저가 없습니다."));
-            String fileUrl = req.fileUrl();
-
-            if (multipartfile != null && !multipartfile.isEmpty()) {
-                s3Uploader.upload(multipartfile, "profile/");
-                fileUrl = s3Uploader.upload(multipartfile, "profile/");
-            } else if (!fileUrl.equals(defaultProfileImageUrl)) {
-                s3Uploader.upload(multipartfile, "profile/");
-            } else {
-                fileUrl = defaultProfileImageUrl;
-            }
-
-            profileUser.update(req);
-            return new ProfileResponseDTO(profileUser.getNickname(), profileUser.getDescription(),
-                profileUser.getFileUrl());
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("프로필 업데이트에 실패했습니다.", e);
-        }
-
     public ProfileResponseDTO updateProfile(String account, ProfileRequestDTO req) {
         User profileUser = userRepository.findByAccount(account)
-                .orElseThrow(NoSuchElementException::new);
+            .orElseThrow(NoSuchElementException::new);
         System.out.println("수정된 비밀번호"+req.password());
         String password = passwordEncoder.encode(req.password());
         profileUser.update(req, password);
 
         return new ProfileResponseDTO(profileUser.getAccount(),
-                                        profileUser.getNickname(),
-                                        profileUser.getEmail(),
-                                        profileUser.getDescription(),
-                                        profileUser.getFileUrl());
-
+            profileUser.getNickname(),
+            profileUser.getEmail(),
+            profileUser.getDescription(),
+            profileUser.getFileUrl());
     }
 
     public ProfileResponseDTO getProfile(String account) {
         User user = findProfile(account);
         return new ProfileResponseDTO(user.getAccount(),
-                                        user.getNickname(),
-                                        user.getEmail(),
-                                        user.getDescription(),
-                                        user.getFileUrl());
+            user.getNickname(),
+            user.getEmail(),
+            user.getDescription(),
+            user.getFileUrl());
     }
 
-   public User findProfile(String account) {
+    public User findProfile(String account) {
         return userRepository.findByAccount(account)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다."));
     }
 
     // 프로필 작성자와 사이트 이용자가 일치하는 메서드
@@ -106,8 +71,8 @@ public class UserInfoService {
     public List<RegisteredProductResponseDTO> getUserProducts(String account) {
         List<Product> productList = userRepository.getUserProductsOrderByCreatedAtDesc(account);
         return productList.stream()
-                .map(RegisteredProductResponseDTO::of)
-                .collect(Collectors.toList());
+            .map(RegisteredProductResponseDTO::of)
+            .collect(Collectors.toList());
     }
 
     //product 참여 이력 가져오기
