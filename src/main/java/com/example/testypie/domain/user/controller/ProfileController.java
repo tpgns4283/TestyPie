@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -42,10 +43,11 @@ public class ProfileController {
     @PatchMapping("/{account}/update")
     public ResponseEntity<?> updateProfile(@PathVariable String account,
         @RequestBody ProfileRequestDTO req,
+        @PathVariable MultipartFile multipartFile,
         Model model) {
 
         try {
-            ProfileResponseDTO res = userInfoService.updateProfile(account, req);
+            ProfileResponseDTO res = userInfoService.updateProfile(account, req, multipartFile);
             model.addAttribute("account", res);
             return ResponseEntity.ok(res);
         } catch (NoSuchElementException e) {
