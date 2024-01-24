@@ -14,9 +14,7 @@ public record FeedbackResponseDTO(
     LocalDateTime createdAt,
     LocalDateTime modifiedAt,
     String content,
-    @JsonIgnore
     User user,
-    @JsonIgnore
     Product product
     ) {
         public FeedbackResponseDTO (Feedback saveFeedback) {
