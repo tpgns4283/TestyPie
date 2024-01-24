@@ -21,8 +21,6 @@
         <h2>상품 단일 조회</h2>
     </div>
 
-    <h1 th:if="${param.save}" th:text="'상품 저장이 완료되었습니다.'"></h1>
-
     <div>
         <label for="productId">상품 ID</label>
         <input type="text" id="productId" name="productId" class="form-control form-control-sm" value="1" th:value="${product.id}" disabled>
@@ -64,14 +62,7 @@
                     onclick="location.href='updateProductForm.html'"
                     th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/update(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
                     type="button">상품 수정</button>
-        </div>
-        <div class="d-grid gap-2 col-6 mx-auto">
-            <button class="btn btn-secondary delete-btn" id="deleteBtn" type="button"
-                    th:attr="data-productId=${product.id}, data-parentName=${parentCategory_name}, data-childId=${childCategory_id}">
-                상품 삭제
-            </button>
-        </div>
-        <div class="d-grid gap-2 col-6 mx-auto">
+
             <button class="btn btn-secondary"
                     onclick="location.href='productList.html'"
                     th:onclick="|location.href='@{/api/category/{parentName}/{childId}(parentName=${parentCategory_name}, childId=${childCategory_id})}'|"
@@ -80,44 +71,5 @@
     </div>
 </div>
 <!-- section END -->
-
 </body>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        // 문서에 대해 클릭 이벤트를 위임하고, 삭제 버튼이 클릭되었는지 확인
-        $(document).on("click", ".delete-btn", function () {
-            // 삭제 버튼의 데이터 속성을 가져옴
-            var productId = $(this).data("productid");
-            var parentName = $(this).data("parentname");
-            var childId = $(this).data("childid");
-
-            // 확인 다이얼로그 표시
-            if (confirm("상품을 삭제하시겠습니까?")) {
-                // AJAX 요청을 통해 상품 삭제
-                $.ajax({
-                    type: "DELETE",
-                    url: "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/delete",
-                    beforeSend: function(xhr) {
-                        // JWT 토큰을 헤더에 추가
-                        var token = localStorage.getItem("jwtToken");
-                        if (token) {
-                            xhr.setRequestHeader("Authorization", token);
-                        }
-                    },
-                    success: function (response) {
-                        console.log("상품 삭제 성공:", response);
-                        alert("상품이 삭제되었습니다.");
-                        window.location.href = "/productList.html"; // 상품 목록 페이지로 리다이렉트
-                    },
-                    error: function (error) {
-                        console.error("상품 삭제 오류:", error);
-                        alert("상품 삭제에 실패했습니다.");
-                    }
-                });
-            }
-        });
-    });
-</script>
-
 </html>
