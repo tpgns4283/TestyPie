@@ -4,8 +4,10 @@ package com.example.testypie.domain.user.controller;
 import com.example.testypie.domain.user.dto.LoginRequestDTO;
 import com.example.testypie.domain.user.dto.MessageDTO;
 import com.example.testypie.domain.user.dto.SignUpRequestDTO;
+import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.service.UserService;
 import com.example.testypie.global.jwt.JwtUtil;
+import com.example.testypie.global.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -68,5 +71,12 @@ public class UserController {
         }
         response.put("error", "유효하지 않은 토큰입니다.");
         return response;
+    }
+
+    @DeleteMapping("/signout")
+    public ResponseEntity<MessageDTO> signOut(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        userService.signOut(user);
+        return ResponseEntity.ok(new MessageDTO("유저가 탈퇴했습니다.", 200));
     }
 }
