@@ -43,6 +43,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
+    @Column(unique = true)
+    private String kakaoId;
+
     @OneToMany
     @JoinColumn
     private List<Reward> rewardList = new ArrayList<>();
