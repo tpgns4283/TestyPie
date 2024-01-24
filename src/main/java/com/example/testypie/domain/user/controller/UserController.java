@@ -6,7 +6,6 @@ import com.example.testypie.domain.user.dto.MessageDTO;
 import com.example.testypie.domain.user.dto.SignUpRequestDTO;
 import com.example.testypie.domain.user.service.UserService;
 import com.example.testypie.global.jwt.JwtUtil;
-import com.example.testypie.global.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -14,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -46,7 +43,11 @@ public class UserController {
     public ResponseEntity<MessageDTO> login(@RequestBody LoginRequestDTO req,
         HttpServletResponse res) {
         userService.login(req);
-        res.setHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(req.account()));
+
+        // access token, refresh token 생성
+        res.setHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createAccessToken(req.account()));
+        res.setHeader(JwtUtil.REFRESH_AUTHORIZATION_HEADER, jwtUtil.createRefreshToken(req.account()));
+
         return ResponseEntity.ok().body(new MessageDTO("로그인 성공", HttpStatus.OK.value()));
     }
 
