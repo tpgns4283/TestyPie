@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -41,18 +42,19 @@ public class ProfileController {
     //프로필 수정
     @PatchMapping("/{account}/update")
     public ResponseEntity<?> updateProfile(@PathVariable String account,
-                                           @RequestBody ProfileRequestDTO req,
-                                            Model model) {
+        @RequestBody ProfileRequestDTO req,
+        @PathVariable MultipartFile multipartFile,
+        Model model) {
 
         try {
-            ProfileResponseDTO res = userInfoService.updateProfile(account, req);
+            ProfileResponseDTO res = userInfoService.updateProfile(account, req, multipartFile);
             model.addAttribute("account", res);
             return ResponseEntity.ok(res);
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
-                    .body(new MessageDTO("업데이트에 실패했습니다.", HttpStatus.BAD_REQUEST.value()));
+                .body(new MessageDTO("업데이트에 실패했습니다.", HttpStatus.BAD_REQUEST.value()));
         }
     }
 
@@ -100,7 +102,7 @@ public class ProfileController {
     // 3. 결과는 AverageRatingResponseDTO에 담겨 보내집니다.
     @GetMapping("{account}/averageStarRating")
     public ResponseEntity<AverageRatingResponseDTO> getAverageStarRating(@PathVariable String account,
-                                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 1.
         userInfoService.checkSameUser(account, userDetails.getUsername());
 
@@ -121,9 +123,9 @@ public class ProfileController {
     // 4. 별점을 double rating column에 넣습니다.
     @PostMapping("/{account}/ratingStar/{productId}/{feedbackId}")
     public ResponseEntity<MessageDTO> assignRatingStarToFeedback(@PathVariable String account, @PathVariable Long productId,
-                                                                 @PathVariable Long feedbackId,
-                                                                 @Valid @RequestBody RatingStarRequestDTO req,
-                                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        @PathVariable Long feedbackId,
+        @Valid @RequestBody RatingStarRequestDTO req,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
 
         // 1.

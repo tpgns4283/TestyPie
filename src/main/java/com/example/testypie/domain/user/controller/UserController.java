@@ -38,13 +38,13 @@ public class UserController {
         userService.signup(req);
 
         return ResponseEntity.status(HttpStatus.CREATED.value())
-                .body(new MessageDTO("회원가입 성공", HttpStatus.CREATED.value()));
+            .body(new MessageDTO("회원가입 성공", HttpStatus.CREATED.value()));
     }
 
     //로그인
     @PostMapping("/api/users/login")
     public ResponseEntity<MessageDTO> login(@RequestBody LoginRequestDTO req,
-                                            HttpServletResponse res) {
+        HttpServletResponse res) {
         userService.login(req);
         res.setHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(req.account()));
         return ResponseEntity.ok().body(new MessageDTO("로그인 성공", HttpStatus.OK.value()));

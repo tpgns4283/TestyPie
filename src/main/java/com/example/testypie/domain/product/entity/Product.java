@@ -2,12 +2,21 @@ package com.example.testypie.domain.product.entity;
 
 import com.example.testypie.domain.category.entity.Category;
 import com.example.testypie.domain.comment.entity.Comment;
+import com.example.testypie.domain.feedback.entity.Feedback;
+import com.example.testypie.domain.productLike.entity.ProductLike;
 import com.example.testypie.domain.reward.entity.Reward;
 import com.example.testypie.domain.user.entity.User;
-import com.example.testypie.domain.feedback.entity.Feedback;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,16 +45,12 @@ public class Product {
     @Column
     private String content;
 
-    @OneToMany(mappedBy = "product", targetEntity = Comment.class, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Comment> commentList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "product", targetEntity = Reward.class, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Reward> rewardList = new ArrayList<>();
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Category category;
+
+    @Column(nullable = false)
+    private Long productLikeCnt;
 
     @Column
     private LocalDateTime createdAt;
@@ -59,14 +64,25 @@ public class Product {
     @Column
     private LocalDateTime closedAt;
 
+    @OneToMany(mappedBy = "product", targetEntity = Comment.class, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Comment> commentList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", targetEntity = Reward.class, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reward> rewardList = new ArrayList<>();
+
     @OneToMany(mappedBy = "product", targetEntity = Feedback.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Feedback> feedbackList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "product", targetEntity = ProductLike.class, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<ProductLike> productLikeList = new ArrayList<>();
+
     @Builder
     private Product(Long id, User user, String title, String content, Category category,
-                     List<Reward> rewardList, LocalDateTime createAt, LocalDateTime modifiedAt, LocalDateTime startedAt, LocalDateTime closedAt,
-                    List<Comment> commentList, List<Feedback> feedbackList) {
+            List<Reward> rewardList, LocalDateTime createAt, LocalDateTime modifiedAt,
+            LocalDateTime startedAt, LocalDateTime closedAt,
+            List<Comment> commentList, List<Feedback> feedbackList, Long productLikeCnt) {
 
         this.id = id;
         this.user = user;
@@ -80,34 +96,39 @@ public class Product {
         this.closedAt = closedAt;
         this.commentList = commentList;
         this.feedbackList = feedbackList;
+        this.productLikeCnt = productLikeCnt;
     }
 
     public void updateTitle(String title) {
-        if(title != null){
+        if (title != null) {
             this.title = title;
         }
     }
+
     public void updateContent(String content) {
-        if(content != null){
+        if (content != null) {
             this.content = content;
         }
     }
+
     public void updateModifiedAt(LocalDateTime modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
+
     public void updateStartAt(LocalDateTime startedAt) {
-        if(startedAt != null){
+        if (startedAt != null) {
             this.startedAt = startedAt;
         }
     }
+
     public void updateClosedAt(LocalDateTime closedAt) {
-        if(closedAt != null){
+        if (closedAt != null) {
             this.closedAt = closedAt;
         }
     }
 
     public void updateCategory(Category category) {
-        if(category != null){
+        if (category != null) {
             this.category = category;
         }
     }
@@ -122,5 +143,13 @@ public class Product {
         if (rewardList != null) {
             rewardList.forEach(reward -> reward.setProduct(this));
         }
+    }
+
+    public void updateProductLikeCnt(boolean clickProductLike) {
+        if (clickProductLike) {
+            this.productLikeCnt++;
+            return;
+        }
+        this.productLikeCnt--;
     }
 }

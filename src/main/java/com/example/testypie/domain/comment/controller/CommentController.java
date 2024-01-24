@@ -5,12 +5,18 @@ import com.example.testypie.domain.comment.dto.CommentResponseDTO;
 import com.example.testypie.domain.comment.service.CommentService;
 import com.example.testypie.global.security.UserDetailsImpl;
 import jakarta.validation.Valid;
-
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -26,15 +32,19 @@ public class CommentController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long childCategory_id,
             @PathVariable String parentCategory_name) {
-        CommentResponseDTO res = commentService.productComment(product_id, req, userDetails.getUser(), childCategory_id, parentCategory_name);
+
+        CommentResponseDTO res = commentService.productComment(product_id, req,
+                userDetails.getUser(), childCategory_id, parentCategory_name);
         return ResponseEntity.ok(res);
     }
 
     @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments")
     public ResponseEntity<List<CommentResponseDTO>> getComment(@PathVariable Long product_id,
-                                                               @PathVariable Long childCategory_id,
-                                                               @PathVariable String parentCategory_name) {
-        List<CommentResponseDTO> resList = commentService.getComments(product_id, childCategory_id, parentCategory_name);
+            @PathVariable Long childCategory_id,
+            @PathVariable String parentCategory_name) {
+
+        List<CommentResponseDTO> resList = commentService.getComments(product_id, childCategory_id,
+                parentCategory_name);
         return ResponseEntity.ok(resList);
     }
 
@@ -46,7 +56,9 @@ public class CommentController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long childCategory_id,
             @PathVariable String parentCategory_name) {
-        CommentResponseDTO res = commentService.updateComment(product_id, comment_id, req, userDetails.getUser(), childCategory_id, parentCategory_name);
+
+        CommentResponseDTO res = commentService.updateComment(product_id, comment_id, req,
+                userDetails.getUser(), childCategory_id, parentCategory_name);
         return ResponseEntity.ok(res);
     }
 
@@ -56,8 +68,10 @@ public class CommentController {
             @PathVariable Long comment_id,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long childCategory_id,
-            @PathVariable String parentCategory_name){
-     commentService.deleteComment(product_id, comment_id, userDetails.getUser(), childCategory_id, parentCategory_name);
-     return ResponseEntity.noContent().build();
+            @PathVariable String parentCategory_name) {
+
+        commentService.deleteComment(product_id, comment_id, userDetails.getUser(),
+                childCategory_id, parentCategory_name);
+        return ResponseEntity.noContent().build();
     }
 }

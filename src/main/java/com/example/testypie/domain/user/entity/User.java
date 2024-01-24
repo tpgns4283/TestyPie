@@ -64,14 +64,13 @@ public class User {
         this.fileUrl = fileUrl;
     }
 
-    public void update(ProfileRequestDTO req, String password) {
+    public void update(ProfileRequestDTO req) {
         if(password != null && !password.isEmpty())
             this.password = password;
         if(req.nickname() != null && !req.nickname().isEmpty())
             this.nickname = req.nickname();
         if(req.description() != null && !req.description().isEmpty())
             this.description = req.description();
-        if(req.fileUrl() != null && !req.fileUrl().isEmpty())
-            this.fileUrl = req.fileUrl();
+        this.fileUrl = req.fileUrl();
     }
 }
