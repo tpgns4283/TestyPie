@@ -40,9 +40,12 @@ public class KakaoService {
     }
 
     private String getToken(String code) throws JsonProcessingException {
+        log.info("인가코드: " + code);
+
         //요청 URI 만들기
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kauth.kakao.com")
+                .path("/oauth/token")
                 .encode()
                 .build()
                 .toUri();
@@ -77,13 +80,13 @@ public class KakaoService {
     private KakaoUserInfoDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
         // 요청 URL 만들기
         URI uri = UriComponentsBuilder
-                .fromUriString("https://kauth.kakao.com")
-                .path("/home/kakaoInfo")  //이부분을 어떻게 해야할지 이해가 안감
+                .fromUriString("https://kapi.kakao.com")
+                .path("/v2/user/me")
                 .encode()
                 .build()
                 .toUri();
 
-        // HTTP header 생성
+        // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -101,8 +104,10 @@ public class KakaoService {
 
         JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
         Long id = jsonNode.get("id").asLong();
-        String nickname = jsonNode.get("properties").get("nicknamme").asText();
-        String email = jsonNode.get("kakaoo_account").get("email").asText();
+        String nickname = jsonNode.get("properties")
+                .get("nickname").asText();
+        String email = jsonNode.get("kakao_account")
+                .get("email").asText();
 
         log.info("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
         return new KakaoUserInfoDto(id, nickname, email);
