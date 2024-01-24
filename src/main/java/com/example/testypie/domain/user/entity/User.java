@@ -71,7 +71,6 @@ public class User {
             this.nickname = req.nickname();
         if(req.description() != null && !req.description().isEmpty())
             this.description = req.description();
-        if(req.fileUrl() != null && !req.fileUrl().isEmpty())
-            this.fileUrl = req.fileUrl();
+        this.fileUrl = req.fileUrl();
     }
 }
