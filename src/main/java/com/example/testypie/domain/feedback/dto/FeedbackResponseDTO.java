@@ -14,11 +14,7 @@ public record FeedbackResponseDTO(
     LocalDateTime createdAt,
     LocalDateTime modifiedAt,
     String content,
-    String bugReport,
-    String bugImg,
-    @JsonIgnore
     User user,
-    @JsonIgnore
     Product product
     ) {
         public FeedbackResponseDTO (Feedback saveFeedback) {
@@ -29,8 +25,6 @@ public record FeedbackResponseDTO(
                 saveFeedback.getCreatedAt(),
                 saveFeedback.getModifiedAt(),
                 saveFeedback.getContent(),
-                saveFeedback.getBugReport(),
-                saveFeedback.getBugImg(),
                 saveFeedback.getUser(),
                 saveFeedback.getProduct()
             );
