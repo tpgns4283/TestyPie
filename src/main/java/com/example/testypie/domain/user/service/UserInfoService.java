@@ -31,30 +31,30 @@ public class UserInfoService {
     @Transactional
     public ProfileResponseDTO updateProfile(String account, ProfileRequestDTO req) {
         User profileUser = userRepository.findByAccount(account)
-                .orElseThrow(NoSuchElementException::new);
+            .orElseThrow(NoSuchElementException::new);
         System.out.println("수정된 비밀번호"+req.password());
         String password = passwordEncoder.encode(req.password());
         profileUser.update(req, password);
 
         return new ProfileResponseDTO(profileUser.getAccount(),
-                                        profileUser.getNickname(),
-                                        profileUser.getEmail(),
-                                        profileUser.getDescription(),
-                                        profileUser.getFileUrl());
+            profileUser.getNickname(),
+            profileUser.getEmail(),
+            profileUser.getDescription(),
+            profileUser.getFileUrl());
     }
 
     public ProfileResponseDTO getProfile(String account) {
         User user = findProfile(account);
         return new ProfileResponseDTO(user.getAccount(),
-                                        user.getNickname(),
-                                        user.getEmail(),
-                                        user.getDescription(),
-                                        user.getFileUrl());
+            user.getNickname(),
+            user.getEmail(),
+            user.getDescription(),
+            user.getFileUrl());
     }
 
-   public User findProfile(String account) {
+    public User findProfile(String account) {
         return userRepository.findByAccount(account)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다."));
     }
 
     // 프로필 작성자와 사이트 이용자가 일치하는 메서드
@@ -71,8 +71,8 @@ public class UserInfoService {
     public List<RegisteredProductResponseDTO> getUserProducts(String account) {
         List<Product> productList = userRepository.getUserProductsOrderByCreatedAtDesc(account);
         return productList.stream()
-                .map(RegisteredProductResponseDTO::of)
-                .collect(Collectors.toList());
+            .map(RegisteredProductResponseDTO::of)
+            .collect(Collectors.toList());
     }
 
     //product 참여 이력 가져오기

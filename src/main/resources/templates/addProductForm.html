@@ -14,10 +14,10 @@
 <!-- Section START! -->
 <div class="container" th:attr="data-parentname=${parentName}, data-childid=${childId}">
 
+
     <div class="py-5 text-center">
         <h2>상품 등록</h2>
     </div>
-
     <form id="productForm" method="post">
         <div>
             <label for="title">제목</label>
@@ -54,6 +54,7 @@
 <script>
     $(document).ready(function () {
         let initialItemFormCount = 1;
+
         // 보상 아이템 입력 폼 추가 버튼 클릭 시
         $("#addItemBtn").click(function () {
             if (initialItemFormCount < 10) { // 최대 10개까지 추가 가능
@@ -70,6 +71,7 @@
                 </div>
             </div>
         `;
+
                 $("#rewardItems").append(newItemForm);
                 initialItemFormCount++;
             }
