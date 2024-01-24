@@ -30,7 +30,7 @@ public class ProductController {
 
     //Product 생성
     @PostMapping("/category/{parentCategory_name}/{childCategory_id}/products")
-    public ResponseEntity<ProductCreateResponseDTO> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<ProductCreateResponseDTO> createProduct(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                @Valid @RequestBody ProductCreateRequestDTO req,
                                                                @PathVariable Long childCategory_id,
                                                                @PathVariable String parentCategory_name) {
@@ -50,6 +50,8 @@ public class ProductController {
         ProductReadResponseDTO res = productService.getProduct(productId, childCategory_id, parentCategory_name);
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("product");
+        model.addAttribute("parentCategory_name", parentCategory_name);
+        model.addAttribute("childCategory_id", childCategory_id);
         model.addAttribute("product", res);
         return modelAndView;
     }

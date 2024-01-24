@@ -123,17 +123,13 @@
         loadComments();
     });
     function getUserFromToken() {
-        var account = localStorage.getItem("account")
-        console.log(account)
-        return account
+        return localStorage.getItem("account")
     }
 
     function loadComments() {
         var productId = document.getElementById('productId').value;
         var parentName = $(".container").data("parentname");
         var childId = $(".container").data("childid");
-
-        $('#comment-list').empty();
 
         // URL에 실제 값 포함
         const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments";
@@ -149,9 +145,10 @@
                 }
             },
             success: function(response) {
-                console.log(response)
+                const commentList = document.getElementById('comment-list');
+                commentList.innerHTML = ''; // 댓글 목록 초기화
                 response.forEach(function(comment) {
-                    addCommentToDOM(comment.id, comment.content); // 또는 필요에 따라 comment.author 등 다른 필드를 사용
+                    addCommentToDOM(comment.content, comment.id); // 또는 필요에 따라 comment.author 등 다른 필드를 사용
                 });
             },
             error: function(xhr, status, error) {
@@ -187,7 +184,6 @@
                 beforeSend: function (xhr) {
                     // 로컬 스토리지에서 JWT 토큰을 가져와 헤더에 추가
                     var token = localStorage.getItem("jwtToken");
-                    console.log("JWT Token : " + token)
                     if (token) {
                         xhr.setRequestHeader("Authorization", token);
                     }
@@ -215,15 +211,16 @@
         var account = localStorage.getItem("account")
 
         newComment.innerHTML = `
-        <p class="comment-author">${account}</p>
-        <p class="comment-body">${content}</p>
-        <div class="comment-actions">
-            <button onclick="editComment(this)">수정</button>
-            <button onclick="deleteComment(this)">삭제</button>
-        </div>
+    <p class="comment-author">${account}</p>
+    <p class="comment-body">${content}</p> <!-- 댓글 내용을 여기에 표시 -->
+    <div class="comment-actions">
+        <button onclick="editComment(this)">수정</button>
+        <button onclick="deleteComment(this)">삭제</button>
+    </div>
     `;
         commentList.appendChild(newComment);
     }
+
 
     function editComment(button) {
         const comment = button.parentNode.parentNode;

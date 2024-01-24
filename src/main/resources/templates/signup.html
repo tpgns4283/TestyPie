@@ -36,9 +36,8 @@
   $(document).ready(function () {
     // 폼 제출 이벤트 핸들러를 바인딩합니다.
     $("#signupForm").submit(function (event) {
-      event.preventDefault(); // 기본 폼 제출 동작을 방지합니다.
+      event.preventDefault();
 
-      // 폼 입력 필드의 데이터를 JSON 객체로 만듭니다.
       var userData = {
         account: $("#account").val(),
         password: $("#password").val(),
@@ -47,7 +46,6 @@
         description: $("#description").val()
       };
 
-      // 서버로 AJAX POST 요청을 보냅니다.
       $.ajax({
         type: "POST",
         url: "/api/users/signup", // 요청을 보낼 서버의 URL
