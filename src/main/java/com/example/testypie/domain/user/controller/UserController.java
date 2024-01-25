@@ -22,7 +22,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Member;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,13 +49,13 @@ public class UserController {
         userService.signup(req);
 
         return ResponseEntity.status(HttpStatus.CREATED.value())
-            .body(new MessageDTO("회원가입 성공", HttpStatus.CREATED.value()));
+                .body(new MessageDTO("회원가입 성공", HttpStatus.CREATED.value()));
     }
 
     //로그인
     @PostMapping("/api/users/login")
     public ResponseEntity<MessageDTO> login(@RequestBody @Valid LoginRequestDTO req, BindingResult bindingResult,
-        HttpServletResponse res) {
+                                            HttpServletResponse res) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -125,14 +124,14 @@ public class UserController {
 
         if (refreshToken == null) {
             // 리프레시 토큰이 존재하지 않는 경우에 대한 처리
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token not found");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰을 찾을 수 없습니다.");
         }
 
         Claims claims = jwtUtil.getUserInfoFromToken(refreshToken.getTokenValue());
 
         if (claims == null) {
             // 리프레시 토큰이 유효하지 않거나 사용자 ID를 포함하지 않는 경우에 대한 처리
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 토큰입니다.");
         }
 
         String account = claims.getSubject();
@@ -141,6 +140,31 @@ public class UserController {
 
         res.setHeader(AUTHORIZATION_HEADER, jwtUtil.createAccessToken(user.getAccount()));
 
-        return ResponseEntity.ok().body("Refresh successful");
+        return ResponseEntity.ok().body(new MessageDTO("토큰이 성공적으로 생성됐습니다.", 200));
+    }
+
+    @DeleteMapping("/api/users/logout")
+    public ResponseEntity<?> logout(@CookieValue(REFRESH_AUTHORIZATION_HEADER) String token) {
+        logger.info("리프레시 토큰: " + token);
+
+        RefreshToken refreshToken = refreshTokenService.findToken(token);
+
+        if (refreshToken == null) {
+            // 리프레시 토큰이 존재하지 않는 경우에 대한 처리
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰을 찾을 수 없습니다.");
+        }
+
+        Claims claims = jwtUtil.getUserInfoFromToken(refreshToken.getTokenValue());
+
+        if (claims == null) {
+            // 리프레시 토큰이 유효하지 않거나 사용자 ID를 포함하지 않는 경우에 대한 처리
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 토큰입니다.");
+        }
+
+        userService.findUser(claims.getSubject());
+
+        refreshTokenService.deleteRefreshToken(refreshToken);
+
+        return ResponseEntity.ok().body(new MessageDTO("토큰이 성공적으로 삭제됐습니다.", 200));
     }
 }
