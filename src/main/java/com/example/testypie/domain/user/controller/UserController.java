@@ -59,6 +59,13 @@ public class UserController {
 
         // access token, refresh token 생성
         res.setHeader(AUTHORIZATION_HEADER, jwtUtil.createAccessToken(req.account()));
+
+        // cookie에 넣어 관리한다
+        Cookie cookie = new Cookie("refreshToken", jwtToken.getRefreshToken());
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        res.addCookie(cookie);
+
         res.setHeader(REFRESH_AUTHORIZATION_HEADER, jwtUtil.createRefreshToken(req.account()));
 
         return ResponseEntity.ok().body(new MessageDTO("로그인 성공", HttpStatus.OK.value()));

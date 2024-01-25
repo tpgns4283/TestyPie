@@ -46,12 +46,10 @@ public class JwtUtil {
     // JWT 토큰을 substring
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        logger.info("bearer token: " + bearerToken);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
-        logger.error("Not Fount Token");
-        throw new NullPointerException("Not Found Token");
+        return null;
     }
 
     // JWT 검증
