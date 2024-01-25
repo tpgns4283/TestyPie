@@ -16,10 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.example.testypie.global.jwt.JwtUtil.*;
 
 @Slf4j
 @RestController
@@ -33,7 +36,10 @@ public class UserController {
 
     //회원가입
     @PostMapping("/api/users/signup")
-    public ResponseEntity<MessageDTO> signup(@Valid @RequestBody SignUpRequestDTO req) {
+    public ResponseEntity<MessageDTO> signup(@RequestBody @Valid SignUpRequestDTO req, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
         userService.signup(req);
 
@@ -43,13 +49,17 @@ public class UserController {
 
     //로그인
     @PostMapping("/api/users/login")
-    public ResponseEntity<MessageDTO> login(@RequestBody LoginRequestDTO req,
+    public ResponseEntity<MessageDTO> login(@RequestBody @Valid LoginRequestDTO req, BindingResult bindingResult,
         HttpServletResponse res) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         userService.login(req);
 
         // access token, refresh token 생성
-        res.setHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createAccessToken(req.account()));
-        res.setHeader(JwtUtil.REFRESH_AUTHORIZATION_HEADER, jwtUtil.createRefreshToken(req.account()));
+        res.setHeader(AUTHORIZATION_HEADER, jwtUtil.createAccessToken(req.account()));
+        res.setHeader(REFRESH_AUTHORIZATION_HEADER, jwtUtil.createRefreshToken(req.account()));
 
         return ResponseEntity.ok().body(new MessageDTO("로그인 성공", HttpStatus.OK.value()));
     }
@@ -79,4 +89,14 @@ public class UserController {
         userService.signOut(user);
         return ResponseEntity.ok(new MessageDTO("유저가 탈퇴했습니다.", 200));
     }
+
+    // 1. 토큰으로 refresh token을 찾는다.
+    // 2. 만약 refresh token이 비어있다면, 토큰이 유효하지 않습니다.
+    // 3. 액세스토큰과 리프레시 토큰을 다시 만들어 준다.
+
+//    @GetMapping("/refresh")
+//    public ResponseEntity<?> refresh(@RequestHeader(value = AUTHORIZATION_HEADER, required = false) String token){
+//        jwtUtil.getJwtUser(token, REFRESH_TYPE)
+//
+//    }
 }

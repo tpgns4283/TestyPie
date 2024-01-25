@@ -26,7 +26,6 @@ public class RewardService {
     private final UserInfoService userInfoService;
     private final UserRepository userRepository;
 
-
     @Autowired
     public RewardService(RewardRepository rewardRepository, UserInfoService userInfoService, UserRepository userRepository) {
         this.rewardRepository = rewardRepository;

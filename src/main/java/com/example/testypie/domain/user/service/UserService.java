@@ -60,8 +60,14 @@ public class UserService {
     }
 
     public void signOut(User user) {
+        Long userId = user.getId();
 
+        deleteUser(userId);
     }
 
-    private void deleteUser(Long userId)
+    private void deleteUser(Long userId) {
+        userRepository.findById(userId)
+                        .orElseThrow(() -> new IllegalArgumentException("유저를 확인하지 못했습니다."));
+        userRepository.deleteById(userId);
+    }
 }

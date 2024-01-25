@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 public class JwtUtil {
@@ -45,6 +46,7 @@ public class JwtUtil {
     // JWT 토큰을 substring
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        logger.info("bearer token: " + bearerToken);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
@@ -95,4 +97,25 @@ public class JwtUtil {
                         .signWith(key, signatureAlgorithm)
                         .compact();
     }
+
+    /**
+     * 토큰에 담긴 유저 정보를 매핑하는 함수입니다.
+     * 토큰에 담긴 정보가 유효하지 않다면 빈 optional 객체를 반환합니다.
+     *
+     * @param token Bearer token...
+     * @param tokenType refresh, access 토큰
+     * @return 유저정보가 담긴 optional 객체
+     */
+    // 경우의 수
+    // access 토큰이 비어있거나 유효하지 않을경우
+    // refresh토큰이 비어있거나 유효하지 않을 경우
+    //
+//    public Optional<> getJwtUser(String token, String tokenType) {
+//        try {
+//            if (token == null || !token.startsWith("Bearer")) {
+//                return Optional.empty();
+//            }
+//            token = token.substring(7);
+//        }
+//    }
 }
