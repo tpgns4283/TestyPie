@@ -2,20 +2,12 @@ package com.example.testypie.View.controller;
 
 import com.example.testypie.domain.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestTemplate;
 
 
 @Controller
@@ -65,7 +57,7 @@ public class ViewController {
 
     @GetMapping("/api/users/{account}/update")
     public String updateProfile(@PathVariable String account,
-                                           Model model) {
+                                Model model) {
 
         model.addAttribute("account", account);
         return "updateProfileForm";
