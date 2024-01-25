@@ -22,6 +22,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Member;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,8 +61,6 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        User user = userService.findUser(req.account());
-
         userService.login(req);
 
         // access token 생성(header에 관리)
@@ -72,8 +71,8 @@ public class UserController {
 
         // refresh token 객체생성
         RefreshToken refreshToken = RefreshToken.builder()
-                .userId(user.getId())
-                .refreshToken(refreshTokenValue)
+                .account(req.account())
+                .tokenValue(refreshTokenValue)
                 .build();
 
         // 쿠키생성
@@ -107,7 +106,7 @@ public class UserController {
         return response;
     }
 
-    @DeleteMapping("/signout")
+    @DeleteMapping("/api/users/signout")
     public ResponseEntity<MessageDTO> signOut(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         userService.signOut(user);
@@ -118,12 +117,30 @@ public class UserController {
     // 2. 만약 refresh token이 비어있다면, 토큰이 유효하지 않습니다.
     // 3. 액세스토큰과 리프레시 토큰을 다시 만들어 준다.
 
-//    @GetMapping("/refresh")
-//    public ResponseEntity<?> refresh(@CookieValue(REFRESH_AUTHORIZATION_HEADER) String token){
-//        logger.info("리프레시 토큰: " + token);
-//        String refreshToken =
-//
-//
-//        return null;
-//    }
+    @PostMapping("/api/users/refresh")
+    public ResponseEntity<?> refresh(@CookieValue(REFRESH_AUTHORIZATION_HEADER) String token, HttpServletResponse res) {
+        logger.info("리프레시 토큰: " + token);
+
+        RefreshToken refreshToken = refreshTokenService.findToken(token);
+
+        if (refreshToken == null) {
+            // 리프레시 토큰이 존재하지 않는 경우에 대한 처리
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token not found");
+        }
+
+        Claims claims = jwtUtil.getUserInfoFromToken(refreshToken.getTokenValue());
+
+        if (claims == null) {
+            // 리프레시 토큰이 유효하지 않거나 사용자 ID를 포함하지 않는 경우에 대한 처리
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+        }
+
+        String account = claims.getSubject();
+
+        User user = userService.findUser(account);
+
+        res.setHeader(AUTHORIZATION_HEADER, jwtUtil.createAccessToken(user.getAccount()));
+
+        return ResponseEntity.ok().body("Refresh successful");
+    }
 }

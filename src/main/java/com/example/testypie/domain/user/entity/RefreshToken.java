@@ -2,7 +2,6 @@ package com.example.testypie.domain.user.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,12 +11,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RefreshToken {
     @Id
-    Long userId;
-    String refreshToken;
+    String account;
+    String tokenValue;
 
     @Builder
-    public RefreshToken(Long userId,String refreshToken) {
-        this.userId = userId;
-        this.refreshToken = refreshToken;
+    public RefreshToken(String account,String tokenValue) {
+        this.account = account;
+        this.tokenValue = tokenValue;
     }
 }

@@ -64,6 +64,11 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
     }
 
+    public User findUserByUserId(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
+    }
+
     public void signOut(User user) {
         Long userId = user.getId();
 
