@@ -11,8 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-
 
 @Getter
 @Entity
@@ -30,11 +30,11 @@ public class Feedback {
 
     @JoinColumn(name = "feedback_id")
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Question> questionList;
+    private List<Question> questionList = new ArrayList<>();
 
     @JoinColumn(name = "feedback_id")
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Answer> answerList;
+    private List<Answer> answerList = new ArrayList<>();
 
     @JoinColumn
     @ManyToOne(fetch = FetchType.LAZY)

@@ -6,10 +6,13 @@ import com.example.testypie.domain.feedback.dto.FeedbackRequestDTO;
 import com.example.testypie.domain.feedback.dto.FeedbackResponseDTO;
 import com.example.testypie.domain.feedback.entity.Feedback;
 import com.example.testypie.domain.feedback.repository.FeedbackRepository;
+import com.example.testypie.domain.option.dto.OptionCreateRequestDTO;
+import com.example.testypie.domain.option.entity.Option;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.service.ProductService;
 import com.example.testypie.domain.question.dto.QuestionCreateRequestDTO;
-import com.example.testypie.domain.question.dto.QuestionMapper;
+import com.example.testypie.domain.question.entity.Question;
+import com.example.testypie.domain.question.entity.QuestionType;
 import com.example.testypie.domain.user.dto.RatingStarRequestDTO;
 import com.example.testypie.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
@@ -34,24 +38,40 @@ public class FeedbackService {
 
         Product product = verifyUserNotCreateProduct(product_id, user);
         Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
+        if (!category.getId().equals(product.getCategory().getId())) {
+            throw new IllegalArgumentException("카테고리와 Product의 카테고리가 일치하지 않습니다.");
+        }
+        
+        Feedback feedback = Feedback.builder()
+                .user(user)
+                .title(req.title())
+                .createdAt(LocalDateTime.now())
+                .product(product)
+                .build();
 
-        List<QuestionCreateRequestDTO> questionList = req.questionList();
-
-        if(category.getId().equals(product.getCategory().getId())) {
-            Feedback feedback = Feedback.builder()
-                    .user(user)
-                    .title(req.title())
-                    .createdAt(LocalDateTime.now())
-                    .product(product)
+        List<Question> questions = new ArrayList<>();
+        for (QuestionCreateRequestDTO questionDTO : req.questionList()) {
+            Question question = Question.builder()
+                    .text(questionDTO.text())
+                    .questionType(questionDTO.questionType())
+                    .feedback(feedback)
                     .build();
 
-            feedback.setQuestionList(QuestionMapper.mapToEntityList(questionList, feedback));
-
-            Feedback saveFeedback = feedbackRepository.save(feedback);
-            return new FeedbackResponseDTO(saveFeedback);
-        }else{
-            throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
+            if (question.getQuestionType() == QuestionType.MULTI_CHOICE) {
+                for (OptionCreateRequestDTO optionDTO : questionDTO.optionList()) {
+                    Option option = Option.builder()
+                            .text(optionDTO.text())
+                            .question(question)
+                            .build();
+                    question.getOptionList().add(option);
+                }
+            }
+            questions.add(question);
         }
+
+        feedback.setQuestionList(questions); // Feedback 객체에 Question 목록 설정
+        Feedback savedFeedback = feedbackRepository.save(feedback); // Feedback 저장
+        return new FeedbackResponseDTO(savedFeedback); // FeedbackResponseDTO 반환
     }
 
     private Product verifyUserNotCreateProduct(Long productId, User user) {
@@ -69,28 +89,27 @@ public class FeedbackService {
 
         Product product = productService.findProduct(product_id);
         Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
-
-        if(category.getId().equals(product.getCategory().getId())) {
-            Feedback feedback = getFeedbackById(feedback_id);
-            checkFeedback(feedback, product_id);
-            return new FeedbackResponseDTO(feedback);
-        }else{
-            throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
+        if (!category.getId().equals(product.getCategory().getId())) {
+            throw new IllegalArgumentException("카테고리와 Product의 카테고리가 일치하지 않습니다.");
         }
+        
+        Feedback feedback = getFeedbackById(feedback_id);
+        checkFeedback(feedback, product_id);
+        return new FeedbackResponseDTO(feedback);
+      
     }
 
     @Transactional(readOnly = true)
     public List<FeedbackResponseDTO> getFeedbacks(Long product_id, Long childCategory_id, String parentCategory_name) {
         Product product = productService.findProduct(product_id);
         Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
-
-        if(category.getId().equals(product.getCategory().getId())) {
+        if (!category.getId().equals(product.getCategory().getId())) {
+            throw new IllegalArgumentException("카테고리와 Product의 카테고리가 일치하지 않습니다.");
+        }
+        
             return feedbackRepository.findAllByOrderByCreatedAtDesc().stream()
                     .map(FeedbackResponseDTO::new)
                     .collect(Collectors.toList());
-        }else{
-            throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
-        }
     }
 
     //=======================================================================//

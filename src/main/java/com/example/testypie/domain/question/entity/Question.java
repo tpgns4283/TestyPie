@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,20 +25,20 @@ public class Question {
     @Enumerated(EnumType.STRING)
     private QuestionType questionType;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_id") // Option 테이블에 question_id 외래키 추가
-    private List<Option> optionList;
+    @JoinColumn
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Option> optionList = new ArrayList<>();
 
     @JoinColumn
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Feedback feedback;
 
     @Builder
-    public Question(Long id, String text, QuestionType questionType, List<Option> optionList, Feedback feedback) {
+    public Question(Long id, String text, QuestionType questionType, Feedback feedback) {
         this.id = id;
         this.text = text;
         this.questionType = questionType;
-        this.optionList = optionList;
+        this.optionList = new ArrayList<>();
         this.feedback = feedback;
     }
 }

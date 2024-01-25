@@ -2,7 +2,10 @@ package com.example.testypie.domain.option.entity;
 
 import com.example.testypie.domain.question.entity.Question;
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Table(name = "options")
 @Entity
 public class Option {
@@ -15,4 +18,10 @@ public class Option {
     @ManyToOne(fetch = FetchType.LAZY)
     private Question question; // 해당 선택지가 속한 질문
 
+    @Builder
+    public Option(Long id, String text, Question question){
+        this.id = id;
+        this.text = text;
+        this.question = question;
+    }
 }

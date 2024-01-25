@@ -75,17 +75,17 @@ public class ProductService {
     public ProductReadResponseDTO getProduct(Long productId, Long category_id,
             String parentCategory_name)
             throws ParseException {
-        Category category = categoryService.getCategory(category_id, parentCategory_name);
+
         Product product = findProduct(productId);
+        Category category = categoryService.getCategory(category_id, parentCategory_name);
+        if (!category.getId().equals(product.getCategory().getId())) {
+            throw new IllegalArgumentException("카테고리와 Product의 카테고리가 일치하지 않습니다.");
+        }
 
         List<Reward> rewardList = product.getRewardList();
         List<RewardReadResponseDTO> rewardDTOList = RewardMapper.mapToDTOList(rewardList);
 
-        if (category.getId().equals(product.getCategory().getId())) {
-            return ProductReadResponseDTO.of(product, rewardDTOList);
-        } else {
-            throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
-        }
+        return ProductReadResponseDTO.of(product, rewardDTOList);
     }
 
     public Page<ProductPageResponseDTO> getProductPage(Pageable pageable,
@@ -116,8 +116,7 @@ public class ProductService {
     }
 
     private Page<ProductPageResponseDTO> getProductReadResponseDTOS(Pageable pageable,
-            Page<Product> productPage)
-            throws ParseException {
+            Page<Product> productPage) {
 
         List<ProductPageResponseDTO> resList = new ArrayList<>();
 
@@ -132,10 +131,13 @@ public class ProductService {
     public ProductUpdateResponseDTO updateProduct(Long productId, ProductUpdateRequestDTO req,
             User user, Long category_id,
             String parentCategory_name) {
+
         Product product = getUserProduct(productId, user);
         Category category = categoryService.getCategory(category_id, parentCategory_name);
+        if (!category.getId().equals(product.getCategory().getId())) {
+            throw new IllegalArgumentException("카테고리와 Product의 카테고리가 일치하지 않습니다.");
+        }
 
-        if (category.getId().equals(product.getCategory().getId())) {
             product.updateTitle(req.title());
             product.updateContent(req.content());
             product.updateCategory(category);
@@ -146,23 +148,20 @@ public class ProductService {
             productRepository.save(product);
 
             return ProductUpdateResponseDTO.of(product);
-        } else {
-            throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
-        }
     }
 
     //DELETE
     public ProductDeleteResponseDTO deleteProduct(Long productId, User user, Long category_id,
             String parentCategory_name) {
+
         Category category = categoryService.getCategory(category_id, parentCategory_name);
         Product product = getUserProduct(productId, user);
+        if (!category.getId().equals(product.getCategory().getId())) {
+            throw new IllegalArgumentException("카테고리와 Product의 카테고리가 일치하지 않습니다.");
+        }
 
-        if (category.getId().equals(product.getCategory().getId())) {
             productRepository.delete(product);
             return ProductDeleteResponseDTO.of(product);
-        } else {
-            throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
-        }
     }
 
     //Product 존재여부 확인
