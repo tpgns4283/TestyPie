@@ -58,4 +58,26 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
     }
+
+    public User findUser(String account) {
+        return userRepository.findByAccount(account)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
+    }
+
+    public User findUserByUserId(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
+    }
+
+    public void signOut(User user) {
+        Long userId = user.getId();
+
+        deleteUser(userId);
+    }
+
+    private void deleteUser(Long userId) {
+        userRepository.findById(userId)
+                        .orElseThrow(() -> new IllegalArgumentException("유저를 확인하지 못했습니다."));
+        userRepository.deleteById(userId);
+    }
 }

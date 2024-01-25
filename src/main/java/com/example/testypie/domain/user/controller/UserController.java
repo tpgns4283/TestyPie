@@ -4,19 +4,27 @@ package com.example.testypie.domain.user.controller;
 import com.example.testypie.domain.user.dto.LoginRequestDTO;
 import com.example.testypie.domain.user.dto.MessageDTO;
 import com.example.testypie.domain.user.dto.SignUpRequestDTO;
+import com.example.testypie.domain.user.entity.RefreshToken;
+import com.example.testypie.domain.user.entity.User;
+import com.example.testypie.domain.user.service.RefreshTokenService;
 import com.example.testypie.domain.user.service.UserService;
 import com.example.testypie.global.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.example.testypie.global.jwt.JwtUtil.*;
 
 @Slf4j
 @RestController
@@ -24,13 +32,18 @@ import java.util.Map;
 @RequestMapping
 public class UserController {
 
+    private final RefreshTokenService refreshTokenService;
+
     private final UserService userService;
 
     private final JwtUtil jwtUtil;
 
     //회원가입
     @PostMapping("/api/users/signup")
-    public ResponseEntity<MessageDTO> signup(@Valid @RequestBody SignUpRequestDTO req) {
+    public ResponseEntity<MessageDTO> signup(@RequestBody @Valid SignUpRequestDTO req, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
         userService.signup(req);
 
@@ -40,10 +53,35 @@ public class UserController {
 
     //로그인
     @PostMapping("/api/users/login")
-    public ResponseEntity<MessageDTO> login(@RequestBody LoginRequestDTO req,
+    public ResponseEntity<MessageDTO> login(@RequestBody @Valid LoginRequestDTO req, BindingResult bindingResult,
                                             HttpServletResponse res) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         userService.login(req);
-        res.setHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(req.account()));
+
+        // access token 생성(header에 관리)
+        res.setHeader(AUTHORIZATION_HEADER, jwtUtil.createAccessToken(req.account()));
+
+        // refresh token 값 생성(cookie에 관리)
+        String refreshTokenValue = jwtUtil.createRefreshToken(req.account());
+
+        // refresh token 객체생성
+        RefreshToken refreshToken = RefreshToken.builder()
+                .account(req.account())
+                .tokenValue(refreshTokenValue)
+                .build();
+
+        // 쿠키생성
+        Cookie cookie = new Cookie(REFRESH_AUTHORIZATION_HEADER, refreshTokenValue);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        res.addCookie(cookie);
+
+        // 쿠키 저장
+        refreshTokenService.addRefreshToken(refreshToken);
+
         return ResponseEntity.ok().body(new MessageDTO("로그인 성공", HttpStatus.OK.value()));
     }
 
@@ -64,5 +102,68 @@ public class UserController {
         }
         response.put("error", "유효하지 않은 토큰입니다.");
         return response;
+    }
+
+    @DeleteMapping("/api/users/signout")
+    public ResponseEntity<MessageDTO> signOut(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        userService.signOut(user);
+        return ResponseEntity.ok(new MessageDTO("유저가 탈퇴했습니다.", 200));
+    }
+
+    // 1. 토큰으로 refresh token을 찾는다.
+    // 2. 만약 refresh token이 비어있다면, 토큰이 유효하지 않습니다.
+    // 3. 액세스토큰과 리프레시 토큰을 다시 만들어 준다.
+
+    @PostMapping("/api/users/refresh")
+    public ResponseEntity<?> refresh(@CookieValue(REFRESH_AUTHORIZATION_HEADER) String token, HttpServletResponse res) {
+        logger.info("리프레시 토큰: " + token);
+
+        RefreshToken refreshToken = refreshTokenService.findToken(token);
+
+        if (refreshToken == null) {
+            // 리프레시 토큰이 존재하지 않는 경우에 대한 처리
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰을 찾을 수 없습니다.");
+        }
+
+        Claims claims = jwtUtil.getUserInfoFromToken(refreshToken.getTokenValue());
+
+        if (claims == null) {
+            // 리프레시 토큰이 유효하지 않거나 사용자 ID를 포함하지 않는 경우에 대한 처리
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 토큰입니다.");
+        }
+
+        String account = claims.getSubject();
+
+        User user = userService.findUser(account);
+
+        res.setHeader(AUTHORIZATION_HEADER, jwtUtil.createAccessToken(user.getAccount()));
+
+        return ResponseEntity.ok().body(new MessageDTO("토큰이 성공적으로 생성됐습니다.", 200));
+    }
+
+    @DeleteMapping("/api/users/logout")
+    public ResponseEntity<?> logout(@CookieValue(REFRESH_AUTHORIZATION_HEADER) String token) {
+        logger.info("리프레시 토큰: " + token);
+
+        RefreshToken refreshToken = refreshTokenService.findToken(token);
+
+        if (refreshToken == null) {
+            // 리프레시 토큰이 존재하지 않는 경우에 대한 처리
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰을 찾을 수 없습니다.");
+        }
+
+        Claims claims = jwtUtil.getUserInfoFromToken(refreshToken.getTokenValue());
+
+        if (claims == null) {
+            // 리프레시 토큰이 유효하지 않거나 사용자 ID를 포함하지 않는 경우에 대한 처리
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 토큰입니다.");
+        }
+
+        userService.findUser(claims.getSubject());
+
+        refreshTokenService.deleteRefreshToken(refreshToken);
+
+        return ResponseEntity.ok().body(new MessageDTO("토큰이 성공적으로 삭제됐습니다.", 200));
     }
 }
