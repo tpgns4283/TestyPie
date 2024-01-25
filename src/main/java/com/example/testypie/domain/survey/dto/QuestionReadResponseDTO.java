@@ -1,9 +1,7 @@
-package com.example.testypie.domain.question.dto;
+package com.example.testypie.domain.survey.dto;
 
-import com.example.testypie.domain.option.dto.OptionReadResponseDTO;
-import com.example.testypie.domain.option.entity.Option;
-import com.example.testypie.domain.question.entity.Question;
-import com.example.testypie.domain.question.entity.QuestionType;
+import com.example.testypie.domain.survey.entity.Question;
+import com.example.testypie.domain.survey.entity.QuestionType;
 
 import java.util.List;
 import java.util.stream.Collectors;

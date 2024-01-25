@@ -1,4 +1,4 @@
-package com.example.testypie.domain.option.dto;
+package com.example.testypie.domain.survey.dto;
 
 import java.util.List;
 

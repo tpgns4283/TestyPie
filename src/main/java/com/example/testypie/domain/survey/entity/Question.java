@@ -1,8 +1,5 @@
-package com.example.testypie.domain.question.entity;
+package com.example.testypie.domain.survey.entity;
 
-import com.example.testypie.domain.feedback.entity.Feedback;
-import com.example.testypie.domain.option.entity.Option;
-import com.example.testypie.domain.survey.entity.Survey;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

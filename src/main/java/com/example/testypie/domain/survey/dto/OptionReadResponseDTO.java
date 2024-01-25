@@ -1,6 +1,6 @@
-package com.example.testypie.domain.option.dto;
+package com.example.testypie.domain.survey.dto;
 
-import com.example.testypie.domain.option.entity.Option;
+import com.example.testypie.domain.survey.entity.Option;
 
 public record OptionReadResponseDTO(
 

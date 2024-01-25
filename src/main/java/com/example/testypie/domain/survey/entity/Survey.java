@@ -1,7 +1,6 @@
 package com.example.testypie.domain.survey.entity;
 
 import com.example.testypie.domain.product.entity.Product;
-import com.example.testypie.domain.question.entity.Question;
 import com.example.testypie.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;

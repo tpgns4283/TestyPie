@@ -1,6 +1,5 @@
 package com.example.testypie.domain.survey.dto;
 
-import com.example.testypie.domain.question.dto.QuestionReadResponseDTO;
 import com.example.testypie.domain.survey.entity.Survey;
 
 import java.time.LocalDateTime;
