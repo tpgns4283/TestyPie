@@ -1,4 +1,4 @@
-package com.example.testypie.domain.product.repositoy;
+package com.example.testypie.domain.product.repository;
 
 import com.example.testypie.domain.product.entity.Product;
 import org.springframework.data.domain.Page;
