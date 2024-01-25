@@ -17,6 +17,7 @@ public record ProductReadResponseDTO (
         String title,
         String content,
         String category,
+        Long productLikeCnt,
         LocalDateTime createAt,
         LocalDateTime startAt,
         LocalDateTime closedAt,
@@ -45,13 +46,13 @@ public record ProductReadResponseDTO (
             message = "마감 " +diffDays+"일 전";
         }
 
-
         return new ProductReadResponseDTO(
                 product.getId(),
                 product.getUser().getAccount(),
                 product.getTitle(),
                 product.getContent(),
                 product.getCategory().getName(),
+                product.getProductLikeCnt(),
                 product.getCreatedAt(),
                 product.getStartedAt(),
                 product.getClosedAt(),
