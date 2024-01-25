@@ -2,6 +2,7 @@ package com.example.testypie.domain.question.entity;
 
 import com.example.testypie.domain.feedback.entity.Feedback;
 import com.example.testypie.domain.option.entity.Option;
+import com.example.testypie.domain.survey.entity.Survey;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,14 +32,14 @@ public class Question {
 
     @JoinColumn
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Feedback feedback;
+    private Survey survey;
 
     @Builder
-    public Question(Long id, String text, QuestionType questionType, Feedback feedback) {
+    public Question(Long id, String text, QuestionType questionType, Survey survey) {
         this.id = id;
         this.text = text;
         this.questionType = questionType;
         this.optionList = new ArrayList<>();
-        this.feedback = feedback;
+        this.survey = survey;
     }
 }

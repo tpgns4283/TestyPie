@@ -13,7 +13,7 @@ public record QuestionReadResponseDTO(
         String text,
         QuestionType questionType,
         List<OptionReadResponseDTO> optionList,
-        Long feedbackId
+        Long surveyId
 ) {
 
     public static QuestionReadResponseDTO of(Question question) {
@@ -25,7 +25,7 @@ public record QuestionReadResponseDTO(
                 question.getText(),
                 question.getQuestionType(),
                 optionList,
-                question.getFeedback().getId()
+                question.getSurvey().getId()
 
         );
     }

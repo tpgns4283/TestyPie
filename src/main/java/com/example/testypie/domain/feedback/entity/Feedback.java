@@ -1,8 +1,6 @@
 package com.example.testypie.domain.feedback.entity;
 
-import com.example.testypie.domain.answer.entity.Answer;
 import com.example.testypie.domain.product.entity.Product;
-import com.example.testypie.domain.question.entity.Question;
 import com.example.testypie.domain.user.dto.RatingStarRequestDTO;
 import com.example.testypie.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -11,8 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Entity
@@ -23,18 +19,10 @@ public class Feedback {
     private Long id;
 
     @Column
-    private String title;
+    private String response;
 
     @Column
     private LocalDateTime createdAt;
-
-    @JoinColumn(name = "feedback_id")
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Question> questionList = new ArrayList<>();
-
-    @JoinColumn(name = "feedback_id")
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Answer> answerList = new ArrayList<>();
 
     @JoinColumn
     @ManyToOne(fetch = FetchType.LAZY)
@@ -48,27 +36,16 @@ public class Feedback {
     private Double rating;
 
     @Builder
-    private Feedback(Long id, String title, LocalDateTime createdAt, List<Question> questionList,
-                     Double rating, User user, Product product) {
+    private Feedback(Long id, String response, LocalDateTime createdAt, Double rating, User user, Product product) {
         this.id = id;
-        this.title = title;
+        this.response = response;
         this.createdAt = createdAt;
-        this.questionList = questionList;
-        this.rating = rating;
         this.user = user;
         this.product = product;
+        this.rating = rating;
     }
 
     public void assignRating(RatingStarRequestDTO req) {
         this.rating = req.rating();
-    }
-
-    public void setQuestionList(List<Question> questionList) {
-        if (questionList != null) {
-            this.questionList = questionList;
-            questionList.forEach(question -> question.setFeedback(this));
-        } else{
-            throw new IllegalArgumentException("Feedback에 Question은 반드시 들어가야 합니다.");
-        }
     }
 }
