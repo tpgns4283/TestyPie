@@ -9,6 +9,7 @@ import com.example.testypie.domain.user.service.UserService;
 import com.example.testypie.global.jwt.JwtUtil;
 import com.example.testypie.global.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -57,16 +58,14 @@ public class UserController {
 
         userService.login(req);
 
-        // access token, refresh token 생성
+        // access token 생성(header에 관리)
         res.setHeader(AUTHORIZATION_HEADER, jwtUtil.createAccessToken(req.account()));
 
-        // cookie에 넣어 관리한다
-        Cookie cookie = new Cookie("refreshToken", jwtToken.getRefreshToken());
+        // refresh token 생성(cookie에 관리)
+        Cookie cookie = new Cookie(REFRESH_AUTHORIZATION_HEADER, jwtUtil.createRefreshToken(req.account()));
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         res.addCookie(cookie);
-
-        res.setHeader(REFRESH_AUTHORIZATION_HEADER, jwtUtil.createRefreshToken(req.account()));
 
         return ResponseEntity.ok().body(new MessageDTO("로그인 성공", HttpStatus.OK.value()));
     }

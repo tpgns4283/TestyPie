@@ -87,8 +87,7 @@ public class JwtUtil {
 
     public String createRefreshToken(String username) {
         Date date = new Date();
-        return BEARER_PREFIX +
-                Jwts.builder()
+        return Jwts.builder()
                         .setSubject(username)
                         .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
                         .setIssuedAt(date)
