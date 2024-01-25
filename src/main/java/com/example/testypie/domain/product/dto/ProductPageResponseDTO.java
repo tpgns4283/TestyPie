@@ -11,6 +11,7 @@ public record ProductPageResponseDTO (
         String content,
         Long childCategoryId,
         String parentCategoryName,
+        Long productLikeCnt,
         LocalDateTime createAt,
         LocalDateTime startAt,
         LocalDateTime closedAt
@@ -24,6 +25,7 @@ public record ProductPageResponseDTO (
                 product.getContent(),
                 product.getCategory().getId(),
                 product.getCategory().getParent().getName(),
+                product.getProductLikeCnt(),
                 product.getCreatedAt(),
                 product.getStartedAt(),
                 product.getClosedAt()
