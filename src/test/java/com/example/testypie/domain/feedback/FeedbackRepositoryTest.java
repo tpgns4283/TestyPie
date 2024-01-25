@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.example.testypie.domain.feedback.entity.Feedback;
 import com.example.testypie.domain.feedback.repository.FeedbackRepository;
 import com.example.testypie.domain.product.entity.Product;
-import com.example.testypie.domain.product.repositoy.ProductRepository;
+import com.example.testypie.domain.product.repository.ProductRepository;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +48,7 @@ class FeedbackRepositoryTest {
                 .id(1L)
                 .title("test title")
                 .content("test content")
+                .productLikeCnt(0L)
                 .user(user)
                 .build());
     }

@@ -65,15 +65,12 @@
                     closedAt: $("#closedAt").val()
                 };
 
-                // 데이터 속성을 통해 값을 가져옵니다.
                 var parentName = $(".container").data("parentname");
                 var childId = $(".container").data("childid");
                 var productId = $(".container").data("productid");
 
-                // URL을 동적으로 생성합니다.
                 var url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/update";
 
-                // JSON 데이터를 서버로 전송합니다.
                 $.ajax({
                     type: "PATCH", // PATCH 요청으로 변경
                     url: url,

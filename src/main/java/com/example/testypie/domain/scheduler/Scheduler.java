@@ -1,7 +1,7 @@
 package com.example.testypie.domain.scheduler;
 
 import com.example.testypie.domain.product.entity.Product;
-import com.example.testypie.domain.product.repositoy.ProductRepository;
+import com.example.testypie.domain.product.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
