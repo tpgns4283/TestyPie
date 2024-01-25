@@ -67,7 +67,6 @@ public class ProductService {
                 .build();
 
         product.setRewardList(RewardMapper.mapToEntityList(a, product));
-        System.out.println(product.getRewardList());
 
         Product saveProduct = productRepository.save(product);
 

@@ -1,7 +1,9 @@
 package com.example.testypie.domain.feedback.entity;
 
+import com.example.testypie.domain.answer.entity.Answer;
 import com.example.testypie.domain.feedback.dto.FeedbackRequestDTO;
 import com.example.testypie.domain.product.entity.Product;
+import com.example.testypie.domain.question.entity.Question;
 import com.example.testypie.domain.user.dto.RatingStarRequestDTO;
 import com.example.testypie.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -10,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Getter
@@ -21,25 +24,18 @@ public class Feedback {
     private Long id;
 
     @Column
-    private Double grade;
-
-    @Column
     private String title;
 
     @Column
     private LocalDateTime createdAt;
 
-    @Column
-    private LocalDateTime modifiedAt;
+    @JoinColumn(name = "feedback_id")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Question> questionList;
 
-    @Column
-    private String content;
-
-    @Column
-    private String bugReport;
-
-    @Column
-    private String bugImg;
+    @JoinColumn(name = "feedback_id")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Answer> answerList;
 
     @JoinColumn
     @ManyToOne(fetch = FetchType.LAZY)
@@ -53,34 +49,14 @@ public class Feedback {
     private Double rating;
 
     @Builder
-    private Feedback(Long id, Double grade, String title, LocalDateTime createdAt, LocalDateTime modifiedAt,
-                     String content, String bugReport, String bugImg, Double rating, User user, Product product) {
+    private Feedback(Long id, String title, LocalDateTime createdAt, List<Question> questionList,
+                     Double rating, User user, Product product) {
         this.id = id;
-        this.grade = grade;
         this.title = title;
         this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
-        this.content = content;
-        this.bugReport = bugReport;
-        this.bugImg = bugImg;
+        this.questionList = questionList;
         this.rating = rating;
         this.user = user;
-        this.product = product;
-    }
-
-    public Feedback(FeedbackRequestDTO req, Product product, User user) {
-        this.title = req.title();
-        this.content = req.content();
-        this.grade = req.grade();
-        this.createdAt = LocalDateTime.now();
-        this.user = user;
-        this.product = product;
-    }
-
-    public void update(Product product, FeedbackRequestDTO req) {
-        this.grade = req.grade();
-        this.modifiedAt = LocalDateTime.now();
-        this.content = req.content();
         this.product = product;
     }
 

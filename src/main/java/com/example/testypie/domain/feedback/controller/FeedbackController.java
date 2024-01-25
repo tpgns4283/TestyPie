@@ -52,27 +52,4 @@ public class FeedbackController {
         FeedbackResponseDTO res = feedbackService.addFeedback(req, product_id, userDetails.getUser(), childCategory_id, parentCategory_name);
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
-
-    @PatchMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/feedback/{feedback_id}")
-    public ResponseEntity<FeedbackResponseDTO> updateFeedback(
-            @PathVariable Long product_id,
-            @Valid @RequestBody FeedbackRequestDTO req,
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long feedback_id,
-            @PathVariable Long childCategory_id,
-            @PathVariable String parentCategory_name) {
-        FeedbackResponseDTO res = feedbackService.updateFeedback(product_id, req, userDetails.getUser(), feedback_id, childCategory_id, parentCategory_name);
-        return ResponseEntity.ok(res);
-    }
-
-    @DeleteMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/feedback/{feedback_id}")
-    public ResponseEntity<Void> deleteFeedback(
-            @PathVariable Long product_id,
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long feedback_id,
-            @PathVariable Long childCategory_id,
-            @PathVariable String parentCategory_name) {
-        feedbackService.deleteFeedback(product_id, userDetails.getUser(), feedback_id, childCategory_id, parentCategory_name);
-        return ResponseEntity.noContent().build();
-    }
 }

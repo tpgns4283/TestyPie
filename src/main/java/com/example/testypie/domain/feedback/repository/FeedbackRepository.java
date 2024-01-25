@@ -10,11 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
 
-    Optional<Feedback> findByTitle(String Title);
-
     List<Feedback> findAllByOrderByCreatedAtDesc();
-
-    Optional<Feedback> findByGrade(double grade);
 
     Optional<Feedback> findByProductIdAndId(Long productId, Long feedbackId);
 

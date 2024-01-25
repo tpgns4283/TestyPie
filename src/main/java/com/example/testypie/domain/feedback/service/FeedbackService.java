@@ -14,8 +14,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.example.testypie.domain.product.constant.ProductConstant.DEFAULT_LIKE_CNT;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +34,12 @@ public class FeedbackService {
         Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
 
         if(category.getId().equals(product.getCategory().getId())) {
-            Feedback feedback = new Feedback(req, product, user);
+            Feedback feedback = Feedback.builder()
+                    .user(user)
+                    .title(req.title())
+                    .createdAt(LocalDateTime.now())
+                    .build();
+
             Feedback saveFeedback = feedbackRepository.save(feedback);
             return new FeedbackResponseDTO(saveFeedback);
         }else{
@@ -68,40 +76,6 @@ public class FeedbackService {
         }
     }
 
-    @Transactional
-    public FeedbackResponseDTO updateFeedback(Long product_id, FeedbackRequestDTO req, User user, Long feedback_id, Long childCategory_id, String parentCategory_name) {
-
-        Product product = productService.findProduct(product_id);
-        Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
-
-        if(category.getId().equals(product.getCategory().getId())) {
-            Feedback feedback = getFeedbackById(feedback_id);
-            checkFeedback(feedback, product_id);
-            checkUser(feedback, user.getId());
-            feedback.update(product, req);
-            return new FeedbackResponseDTO(feedback);
-        }else{
-            throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
-        }
-    }
-
-    @Transactional
-    public void deleteFeedback(Long product_id, User user, Long feedback_id, Long childCategory_id, String parentCategory_name) {
-
-        Product product = productService.findProduct(product_id);
-        Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
-
-        if(category.getId().equals(product.getCategory().getId())) {
-            Feedback feedback = getFeedbackById(feedback_id);
-            checkFeedback(feedback, product_id);
-            checkUser(feedback, user.getId());
-            feedbackRepository.delete(feedback);
-        }else{
-            throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
-        }
-    }
-
-
     //=======================================================================//
     //    에러클래스 수정함
     //=======================================================================//
@@ -126,7 +100,6 @@ public class FeedbackService {
             throw new IllegalArgumentException("feedback's modifier");
         }
     }
-
 
     public double getAverageRating(User user) {
         return feedbackRepository.findAverageScoreByUserId(user.getId());
