@@ -3,10 +3,12 @@ package com.example.testypie.domain.option.entity;
 import com.example.testypie.domain.question.entity.Question;
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Table(name = "options")
+@Getter
 @Entity
 public class Option {
     @Id

@@ -2,7 +2,8 @@ package com.example.testypie.domain.feedback.service;
 
 import com.example.testypie.domain.category.entity.Category;
 import com.example.testypie.domain.category.service.CategoryService;
-import com.example.testypie.domain.feedback.dto.FeedbackRequestDTO;
+import com.example.testypie.domain.feedback.dto.FeedbackCreateRequestDTO;
+import com.example.testypie.domain.feedback.dto.FeedbackReadResponseDTO;
 import com.example.testypie.domain.feedback.dto.FeedbackResponseDTO;
 import com.example.testypie.domain.feedback.entity.Feedback;
 import com.example.testypie.domain.feedback.repository.FeedbackRepository;
@@ -34,9 +35,9 @@ public class FeedbackService {
     private final CategoryService categoryService;
 
     @Transactional
-    public FeedbackResponseDTO addFeedback(FeedbackRequestDTO req, Long product_id, User user, Long childCategory_id, String parentCategory_name) {
+    public FeedbackResponseDTO addFeedback(FeedbackCreateRequestDTO req, Long product_id, User user, Long childCategory_id, String parentCategory_name) {
 
-        Product product = verifyUserNotCreateProduct(product_id, user);
+        Product product = productService.getUserProduct(product_id, user);
         Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
         if (!category.getId().equals(product.getCategory().getId())) {
             throw new IllegalArgumentException("카테고리와 Product의 카테고리가 일치하지 않습니다.");
@@ -69,9 +70,9 @@ public class FeedbackService {
             questions.add(question);
         }
 
-        feedback.setQuestionList(questions); // Feedback 객체에 Question 목록 설정
-        Feedback savedFeedback = feedbackRepository.save(feedback); // Feedback 저장
-        return new FeedbackResponseDTO(savedFeedback); // FeedbackResponseDTO 반환
+        feedback.setQuestionList(questions);
+        Feedback savedFeedback = feedbackRepository.save(feedback);
+        return new FeedbackResponseDTO(savedFeedback);
     }
 
     private Product verifyUserNotCreateProduct(Long productId, User user) {
@@ -85,7 +86,7 @@ public class FeedbackService {
     }
 
     @Transactional(readOnly = true)
-    public FeedbackResponseDTO getFeedback(Long feedback_id, Long product_id, Long childCategory_id, String parentCategory_name) {
+    public FeedbackReadResponseDTO getFeedback(Long feedback_id, Long product_id, Long childCategory_id, String parentCategory_name) {
 
         Product product = productService.findProduct(product_id);
         Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
@@ -95,7 +96,9 @@ public class FeedbackService {
         
         Feedback feedback = getFeedbackById(feedback_id);
         checkFeedback(feedback, product_id);
-        return new FeedbackResponseDTO(feedback);
+
+
+        return FeedbackReadResponseDTO.of(feedback);
       
     }
 

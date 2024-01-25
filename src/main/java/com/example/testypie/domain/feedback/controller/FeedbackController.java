@@ -1,18 +1,16 @@
 package com.example.testypie.domain.feedback.controller;
 
-import com.example.testypie.domain.feedback.service.FeedbackService;
-import com.example.testypie.domain.feedback.dto.FeedbackRequestDTO;
+import com.example.testypie.domain.feedback.dto.FeedbackCreateRequestDTO;
+import com.example.testypie.domain.feedback.dto.FeedbackReadResponseDTO;
 import com.example.testypie.domain.feedback.dto.FeedbackResponseDTO;
+import com.example.testypie.domain.feedback.service.FeedbackService;
 import com.example.testypie.global.security.UserDetailsImpl;
-import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,12 +24,12 @@ public class FeedbackController {
     private final FeedbackService feedbackService;
 
     @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/feedback/{feedback_id}")
-    public ResponseEntity<FeedbackResponseDTO> getFeedback(
+    public ResponseEntity<FeedbackReadResponseDTO> getFeedback(
             @PathVariable Long feedback_id,
             @PathVariable Long product_id,
             @PathVariable Long childCategory_id,
             @PathVariable String parentCategory_name) {
-        FeedbackResponseDTO res = feedbackService.getFeedback(feedback_id, product_id, childCategory_id, parentCategory_name);
+        FeedbackReadResponseDTO res = feedbackService.getFeedback(feedback_id, product_id, childCategory_id, parentCategory_name);
         return ResponseEntity.ok(res);
     }
 
@@ -44,7 +42,7 @@ public class FeedbackController {
     }
 
     @PostMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/feedback")
-    public ResponseEntity<FeedbackResponseDTO> addFeedback(@RequestBody FeedbackRequestDTO req,
+    public ResponseEntity<FeedbackResponseDTO> addFeedback(@RequestBody FeedbackCreateRequestDTO req,
                                                            @AuthenticationPrincipal UserDetailsImpl userDetails,
                                                            @PathVariable Long product_id,
                                                            @PathVariable Long childCategory_id,
