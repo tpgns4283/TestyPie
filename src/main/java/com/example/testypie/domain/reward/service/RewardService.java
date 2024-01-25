@@ -34,18 +34,6 @@ public class RewardService {
         this.userRepository = userRepository;
     }
 
-    public RewardCreateResponseDTO createReward(RewardCreateRequestDTO req, UserDetailsImpl userDetails) {
-
-        User user = userInfoService.findProfile(userDetails.getUser().getAccount());
-
-        Reward saveReward = null;
-
-            Reward reward = Reward.builder().reward_item(req.rewardItem()).item_size(req.itemSize()).user(user).build();
-            saveReward = rewardRepository.save(reward);
-
-        return RewardCreateResponseDTO.of(saveReward);
-    }
-
     public List<RewardReadResponseDTO> getReward(String account) {
         User profileUser = userRepository.findByAccount(account)
                 .orElseThrow(NoSuchElementException::new);

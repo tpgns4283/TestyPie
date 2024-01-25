@@ -53,7 +53,7 @@ public class ProductService {
 
         Category category = categoryService.getCategory(category_id, parentCategory_name);
 
-        List<RewardCreateRequestDTO> a = req.rewardList();
+        List<RewardCreateRequestDTO> rewardList = req.rewardList();
 
         Product product = Product.builder()
                 .user(user)
@@ -66,11 +66,8 @@ public class ProductService {
                 .closedAt(req.closedAt())
                 .build();
 
-        product.setRewardList(RewardMapper.mapToEntityList(a, product));
-
+        product.setRewardList(RewardMapper.mapToEntityList(rewardList, product));
         Product saveProduct = productRepository.save(product);
-
-        System.out.println(product.getRewardList());
         return ProductCreateResponseDTO.of(saveProduct);
     }
 

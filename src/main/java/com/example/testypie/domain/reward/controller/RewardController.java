@@ -30,14 +30,6 @@ public class RewardController {
         this.userInfoService = userInfoService;
     }
 
-    @PostMapping("/reward")
-    public ResponseEntity<RewardCreateResponseDTO> createReward(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                @Valid @RequestBody RewardCreateRequestDTO req
-                                                               ) {
-        RewardCreateResponseDTO res = rewardService.createReward(req, userDetails);
-        return ResponseEntity.status(HttpStatus.CREATED).body(res);
-    }
-
     @GetMapping("/reward")
     public ResponseEntity<List<RewardReadResponseDTO>> getRewardList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 

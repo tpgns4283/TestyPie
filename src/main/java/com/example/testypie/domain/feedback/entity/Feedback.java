@@ -1,7 +1,6 @@
 package com.example.testypie.domain.feedback.entity;
 
 import com.example.testypie.domain.answer.entity.Answer;
-import com.example.testypie.domain.feedback.dto.FeedbackRequestDTO;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.question.entity.Question;
 import com.example.testypie.domain.user.dto.RatingStarRequestDTO;
@@ -41,8 +40,8 @@ public class Feedback {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @JoinColumn
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @Column
@@ -62,5 +61,14 @@ public class Feedback {
 
     public void assignRating(RatingStarRequestDTO req) {
         this.rating = req.rating();
+    }
+
+    public void setQuestionList(List<Question> questionList) {
+        if (questionList != null) {
+            this.questionList = questionList;
+            questionList.forEach(question -> question.setFeedback(this));
+        } else{
+            throw new IllegalArgumentException("Feedback에 Question은 반드시 들어가야 합니다.");
+        }
     }
 }
