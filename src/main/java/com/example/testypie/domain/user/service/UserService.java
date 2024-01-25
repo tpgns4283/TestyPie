@@ -1,9 +1,9 @@
 package com.example.testypie.domain.user.service;
 
 import com.example.testypie.domain.user.dto.LoginRequestDTO;
-import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.domain.user.dto.SignUpRequestDTO;
 import com.example.testypie.domain.user.entity.User;
+import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.domain.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,7 +54,7 @@ public class UserService {
         User user = userRepository.findByAccount(account)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
 
-        if(!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
     }

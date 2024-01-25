@@ -4,7 +4,11 @@ import com.example.testypie.domain.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 
 @Controller
 @RequestMapping
@@ -53,7 +57,7 @@ public class ViewController {
 
     @GetMapping("/api/users/{account}/update")
     public String updateProfile(@PathVariable String account,
-                                           Model model) {
+                                Model model) {
 
         model.addAttribute("account", account);
         return "updateProfileForm";
