@@ -43,7 +43,7 @@ public class Survey {
         this.id = id;
         this.title = title;
         this.createdAt = createdAt;
-        this.questionList = questionList;
+        this.questionList = new ArrayList<>();;
         this.user = user;
         this.product = product;
     }

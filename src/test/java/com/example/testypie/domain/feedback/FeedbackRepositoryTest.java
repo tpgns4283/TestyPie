@@ -64,16 +64,12 @@ class FeedbackRepositoryTest {
                 .id(1L)
                 .user(user)
                 .product(product)
-                .title("test feedback")
-                .content("test feedback content")
                 .rating(3.0)
                 .build());
         feedbackRepository.save(Feedback.builder()
                 .id(2L)
                 .user(user)
                 .product(product)
-                .title("test feedback2")
-                .content("test feedback content2")
                 .rating(3.0)
                 .build());
 
@@ -81,8 +77,6 @@ class FeedbackRepositoryTest {
                 .id(3L)
                 .user(user)
                 .product(product)
-                .title("test feedback3")
-                .content("test feedback content3")
                 .rating(3.0)
                 .build());
         //when

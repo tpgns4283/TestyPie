@@ -2,14 +2,13 @@ package com.example.testypie.domain.survey.service;
 
 import com.example.testypie.domain.category.entity.Category;
 import com.example.testypie.domain.category.service.CategoryService;
-import com.example.testypie.domain.feedback.entity.Feedback;
-import com.example.testypie.domain.option.dto.OptionCreateRequestDTO;
-import com.example.testypie.domain.option.entity.Option;
+import com.example.testypie.domain.survey.dto.OptionCreateRequestDTO;
+import com.example.testypie.domain.survey.entity.Option;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.service.ProductService;
-import com.example.testypie.domain.question.dto.QuestionCreateRequestDTO;
-import com.example.testypie.domain.question.entity.Question;
-import com.example.testypie.domain.question.entity.QuestionType;
+import com.example.testypie.domain.survey.dto.QuestionCreateRequestDTO;
+import com.example.testypie.domain.survey.entity.Question;
+import com.example.testypie.domain.survey.entity.QuestionType;
 import com.example.testypie.domain.survey.dto.SurveyCreateRequestDTO;
 import com.example.testypie.domain.survey.dto.SurveyCreateResponseDTO;
 import com.example.testypie.domain.survey.dto.SurveyReadResponseDTO;
@@ -83,7 +82,7 @@ public class SurveyService {
         }
 
         Survey survey = getSurveyById(surveyId);
-        checkSurvey(survey, productId);
+        checkSurveyUser(survey, productId);
 
         return SurveyReadResponseDTO.of(survey);
     }
@@ -91,12 +90,12 @@ public class SurveyService {
     @Transactional(readOnly = true)
     public Survey getSurveyById(Long id) {
         return surveyRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("feedbackId"));
+                .orElseThrow(() -> new IllegalArgumentException("해당한 설문지가 없습니다."));
     }
 
-    public void checkSurvey(Survey survey, Long product_id) {
-        if (!survey.getProduct().getId().equals(product_id)) {
-            throw new IllegalArgumentException("feedback's productId");
+    public void checkSurveyUser(Survey survey, Long product_id) {
+        if (!survey.getProduct().getId().equals(product_id)) { // product 생성자와 유저가 일치하지 않으면
+            throw new IllegalArgumentException("설문지는 본인만 조회 가능합니다.");
         }
     }
 }
