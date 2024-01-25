@@ -1,37 +1,72 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/default}">
-  <head>
-    <title>Testy Pie</title>
-  </head>
+<html>
+<head>
+  <title>Testy Pie</title>
+</head>
 
-  <body>	<!-- body 없어도 무방 -->
-    <div layout:fragment="content">
-      <form>
-        <div class="mb-3">
-          <label for="exampleInputText1" class="form-label">ID</label>
-          <input type="text" class="form-control" id="exampleInputText1" aria-describedby="emailHelp">
-        </div>
-        <div class="mb-3">
-          <label for="exampleInputPassword1" class="form-label">Password</label>
-          <input type="password" class="form-control" id="exampleInputPassword1">
-        </div>
-        <div class="mb-3">
-          <label for="exampleInputEmail1" class="form-label">Email</label>
-          <input type="email" class="form-control" id="exampleInputEmail1">
-        </div>
-        <div class="mb-3">
-          <label for="exampleInputText2" class="form-label">Nick Name</label>
-          <input type="text" class="form-control" id="exampleInputText2">
-        </div>
-        <br> Profile Photo<br>
-        <div class="input-group">
-          <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
-          <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Button</button>
-        </div>
-      </form>
+<body>
+  <form id="signupForm">
+    <div class="mb-3">
+      <label for="account" class="form-label">ID</label>
+      <input type="text" class="form-control" id="account" aria-describedby="emailHelp">
     </div>
-  </body>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" class="form-control" id="password">
+    </div>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email">
+    </div>
+    <div class="mb-3">
+      <label for="nickname" class="form-label">Nick Name</label>
+      <input type="text" class="form-control" id="nickname">
+    </div>
+    <div class="mb-3">
+      <label for="Description" class="form-label">Description</label>
+      <input type="text" class="form-control" id="description">
+    </div>
+    <!-- 저장 버튼을 추가합니다. -->
+    <button class="btn btn-dark" id="submitBtn" type="submit">회원 가입</button>
+  </form>
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    // 폼 제출 이벤트 핸들러를 바인딩합니다.
+    $("#signupForm").submit(function (event) {
+      event.preventDefault();
+
+      var userData = {
+        account: $("#account").val(),
+        password: $("#password").val(),
+        email: $("#email").val(),
+        nickname: $("#nickname").val(),
+        description: $("#description").val()
+      };
+
+      $.ajax({
+        type: "POST",
+        url: "/api/users/signup", // 요청을 보낼 서버의 URL
+        data: JSON.stringify(userData), // JSON 데이터를 문자열로 변환하여 전송
+        contentType: "application/json; charset=utf-8", // Content-Type을 JSON으로 설정
+        dataType: "json", // 응답 데이터 타입을 JSON으로 설정
+        success: function (response) {
+          // 요청이 성공하면 실행될 함수
+          console.log("회원 가입 성공:", response);
+          alert("가입되었습니다.");
+          window.location.href = "/home"; // 성공 후 페이지 리디렉션
+        },
+        error: function (error) {
+          // 요청이 실패하면 실행될 함수
+          console.error("회원 가입 오류:", error);
+          alert("가입에 실패했습니다.");
+        }
+      });
+    });
+  });
+</script>
+
+
 </html>

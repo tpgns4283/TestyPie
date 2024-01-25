@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link th:href="@{/css/bootstrap.min.css}"
+          href="../../../../../../../../week2/TestyPie/src/main/resources/static/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body th:attr="data-account=${account}">
+<!-- section Start -->
+<div class="py-5 text-center">
+    <h2>프로필 수정</h2>
+</div>
+
+<div>
+    <label for="password">비밀번호</label>
+    <input type="text" id="password" name="password" class="form-control form-control-sm">
+</div>
+<div>
+    <label for="email">이메일</label>
+    <input type="text" id="email" name="email" class="form-control form-control-sm">
+</div>
+<div>
+    <label for="nickname">닉네임</label>
+    <input type="text" id="nickname" name="nickname" class="form-control form-control-sm">
+</div>
+<div>
+    <label for="description">자기소개</label>
+    <input type="text" id="description" name="description" class="form-control form-control-sm">
+</div>
+
+<hr class="my-4">
+
+<button class="btn btn-dark" id="saveBtn" type="button">수정내용 저장</button>
+
+<!-- section END -->
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // 저장 버튼 클릭 시
+        $("#saveBtn").click(function () {
+            if (confirm("프로필을 수정하시겠습니까?")) {
+                // 입력 필드의 값을 읽어와 JSON 객체로 만듭니다.
+                var productData = {
+                    password: $("#password").val(),
+                    email: $("#email").val(),
+                    nickname: $("#nickname").val(),
+                    description: $("#description").val()
+                };
+                var account = $('body').data('account'); // 사용자 아이디 가져오기
+                var url = "/api/users/" + account + "/update";
+
+                // JSON 데이터를 서버로 전송합니다.
+                $.ajax({
+                    type: "PATCH", // PATCH 요청으로 변경
+                    url: url,
+                    data: JSON.stringify(productData), // JSON 데이터를 문자열로 변환하여 전송
+                    contentType: "application/json; charset=utf-8", // Content-Type을 명시적으로 설정
+                    success: function (response) {
+                        // 성공 시 처리
+                        console.log("상품 수정 성공:", response);
+                        // 수정 성공 메시지를 표시하고 페이지 리로드
+                        alert("프로필이 수정되었습니다.");
+                        // 프로필 페이지로 이동
+                        window.location.href = "/api/users/" + account;
+                    },
+                    error: function (error) {
+                        // 오류 시 처리
+                        console.error("프로필 수정 오류:", error);
+                    }
+                });
+            }
+        });
+    });
+</script>
+</html>

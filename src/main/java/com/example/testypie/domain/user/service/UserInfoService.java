@@ -9,7 +9,10 @@ import com.example.testypie.domain.user.dto.*;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.domain.util.S3Uploader;
+import com.example.testypie.domain.util.S3Uploader.dirName;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +22,7 @@ import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -31,23 +35,47 @@ public class UserInfoService {
     private final S3Uploader s3Uploader;
     private final Random random = new Random();
 
+    @Value("${default.image.address}")
+    private String defaultProfileImageUrl;
+
     @Transactional
-    public ProfileResponseDTO updateProfile(String account, ProfileRequestDTO req) {
-        User profileUser = userRepository.findByAccount(account)
-                .orElseThrow(NoSuchElementException::new);
-        profileUser.update(req);
-        return new ProfileResponseDTO(profileUser.getNickname(), profileUser.getDescription(),
-                profileUser.getFileUrl());
+    public ProfileResponseDTO updateProfile(String account, ProfileRequestDTO req,
+        MultipartFile multipartfile) {
+        try {
+            User profileUser = userRepository.findByAccount(account)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 유저가 없습니다."));
+            String fileUrl = req.fileUrl();
+
+            if (multipartfile != null && !multipartfile.isEmpty()) {
+                s3Uploader.upload(multipartfile, "profile/");
+                fileUrl = s3Uploader.upload(multipartfile, "profile/");
+            } else if (!fileUrl.equals(defaultProfileImageUrl)) {
+                s3Uploader.upload(multipartfile, "profile/");
+            } else {
+                fileUrl = defaultProfileImageUrl;
+            }
+
+            profileUser.update(req);
+            return new ProfileResponseDTO(profileUser.getAccount(), profileUser.getNickname(), profileUser.getEmail(), profileUser.getDescription(),
+                profileUser.getFileUrl() );
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("프로필 업데이트에 실패했습니다.", e);
+        }
     }
 
     public ProfileResponseDTO getProfile(String account) {
         User user = findProfile(account);
-        return new ProfileResponseDTO(user.getNickname(), user.getDescription(), user.getFileUrl());
+        return new ProfileResponseDTO(user.getAccount(),
+            user.getNickname(),
+            user.getEmail(),
+            user.getDescription(),
+            user.getFileUrl());
     }
 
     public User findProfile(String account) {
         return userRepository.findByAccount(account)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다."));
     }
 
     // 프로필 작성자와 사이트 이용자가 일치하는 메서드
@@ -64,8 +92,8 @@ public class UserInfoService {
     public List<RegisteredProductResponseDTO> getUserProducts(String account) {
         List<Product> productList = userRepository.getUserProductsOrderByCreatedAtDesc(account);
         return productList.stream()
-                .map(RegisteredProductResponseDTO::of)
-                .collect(Collectors.toList());
+            .map(RegisteredProductResponseDTO::of)
+            .collect(Collectors.toList());
     }
 
     //product 참여 이력 가져오기
@@ -159,22 +187,3 @@ public class UserInfoService {
                 .toList();
     }
 }
-
-    // 5점 피드백 작성 유저 한명 뽑기
-//    public User getRandomUserFromFiveStarFeedbackLists(List<Feedback> feedbackList) {
-//        // 빈 목록이나 null일 경우 예외 처리
-//        if (feedbackList == null || feedbackList.isEmpty()) {
-//            return null;
-//        }
-//
-//        // 랜덤 숫자 생성을 위한 Random 객체 생성
-//        Random random = new Random();
-//
-//        // 랜덤 인덱스 선택
-//        int randomIndex = random.nextInt(feedbackList.size());
-//
-//        // 선택된 랜덤 인덱스의 Feedback에서 User를 얻어옴
-//        Feedback randomFeedback = feedbackList.get(randomIndex);
-//        return randomFeedback.getUser();
-//    }
-

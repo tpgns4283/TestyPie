@@ -1,6 +1,5 @@
 package com.example.testypie.global.security;
 
-
 import com.example.testypie.domain.user.entity.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

@@ -35,6 +35,12 @@ public class Feedback {
     @Column
     private String content;
 
+    @Column
+    private String bugReport;
+
+    @Column
+    private String bugImg;
+
     @JoinColumn
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
@@ -48,13 +54,15 @@ public class Feedback {
 
     @Builder
     private Feedback(Long id, Double grade, String title, LocalDateTime createdAt, LocalDateTime modifiedAt,
-                     String content, Double rating, User user, Product product) {
+                     String content, String bugReport, String bugImg, Double rating, User user, Product product) {
         this.id = id;
         this.grade = grade;
         this.title = title;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.content = content;
+        this.bugReport = bugReport;
+        this.bugImg = bugImg;
         this.rating = rating;
         this.user = user;
         this.product = product;
