@@ -22,13 +22,12 @@ public record ProductReadResponseDTO(
         LocalDateTime startAt,
         LocalDateTime closedAt,
         List<RewardReadResponseDTO> rewardList,
-        String message,
-        Page<CommentResponseDTO> commentList
+        String message
 
 ) {
 
     public static ProductReadResponseDTO of(Product product,
-            List<RewardReadResponseDTO> rewardDTOList, Page<CommentResponseDTO> commentList)
+            List<RewardReadResponseDTO> rewardDTOList)
             throws ParseException {
 
         String end = product.getClosedAt().toString();
@@ -61,8 +60,7 @@ public record ProductReadResponseDTO(
                 product.getStartedAt(),
                 product.getClosedAt(),
                 rewardDTOList,
-                message,
-                commentList
+                message
         );
     }
 }

@@ -13,9 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,9 +44,13 @@ public class CommentService {
 
     public Page<CommentResponseDTO> getComments(Pageable pageable, Category category,
             Product product) {
+        int page = pageable.getPageNumber() - 1;
+        int pageLimit = 10;
 
         if (category.getId().equals(product.getCategory().getId())) {
-            Page<Comment> commentPage = commentRepository.findAllByProduct(product, pageable);
+            Page<Comment> commentPage = commentRepository.findAllByProduct(product,
+                    PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
+
             List<CommentResponseDTO> resList = new ArrayList<>();
 
             for (Comment comment : commentPage) {

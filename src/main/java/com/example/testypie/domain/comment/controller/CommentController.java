@@ -43,7 +43,7 @@ public class CommentController {
 
     @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments")
     public ResponseEntity<Page<CommentResponseDTO>> getComments(
-            @PageableDefault(sort = "comment_id", direction = Direction.DESC) Pageable pageable,
+            @PageableDefault(page = 1, sort = "comment_id", direction = Direction.DESC) Pageable pageable,
             @PathVariable Long product_id,
             @PathVariable Long childCategory_id,
             @PathVariable String parentCategory_name) {
