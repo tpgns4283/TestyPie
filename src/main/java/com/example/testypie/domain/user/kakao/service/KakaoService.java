@@ -20,6 +20,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j(topic = "KAKAO LOGIN")
@@ -31,20 +33,24 @@ public class KakaoService {
     private final RestTemplate restTemplate;
     private final JwtUtil jwtUtil;
 
-    public String kakaoLogin(String code) throws JsonProcessingException {
+    public List<String> kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
-        String accessToken = getToken(code);
-
-        log.info("액세스토큰: " + accessToken);
+        String kakaoAccessToken = getToken(code);
 
         // 2. 토큰으로 카카오 API호출: "액세스 토큰"으로 카카오사용자 정보 가져오기
-        KakaoUserInfoDto kakaoUserInfoDto = getKakaoUserInfo(accessToken);
+        KakaoUserInfoDto kakaoUserInfoDto = getKakaoUserInfo(kakaoAccessToken);
 
         // 3. 회원가입 처리
         User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfoDto);
 
-        // 4. jwt 토큰 반환
-        return jwtUtil.createAccessToken(kakaoUser.getAccount());
+        // 4. access 토큰, refresh 토큰 발급
+        String accessToken = jwtUtil.createAccessToken(kakaoUser.getAccount());
+        String refreshToken = jwtUtil.createRefreshToken(kakaoUser.getAccount());
+        List<String> tokens = new ArrayList<>();
+        tokens.add(accessToken);
+        tokens.add(refreshToken);
+
+        return tokens;
     }
 
     private String getToken(String code) throws JsonProcessingException {

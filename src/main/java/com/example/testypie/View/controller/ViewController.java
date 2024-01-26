@@ -1,6 +1,7 @@
 package com.example.testypie.View.controller;
 
 import com.example.testypie.domain.user.entity.User;
+import com.example.testypie.global.security.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import com.example.testypie.domain.user.kakao.service.KakaoService;
 import com.example.testypie.global.jwt.JwtUtil;
@@ -9,9 +10,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import static com.example.testypie.global.jwt.JwtUtil.REFRESH_AUTHORIZATION_HEADER;
 
 
 @Slf4j
@@ -42,17 +48,25 @@ public class ViewController {
         return "signup";
     }
 
+    //카카오 로그인시 accessToken을 헤더에 refreshToken을 쿠키에 넣습니다.
     @GetMapping("/home/kakao-login/callback")
-    @ResponseBody
-    public String kakaoCallback(@RequestParam String code, HttpServletResponse res) throws JsonProcessingException {//Data를 리턴해주는 컨트롤러 함수
-        String token = kakaoService.kakaoLogin(code);
+    public String kakaoCallback(@RequestParam String code, HttpServletResponse res) throws JsonProcessingException {
+        //Data를 리턴해주는 컨트롤러 함수
+        List<String> tokens = kakaoService.kakaoLogin(code);
 
-        log.info("잘린 토큰: " + token.substring(7));
+        String accessToken = tokens.get(0);
+        String refreshToken = tokens.get(1);
 
-        // jwt토큰 만들기
-//        res.setHeader(JwtUtil.AUTHORIZATION_HEADER, token.substring(7));
+        log.info(refreshToken);
 
-        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, token.substring(7));
+        log.info("잘린 토큰: " + tokens.get(0).substring(7));
+
+        // jwt토큰 access토큰 만들기
+        res.setHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken.substring(7));
+
+        // token으로 리프레시 토큰만들어주기
+        Cookie cookie = new Cookie(REFRESH_AUTHORIZATION_HEADER, refreshToken.substring(7));
+        cookie.setHttpOnly(true);
         cookie.setPath("/");
         res.addCookie(cookie);
 
