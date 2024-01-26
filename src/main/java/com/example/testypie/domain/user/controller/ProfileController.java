@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
@@ -41,21 +42,23 @@ public class ProfileController {
     }
 
     //프로필 수정
-    @PatchMapping("/{account}/update")
-    public ResponseEntity<?> updateProfile(@PathVariable String account,
-                                           @RequestBody ProfileRequestDTO req,
-                                           @PathVariable MultipartFile multipartFile,
-                                           Model model) {
+    @PatchMapping(value = "/{account}/update", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> updateProfile(
+        @PathVariable String account,
+        @RequestPart("req") ProfileRequestDTO req,
+        @RequestPart("file") MultipartFile multipartFile
+        // MultipartHttpServletRequest multipartreq,
+        // Model model
+    ) {
 
-        try {
+        try { //log.info(multipartreq.getFiles("multipartFile").toString());
             ProfileResponseDTO res = userInfoService.updateProfile(account, req, multipartFile);
-            model.addAttribute("account", res);
             return ResponseEntity.ok(res);
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
-                    .body(new MessageDTO("업데이트에 실패했습니다.", HttpStatus.BAD_REQUEST.value()));
+                .body(new MessageDTO("업데이트에 실패했습니다.", HttpStatus.BAD_REQUEST.value()));
         }
     }
 
