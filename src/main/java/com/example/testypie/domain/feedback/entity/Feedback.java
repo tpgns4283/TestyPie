@@ -1,16 +1,16 @@
 package com.example.testypie.domain.feedback.entity;
 
-import com.example.testypie.domain.feedback.dto.FeedbackRequestDTO;
 import com.example.testypie.domain.product.entity.Product;
+import com.example.testypie.domain.survey.entity.Survey;
 import com.example.testypie.domain.user.dto.RatingStarRequestDTO;
 import com.example.testypie.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
-
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -21,70 +21,47 @@ public class Feedback {
     private Long id;
 
     @Column
-    private Double grade;
-
-    @Column
-    private String title;
-
-    @Column
     private LocalDateTime createdAt;
 
-    @Column
-    private LocalDateTime modifiedAt;
-
-    @Column
-    private String content;
-
-    @Column
-    private String bugReport;
-
-    @Column
-    private String bugImg;
+    @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FeedbackDetails> feedbackDetailsList = new ArrayList<>();
 
     @JoinColumn
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @JoinColumn
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
     private Product product;
+
+    @ManyToOne
+    @JoinColumn
+    private Survey survey;
 
     @Column
     private Double rating;
 
     @Builder
-    private Feedback(Long id, Double grade, String title, LocalDateTime createdAt, LocalDateTime modifiedAt,
-                     String content, String bugReport, String bugImg, Double rating, User user, Product product) {
+    private Feedback(Long id, LocalDateTime createdAt, Double rating, User user, Product product, Survey survey) {
         this.id = id;
-        this.grade = grade;
-        this.title = title;
+        this.feedbackDetailsList = new ArrayList<>();
         this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
-        this.content = content;
-        this.bugReport = bugReport;
-        this.bugImg = bugImg;
+        this.user = user;
+        this.product = product;
         this.rating = rating;
-        this.user = user;
-        this.product = product;
-    }
-
-    public Feedback(FeedbackRequestDTO req, Product product, User user) {
-        this.title = req.title();
-        this.content = req.content();
-        this.grade = req.grade();
-        this.createdAt = LocalDateTime.now();
-        this.user = user;
-        this.product = product;
-    }
-
-    public void update(Product product, FeedbackRequestDTO req) {
-        this.grade = req.grade();
-        this.modifiedAt = LocalDateTime.now();
-        this.content = req.content();
-        this.product = product;
+        this.survey = survey;
     }
 
     public void assignRating(RatingStarRequestDTO req) {
         this.rating = req.rating();
+    }
+
+    public void setFeedbackDetailsList(List<FeedbackDetails> detailslist) {
+        if (detailslist != null) {
+            this.feedbackDetailsList = detailslist;
+            detailslist.forEach(feedbackDetails -> feedbackDetails.setFeedback(this));
+        } else{
+            throw new IllegalArgumentException("Feedback에 Question은 반드시 들어가야 합니다.");
+        }
     }
 }

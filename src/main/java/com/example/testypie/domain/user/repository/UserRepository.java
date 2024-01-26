@@ -1,10 +1,13 @@
 package com.example.testypie.domain.user.repository;
 
+import com.example.testypie.domain.feedback.entity.Feedback;
 import com.example.testypie.domain.product.entity.Product;
+import com.example.testypie.domain.reward.entity.Reward;
 import com.example.testypie.domain.user.dto.ParticipatedProductResponseDTO;
 import com.example.testypie.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +26,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<ParticipatedProductResponseDTO> getUserFeedbacksDtoIncludingProductInfo(String account);
 
     boolean existsProductById(Long productId);
+
+    @Query("SELECT DISTINCT f.user FROM Feedback f WHERE f.product.id = :productId")
+    List<User> findAllFeedbackUsersByProductId(@Param("productId") Long productId);
+
+    Optional<User> getUserById(Long id);
+
+    Optional<User> findByKakaoId(Long kakaoId);
 }
 
 

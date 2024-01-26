@@ -1,25 +1,25 @@
 package com.example.testypie.domain.user.service;
 
 import com.example.testypie.domain.user.dto.LoginRequestDTO;
-import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.domain.user.dto.SignUpRequestDTO;
 import com.example.testypie.domain.user.entity.User;
-import com.example.testypie.domain.util.S3Uploader;
+import com.example.testypie.domain.user.repository.UserRepository;
+//import com.example.testypie.domain.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@RequiredArgsConstructor
-@Transactional
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
 
-    private final S3Uploader s3Uploader;
+//    private final S3Uploader s3Uploader;
 
     public void signup(SignUpRequestDTO signUpRequestDTO) {
 
@@ -54,7 +54,7 @@ public class UserService {
         User user = userRepository.findByAccount(account)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
 
-        if(!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
     }
@@ -77,7 +77,7 @@ public class UserService {
 
     private void deleteUser(Long userId) {
         userRepository.findById(userId)
-                        .orElseThrow(() -> new IllegalArgumentException("유저를 확인하지 못했습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("유저를 확인하지 못했습니다."));
         userRepository.deleteById(userId);
     }
 }

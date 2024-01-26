@@ -1,9 +1,12 @@
 package com.example.testypie.domain.comment.entity;
 
 import com.example.testypie.domain.comment.dto.CommentRequestDTO;
+import com.example.testypie.domain.commentLike.entity.CommentLike;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.user.entity.User;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +24,8 @@ public class Comment {
     @Column(nullable = false)
     private String content;
 
+    private Long commentLikeCnt;
+
     @Column
     private LocalDateTime createAt;
 
@@ -35,10 +40,15 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
+    @OneToMany(mappedBy = "comment", targetEntity = CommentLike.class, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<CommentLike> commentLikeList = new ArrayList<>();
+
     @Builder
-    public Comment(Long id, String content, LocalDateTime createAt, LocalDateTime modifiedAt, User user, Product product) {
+    private Comment(Long id, String content, Long commentLikeCnt, LocalDateTime createAt, LocalDateTime modifiedAt,
+            User user, Product product) {
         this.id = id;
         this.content = content;
+        this.commentLikeCnt = commentLikeCnt;
         this.createAt = createAt;
         this.modifiedAt = modifiedAt;
         this.user = user;
@@ -49,5 +59,13 @@ public class Comment {
         this.content = req.content();
         this.product = product;
         this.modifiedAt = LocalDateTime.now();
+    }
+
+    public void updateCommentLikeCnt(boolean clickCommentLike) {
+        if (clickCommentLike) {
+            this.commentLikeCnt++;
+            return;
+        }
+        this.commentLikeCnt--;
     }
 }
