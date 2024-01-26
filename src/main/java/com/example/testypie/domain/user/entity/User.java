@@ -1,8 +1,8 @@
 package com.example.testypie.domain.user.entity;
 
 import com.example.testypie.domain.reward.entity.Reward;
-import com.example.testypie.domain.userrole.constant.UserRole;
 import com.example.testypie.domain.user.dto.ProfileRequestDTO;
+import com.example.testypie.domain.userrole.constant.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
@@ -54,7 +54,7 @@ public class User {
 
     @Builder
     private User(Long id, String account, String password, String email, String nickname,
-        String description, UserRole userRole, String fileUrl, Long kakaoId) {
+                 String description, UserRole userRole, String fileUrl, Long kakaoId) {
 
         this.id = id;
         this.account = account;
@@ -68,11 +68,11 @@ public class User {
     }
 
     public void update(ProfileRequestDTO req) {
-        if(password != null && !password.isEmpty())
+        if (password != null && !password.isEmpty())
             this.password = password;
-        if(req.nickname() != null && !req.nickname().isEmpty())
+        if (req.nickname() != null && !req.nickname().isEmpty())
             this.nickname = req.nickname();
-        if(req.description() != null && !req.description().isEmpty())
+        if (req.description() != null && !req.description().isEmpty())
             this.description = req.description();
         this.fileUrl = req.fileUrl();
     }

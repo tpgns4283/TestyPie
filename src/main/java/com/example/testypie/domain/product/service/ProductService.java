@@ -1,6 +1,6 @@
 package com.example.testypie.domain.product.service;
 
-import static com.example.testypie.domain.product.constant.ProductConstant.DEFAULT_LIKE_CNT;
+import static com.example.testypie.domain.product.constant.ProductConstant.DEFAULT_PRODUCT_LIKE_CNT;
 
 import com.example.testypie.domain.category.entity.Category;
 import com.example.testypie.domain.category.service.CategoryService;
@@ -60,7 +60,7 @@ public class ProductService {
                 .title(req.title())
                 .content(req.content())
                 .category(category)
-                .productLikeCnt(DEFAULT_LIKE_CNT)
+                .productLikeCnt(DEFAULT_PRODUCT_LIKE_CNT)
                 .createAt(LocalDateTime.now())
                 .startedAt(req.startAt())
                 .closedAt(req.closedAt())

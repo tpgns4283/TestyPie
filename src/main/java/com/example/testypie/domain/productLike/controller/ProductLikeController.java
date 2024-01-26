@@ -21,10 +21,10 @@ public class ProductLikeController {
     @PatchMapping("{product_id}")
     public ResponseEntity<ProductLikeResponseDto> clickProductLike(
             @PathVariable String parentCategory_name,
-            @PathVariable Long childCategory_id, @PathVariable Long productId,
+            @PathVariable Long childCategory_id, @PathVariable Long product_id,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        ProductLikeResponseDto res = productLikeService.clickProductLike(productId,
+        ProductLikeResponseDto res = productLikeService.clickProductLike(product_id,
                 userDetails.getUser());
         return ResponseEntity.ok().body(res);
     }

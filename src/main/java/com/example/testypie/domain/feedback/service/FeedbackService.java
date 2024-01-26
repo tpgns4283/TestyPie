@@ -143,4 +143,10 @@ public class FeedbackService {
         feedback.assignRating(req);
         feedbackRepository.save(feedback);
     }
+
+    // 5점을 받은 피드백의 리스트를 가져오는 메서드
+    public List<Feedback> findFiveStarFeedbacksByProduct(Long productId) {
+        return feedbackRepository.findFeedbacksByProductIdAndRating(productId, 5.0);
+    }
+
 }
