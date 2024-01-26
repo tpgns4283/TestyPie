@@ -15,13 +15,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
-public class SurveyRepositoryTest {
+public class SurveyCreateTest {
 
     @Autowired
     private SurveyRepository surveyRepository;
 
     @Test
-    public void createSurveyWithQuestionsAndOptionsTest() {
+    public void createSurveyTest() {
 
         Survey survey = Survey.builder()
                 .title("새 설문조사")
@@ -56,6 +56,6 @@ public class SurveyRepositoryTest {
 
         Survey savedSurvey = surveyRepository.save(survey);
 
-        assertNotNull(savedSurvey.getId(), "Survey should have an ID");
+        assertNotNull(savedSurvey.getId());
     }
 }
