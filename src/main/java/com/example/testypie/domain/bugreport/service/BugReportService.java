@@ -21,14 +21,13 @@ public class BugReportService {
 
     @Transactional
     public BugReportResponseDTO createBugReport(Long productId, BugReportRequestDTO req,
-        User user) {
+            User user) {
         Product product = productService.findProduct(productId);
         BugReport bugReport =
-            BugReport.builder().content(req.content()).product(product).user(user).build();
+                BugReport.builder().content(req.content()).product(product).user(user).build();
 
         BugReport saveBugReport = bugReportRepository.save(bugReport);
 
         return BugReportResponseDTO.of(saveBugReport);
-
     }
 }

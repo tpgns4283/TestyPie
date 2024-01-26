@@ -1,9 +1,11 @@
 package com.example.testypie.domain.product.service;
 
-import static com.example.testypie.domain.product.constant.ProductConstant.DEFAULT_LIKE_CNT;
+import static com.example.testypie.domain.product.constant.ProductConstant.DEFAULT_PRODUCT_LIKE_CNT;
 
 import com.example.testypie.domain.category.entity.Category;
 import com.example.testypie.domain.category.service.CategoryService;
+import com.example.testypie.domain.comment.dto.CommentResponseDTO;
+import com.example.testypie.domain.comment.service.CommentService;
 import com.example.testypie.domain.product.dto.ProductCreateRequestDTO;
 import com.example.testypie.domain.product.dto.ProductCreateResponseDTO;
 import com.example.testypie.domain.product.dto.ProductDeleteResponseDTO;
@@ -23,8 +25,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -33,18 +35,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
-
-    @Autowired
-    public ProductService(ProductRepository productRepository, CategoryService categoryService) {
-        this.productRepository = productRepository;
-        this.categoryService = categoryService;
-    }
+    private final CommentService commentService;
 
     //CREATE
     @Transactional
@@ -60,7 +58,7 @@ public class ProductService {
                 .title(req.title())
                 .content(req.content())
                 .category(category)
-                .productLikeCnt(DEFAULT_LIKE_CNT)
+                .productLikeCnt(DEFAULT_PRODUCT_LIKE_CNT)
                 .createAt(LocalDateTime.now())
                 .startedAt(req.startAt())
                 .closedAt(req.closedAt())
@@ -72,7 +70,7 @@ public class ProductService {
     }
 
     //READ
-    public ProductReadResponseDTO getProduct(Long productId, Long category_id,
+    public ProductReadResponseDTO getProduct(Pageable pageable, Long productId, Long category_id,
             String parentCategory_name)
             throws ParseException {
 

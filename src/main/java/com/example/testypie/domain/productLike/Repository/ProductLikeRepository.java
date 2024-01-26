@@ -1,4 +1,4 @@
-package com.example.testypie.domain.productLike.Repository;
+package com.example.testypie.domain.productLike.repository;
 
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.productLike.entity.ProductLike;
@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductLikeRepository extends JpaRepository<ProductLike, Long> {
 
-    Optional<ProductLike> findByUserAndProduct(Product product, User user);
+    Optional<ProductLike> findByProductAndUser(Product product, User user);
 }
