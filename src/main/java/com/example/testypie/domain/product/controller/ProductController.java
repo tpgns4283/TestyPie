@@ -57,13 +57,12 @@ public class ProductController {
     //Product 단일 조회
     @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
     public ModelAndView getProduct(
-            @PageableDefault(sort = "comment_id", direction = Direction.DESC) Pageable pageable,
             @PathVariable Long productId,
             @PathVariable Long childCategory_id,
             @PathVariable String parentCategory_name,
             Model model) throws ParseException {
 
-        ProductReadResponseDTO res = productService.getProduct(pageable, productId,
+        ProductReadResponseDTO res = productService.getProduct(productId,
                 childCategory_id,
                 parentCategory_name);
         ModelAndView modelAndView = new ModelAndView();
