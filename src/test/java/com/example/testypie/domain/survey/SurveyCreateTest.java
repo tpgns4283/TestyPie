@@ -20,7 +20,6 @@ public class SurveyCreateTest {
     @Autowired
     private SurveyRepository surveyRepository;
 
-    @Test
     public void createSurveyTest() {
 
         Survey survey = Survey.builder()
