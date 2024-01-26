@@ -1,6 +1,10 @@
 package com.example.testypie.domain.user.controller;
 
 
+import static com.example.testypie.global.jwt.JwtUtil.AUTHORIZATION_HEADER;
+import static com.example.testypie.global.jwt.JwtUtil.REFRESH_AUTHORIZATION_HEADER;
+import static com.example.testypie.global.jwt.JwtUtil.logger;
+
 import com.example.testypie.domain.user.dto.LoginRequestDTO;
 import com.example.testypie.domain.user.dto.MessageDTO;
 import com.example.testypie.domain.user.dto.SignUpRequestDTO;
@@ -15,23 +19,27 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.example.testypie.global.jwt.JwtUtil.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequiredArgsConstructor
 @RequestMapping
+@RequiredArgsConstructor
 public class UserController {
 
     private final RefreshTokenService refreshTokenService;
@@ -42,7 +50,8 @@ public class UserController {
 
     //회원가입
     @PostMapping("/api/users/signup")
-    public ResponseEntity<MessageDTO> signup(@RequestBody @Valid SignUpRequestDTO req, BindingResult bindingResult) {
+    public ResponseEntity<MessageDTO> signup(@RequestBody @Valid SignUpRequestDTO req,
+            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -55,8 +64,9 @@ public class UserController {
 
     //로그인
     @PostMapping("/api/users/login")
-    public ResponseEntity<MessageDTO> login(@RequestBody @Valid LoginRequestDTO req, BindingResult bindingResult,
-                                            HttpServletResponse res) {
+    public ResponseEntity<MessageDTO> login(@RequestBody @Valid LoginRequestDTO req,
+            BindingResult bindingResult,
+            HttpServletResponse res) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -91,7 +101,8 @@ public class UserController {
      json형식의 데이터르 매핑 후 response를 다시 front에 던져주는 로직입니다.
      */
     @GetMapping("/api/user/profile")
-    public Map<String, String> getUserProfile(@RequestHeader("Authorization") String authorizationHeader) {
+    public Map<String, String> getUserProfile(
+            @RequestHeader("Authorization") String authorizationHeader) {
         Map<String, String> response = new HashMap<>();
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
@@ -107,7 +118,8 @@ public class UserController {
     }
 
     @DeleteMapping("/api/users/signout")
-    public ResponseEntity<MessageDTO> signOut(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<MessageDTO> signOut(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         userService.signOut(user);
         return ResponseEntity.ok(new MessageDTO("유저가 탈퇴했습니다.", 200));
@@ -118,8 +130,8 @@ public class UserController {
     // 3. 액세스토큰과 리프레시 토큰을 다시 만들어 준다.
 
     @PostMapping("/api/users/refresh")
-    public ResponseEntity<?> refresh(@CookieValue(REFRESH_AUTHORIZATION_HEADER) String token, HttpServletResponse res) {
-        logger.info("리프레시 토큰: " + token);
+    public ResponseEntity<?> refresh(@CookieValue(REFRESH_AUTHORIZATION_HEADER) String token,
+            HttpServletResponse res) {
 
         RefreshToken refreshToken = refreshTokenService.findToken(token);
 

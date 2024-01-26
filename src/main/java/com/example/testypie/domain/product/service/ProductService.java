@@ -4,6 +4,8 @@ import static com.example.testypie.domain.product.constant.ProductConstant.DEFAU
 
 import com.example.testypie.domain.category.entity.Category;
 import com.example.testypie.domain.category.service.CategoryService;
+import com.example.testypie.domain.comment.dto.CommentResponseDTO;
+import com.example.testypie.domain.comment.service.CommentService;
 import com.example.testypie.domain.product.dto.ProductCreateRequestDTO;
 import com.example.testypie.domain.product.dto.ProductCreateResponseDTO;
 import com.example.testypie.domain.product.dto.ProductDeleteResponseDTO;
@@ -23,8 +25,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -33,18 +35,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
-
-    @Autowired
-    public ProductService(ProductRepository productRepository, CategoryService categoryService) {
-        this.productRepository = productRepository;
-        this.categoryService = categoryService;
-    }
+    private final CommentService commentService;
 
     //CREATE
     @Transactional
@@ -53,7 +51,7 @@ public class ProductService {
 
         Category category = categoryService.getCategory(category_id, parentCategory_name);
 
-        List<RewardCreateRequestDTO> a = req.rewardList();
+        List<RewardCreateRequestDTO> rewardList = req.rewardList();
 
         Product product = Product.builder()
                 .user(user)
@@ -66,19 +64,16 @@ public class ProductService {
                 .closedAt(req.closedAt())
                 .build();
 
-        product.setRewardList(RewardMapper.mapToEntityList(a, product));
-        System.out.println(product.getRewardList());
-
+        product.setRewardList(RewardMapper.mapToEntityList(rewardList, product));
         Product saveProduct = productRepository.save(product);
-
-        System.out.println(product.getRewardList());
         return ProductCreateResponseDTO.of(saveProduct);
     }
 
     //READ
     public ProductReadResponseDTO getProduct(Long productId, Long category_id,
-            String parentCategory_name)
+                                             String parentCategory_name)
             throws ParseException {
+
         Category category = categoryService.getCategory(category_id, parentCategory_name);
         Product product = findProduct(productId);
 
@@ -120,8 +115,7 @@ public class ProductService {
     }
 
     private Page<ProductPageResponseDTO> getProductReadResponseDTOS(Pageable pageable,
-            Page<Product> productPage)
-            throws ParseException {
+            Page<Product> productPage) {
 
         List<ProductPageResponseDTO> resList = new ArrayList<>();
 
@@ -136,10 +130,13 @@ public class ProductService {
     public ProductUpdateResponseDTO updateProduct(Long productId, ProductUpdateRequestDTO req,
             User user, Long category_id,
             String parentCategory_name) {
+
         Product product = getUserProduct(productId, user);
         Category category = categoryService.getCategory(category_id, parentCategory_name);
+        if (!category.getId().equals(product.getCategory().getId())) {
+            throw new IllegalArgumentException("카테고리와 Product의 카테고리가 일치하지 않습니다.");
+        }
 
-        if (category.getId().equals(product.getCategory().getId())) {
             product.updateTitle(req.title());
             product.updateContent(req.content());
             product.updateCategory(category);
@@ -150,23 +147,20 @@ public class ProductService {
             productRepository.save(product);
 
             return ProductUpdateResponseDTO.of(product);
-        } else {
-            throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
-        }
     }
 
     //DELETE
     public ProductDeleteResponseDTO deleteProduct(Long productId, User user, Long category_id,
             String parentCategory_name) {
+
         Category category = categoryService.getCategory(category_id, parentCategory_name);
         Product product = getUserProduct(productId, user);
+        if (!category.getId().equals(product.getCategory().getId())) {
+            throw new IllegalArgumentException("카테고리와 Product의 카테고리가 일치하지 않습니다.");
+        }
 
-        if (category.getId().equals(product.getCategory().getId())) {
             productRepository.delete(product);
             return ProductDeleteResponseDTO.of(product);
-        } else {
-            throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
-        }
     }
 
     //Product 존재여부 확인

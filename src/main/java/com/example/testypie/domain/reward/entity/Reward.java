@@ -37,16 +37,12 @@ public class Reward {
     String fileUrl;
 
     @Builder
-    private Reward(Long id, String reward_item, Long item_size, User user, Product product, String fileUrl) {
+    public Reward(Long id, String reward_item, Long item_size, User user, Product product, String fileUrl) {
         this.id = id;
         this.rewardItem = reward_item;
         this.itemSize = item_size;
         this.user = user;
         this.product = product;
         this.fileUrl = fileUrl;
-    }
-
-    public void setProduct(Product saveProduct) {
-        this.product = saveProduct;
     }
 }

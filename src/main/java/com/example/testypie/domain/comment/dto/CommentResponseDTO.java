@@ -18,8 +18,8 @@ public record CommentResponseDTO(
         Product product
 ) {
 
-    public CommentResponseDTO(Comment saveComment) {
-        this(
+    public static CommentResponseDTO of (Comment saveComment) {
+        return new CommentResponseDTO(
                 saveComment.getId(),
                 saveComment.getContent(),
                 saveComment.getCommentLikeCnt(),

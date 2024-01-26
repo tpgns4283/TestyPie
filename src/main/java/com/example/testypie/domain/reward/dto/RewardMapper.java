@@ -14,11 +14,11 @@ public class RewardMapper {
     }
 
     public static Reward mapToEntity(RewardCreateRequestDTO dto, Product product) {
-        Reward reward = new Reward();
-        reward.setRewardItem(dto.rewardItem());
-        reward.setItemSize(dto.itemSize());
-        reward.setProduct(product);
-        return reward;
+        return Reward.builder()
+                .reward_item(dto.rewardItem())
+                .item_size(dto.itemSize())
+                .product(product)
+                .build();
     }
 
     public static List<RewardReadResponseDTO> mapToDTOList(List<Reward> rewardList) {
