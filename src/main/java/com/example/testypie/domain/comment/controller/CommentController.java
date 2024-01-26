@@ -2,11 +2,14 @@ package com.example.testypie.domain.comment.controller;
 
 import com.example.testypie.domain.comment.dto.CommentRequestDTO;
 import com.example.testypie.domain.comment.dto.CommentResponseDTO;
-import com.example.testypie.domain.comment.service.CommentService;
+import com.example.testypie.domain.core.service.CommentMatcherService;
 import com.example.testypie.global.security.UserDetailsImpl;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CommentController {
 
-    private final CommentService commentService;
+    private final CommentMatcherService commentMatcherService;
 
     @PostMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments")
     public ResponseEntity<CommentResponseDTO> postComment(
@@ -33,18 +36,21 @@ public class CommentController {
             @PathVariable Long childCategory_id,
             @PathVariable String parentCategory_name) {
 
-        CommentResponseDTO res = commentService.productComment(product_id, req,
+        CommentResponseDTO res = commentMatcherService.productComment(product_id, req,
                 userDetails.getUser(), childCategory_id, parentCategory_name);
         return ResponseEntity.ok(res);
     }
 
     @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments")
-    public ResponseEntity<List<CommentResponseDTO>> getComment(@PathVariable Long product_id,
+    public ResponseEntity<Page<CommentResponseDTO>> getComments(
+            @PageableDefault(sort = "comment_id", direction = Direction.DESC) Pageable pageable,
+            @PathVariable Long product_id,
             @PathVariable Long childCategory_id,
             @PathVariable String parentCategory_name) {
 
-        List<CommentResponseDTO> resList = commentService.getComments(product_id, childCategory_id,
-                parentCategory_name);
+        Page<CommentResponseDTO> resList = commentMatcherService.getComments(pageable, product_id,
+                childCategory_id, parentCategory_name);
+
         return ResponseEntity.ok(resList);
     }
 
@@ -57,7 +63,7 @@ public class CommentController {
             @PathVariable Long childCategory_id,
             @PathVariable String parentCategory_name) {
 
-        CommentResponseDTO res = commentService.updateComment(product_id, comment_id, req,
+        CommentResponseDTO res = commentMatcherService.updateComment(product_id, comment_id, req,
                 userDetails.getUser(), childCategory_id, parentCategory_name);
         return ResponseEntity.ok(res);
     }
@@ -70,7 +76,7 @@ public class CommentController {
             @PathVariable Long childCategory_id,
             @PathVariable String parentCategory_name) {
 
-        commentService.deleteComment(product_id, comment_id, userDetails.getUser(),
+        commentMatcherService.deleteComment(product_id, comment_id, userDetails.getUser(),
                 childCategory_id, parentCategory_name);
         return ResponseEntity.noContent().build();
     }
