@@ -4,6 +4,8 @@ import static com.example.testypie.domain.product.constant.ProductConstant.DEFAU
 
 import com.example.testypie.domain.category.entity.Category;
 import com.example.testypie.domain.category.service.CategoryService;
+import com.example.testypie.domain.comment.dto.CommentResponseDTO;
+import com.example.testypie.domain.comment.service.CommentService;
 import com.example.testypie.domain.product.dto.ProductCreateRequestDTO;
 import com.example.testypie.domain.product.dto.ProductCreateResponseDTO;
 import com.example.testypie.domain.product.dto.ProductDeleteResponseDTO;
@@ -39,11 +41,14 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
+    private final CommentService commentService;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryService categoryService) {
+    public ProductService(ProductRepository productRepository, CategoryService categoryService,
+            CommentService commentService) {
         this.productRepository = productRepository;
         this.categoryService = categoryService;
+        this.commentService = commentService;
     }
 
     //CREATE
@@ -76,17 +81,19 @@ public class ProductService {
     }
 
     //READ
-    public ProductReadResponseDTO getProduct(Long productId, Long category_id,
+    public ProductReadResponseDTO getProduct(Pageable pageable, Long productId, Long category_id,
             String parentCategory_name)
             throws ParseException {
+
         Category category = categoryService.getCategory(category_id, parentCategory_name);
         Product product = findProduct(productId);
-
+        Page<CommentResponseDTO> commentPage = commentService.getComments(pageable, category,
+                product);
         List<Reward> rewardList = product.getRewardList();
         List<RewardReadResponseDTO> rewardDTOList = RewardMapper.mapToDTOList(rewardList);
 
         if (category.getId().equals(product.getCategory().getId())) {
-            return ProductReadResponseDTO.of(product, rewardDTOList);
+            return ProductReadResponseDTO.of(product, rewardDTOList, commentPage);
         } else {
             throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
         }
