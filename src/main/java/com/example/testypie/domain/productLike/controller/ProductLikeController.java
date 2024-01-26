@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/category/{parentCategory_name}/{childCategory_id}/products/")
+@RequestMapping("/api/category/{parentCategory_name}/{childCategory_id}/products")
 public class ProductLikeController {
 
     private final ProductLikeService productLikeService;
 
-    @PatchMapping("{product_id}")
+    @PatchMapping("/{product_id}")
     public ResponseEntity<ProductLikeResponseDto> clickProductLike(
             @PathVariable String parentCategory_name,
             @PathVariable Long childCategory_id, @PathVariable Long product_id,
