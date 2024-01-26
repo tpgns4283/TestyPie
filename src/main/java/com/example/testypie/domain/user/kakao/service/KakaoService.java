@@ -44,7 +44,7 @@ public class KakaoService {
         User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfoDto);
 
         // 4. jwt 토큰 반환
-        return jwtUtil.createToken(kakaoUser.getAccount());
+        return jwtUtil.createAccessToken(kakaoUser.getAccount());
     }
 
     private String getToken(String code) throws JsonProcessingException {
