@@ -10,11 +10,7 @@ import java.util.Optional;
 
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
 
-    Optional<Feedback> findByTitle(String Title);
-
     List<Feedback> findAllByOrderByCreatedAtDesc();
-
-    Optional<Feedback> findByGrade(double grade);
 
     Optional<Feedback> findByProductIdAndId(Long productId, Long feedbackId);
 

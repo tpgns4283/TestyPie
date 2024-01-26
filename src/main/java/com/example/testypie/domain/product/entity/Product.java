@@ -7,16 +7,8 @@ import com.example.testypie.domain.productLike.entity.ProductLike;
 import com.example.testypie.domain.reward.entity.Reward;
 import com.example.testypie.domain.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,12 +60,13 @@ public class Product {
     @JsonIgnore
     private List<Comment> commentList = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "product", targetEntity = Reward.class, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reward> rewardList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product", targetEntity = Feedback.class, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<Feedback> feedbackList = new ArrayList<>();
+    private Feedback feedback;
 
     @OneToMany(mappedBy = "product", targetEntity = ProductLike.class, cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<ProductLike> productLikeList = new ArrayList<>();
@@ -82,7 +75,7 @@ public class Product {
     private Product(Long id, User user, String title, String content, Category category,
             List<Reward> rewardList, LocalDateTime createAt, LocalDateTime modifiedAt,
             LocalDateTime startedAt, LocalDateTime closedAt,
-            List<Comment> commentList, List<Feedback> feedbackList, Long productLikeCnt) {
+            List<Comment> commentList, Feedback feedback, Long productLikeCnt) {
 
         this.id = id;
         this.user = user;
@@ -95,7 +88,7 @@ public class Product {
         this.startedAt = startedAt;
         this.closedAt = closedAt;
         this.commentList = commentList;
-        this.feedbackList = feedbackList;
+        this.feedback = feedback;
         this.productLikeCnt = productLikeCnt;
     }
 
@@ -134,14 +127,11 @@ public class Product {
     }
 
     public void setRewardList(List<Reward> rewardList) {
-        if (this.rewardList != null) {
-            this.rewardList.forEach(reward -> reward.setProduct(null));
-        }
-
-        this.rewardList = rewardList;
-
         if (rewardList != null) {
+            this.rewardList = rewardList;
             rewardList.forEach(reward -> reward.setProduct(this));
+        } else{
+            throw new IllegalArgumentException("Product에 Reward는 반드시 들어가야 합니다.");
         }
     }
 
