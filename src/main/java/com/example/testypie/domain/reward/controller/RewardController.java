@@ -30,11 +30,6 @@ public class RewardController {
     private final RewardService rewardService;
     private final UserInfoService userInfoService;
 
-    public RewardController(RewardService rewardService, UserInfoService userInfoService) {
-        this.rewardService = rewardService;
-        this.userInfoService = userInfoService;
-    }
-
     @GetMapping("/reward")
     public ResponseEntity<List<RewardReadResponseDTO>> getRewardList(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {

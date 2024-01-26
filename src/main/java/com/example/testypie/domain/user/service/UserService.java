@@ -4,7 +4,7 @@ import com.example.testypie.domain.user.dto.LoginRequestDTO;
 import com.example.testypie.domain.user.dto.SignUpRequestDTO;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.repository.UserRepository;
-import com.example.testypie.domain.util.S3Uploader;
+//import com.example.testypie.domain.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    private final S3Uploader s3Uploader;
+//    private final S3Uploader s3Uploader;
 
     public void signup(SignUpRequestDTO signUpRequestDTO) {
 

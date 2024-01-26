@@ -71,19 +71,21 @@ public class ProductService {
 
     //READ
     public ProductReadResponseDTO getProduct(Pageable pageable, Long productId, Long category_id,
-            String parentCategory_name)
+                                             String parentCategory_name)
             throws ParseException {
 
-        Product product = findProduct(productId);
         Category category = categoryService.getCategory(category_id, parentCategory_name);
-        if (!category.getId().equals(product.getCategory().getId())) {
-            throw new IllegalArgumentException("카테고리와 Product의 카테고리가 일치하지 않습니다.");
-        }
-
+        Product product = findProduct(productId);
+        Page<CommentResponseDTO> commentPage = commentService.getComments(pageable, category,
+                product);
         List<Reward> rewardList = product.getRewardList();
         List<RewardReadResponseDTO> rewardDTOList = RewardMapper.mapToDTOList(rewardList);
 
-        return ProductReadResponseDTO.of(product, rewardDTOList);
+        if (category.getId().equals(product.getCategory().getId())) {
+            return ProductReadResponseDTO.of(product, rewardDTOList, commentPage);
+        } else {
+            throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
+        }
     }
 
     public Page<ProductPageResponseDTO> getProductPage(Pageable pageable,

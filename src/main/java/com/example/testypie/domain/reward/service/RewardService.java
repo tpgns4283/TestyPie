@@ -24,14 +24,6 @@ public class RewardService {
     private final UserInfoService userInfoService;
     private final UserRepository userRepository;
 
-
-    @Autowired
-    public RewardService(RewardRepository rewardRepository, UserInfoService userInfoService, UserRepository userRepository) {
-        this.rewardRepository = rewardRepository;
-        this.userInfoService = userInfoService;
-        this.userRepository = userRepository;
-    }
-
     public List<RewardReadResponseDTO> getReward(String account) {
         User profileUser = userRepository.findByAccount(account)
                 .orElseThrow(NoSuchElementException::new);

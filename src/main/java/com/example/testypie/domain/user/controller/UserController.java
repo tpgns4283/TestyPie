@@ -131,7 +131,6 @@ public class UserController {
     @PostMapping("/api/users/refresh")
     public ResponseEntity<?> refresh(@CookieValue(REFRESH_AUTHORIZATION_HEADER) String token,
             HttpServletResponse res) {
-        logger.info("리프레시 토큰: " + token);
 
         RefreshToken refreshToken = refreshTokenService.findToken(token);
 
