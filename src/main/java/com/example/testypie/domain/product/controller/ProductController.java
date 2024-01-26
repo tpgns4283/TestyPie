@@ -8,6 +8,8 @@ import com.example.testypie.domain.user.entity.User;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,12 +48,14 @@ public class ProductController {
 
     //Product 단일 조회
     @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
-    public ModelAndView getProduct(@PathVariable Long productId,
+    public ModelAndView getProduct(
+            @PageableDefault(sort = "comment_id", direction = Direction.DESC) Pageable pageable,
+            @PathVariable Long productId,
             @PathVariable Long childCategory_id,
             @PathVariable String parentCategory_name,
             Model model) throws ParseException {
 
-        ProductReadResponseDTO res = productService.getProduct(productId, childCategory_id,
+        ProductReadResponseDTO res = productService.getProduct(pageable, productId, childCategory_id,
                 parentCategory_name);
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("product");
