@@ -67,14 +67,14 @@ public class User {
         this.kakaoId = kakaoId;
     }
 
-    public void update(ProfileRequestDTO req) {
+    public void update(ProfileRequestDTO req, String fileUrl) {
         if (password != null && !password.isEmpty())
             this.password = password;
         if (req.nickname() != null && !req.nickname().isEmpty())
             this.nickname = req.nickname();
         if (req.description() != null && !req.description().isEmpty())
             this.description = req.description();
-        this.fileUrl = req.fileUrl();
+        this.fileUrl = fileUrl;
     }
 
     public User kakaoIdUpdate(Long kakaoId) {
