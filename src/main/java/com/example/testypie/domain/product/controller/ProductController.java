@@ -1,35 +1,43 @@
 package com.example.testypie.domain.product.controller;
 
-import com.example.testypie.domain.product.dto.*;
-
+import com.example.testypie.domain.product.dto.ProductCreateRequestDTO;
+import com.example.testypie.domain.product.dto.ProductCreateResponseDTO;
+import com.example.testypie.domain.product.dto.ProductDeleteResponseDTO;
+import com.example.testypie.domain.product.dto.ProductPageResponseDTO;
+import com.example.testypie.domain.product.dto.ProductReadResponseDTO;
+import com.example.testypie.domain.product.dto.ProductUpdateRequestDTO;
+import com.example.testypie.domain.product.dto.ProductUpdateResponseDTO;
 import com.example.testypie.domain.product.service.ProductService;
-import com.example.testypie.global.security.UserDetailsImpl;
 import com.example.testypie.domain.user.entity.User;
+import com.example.testypie.global.security.UserDetailsImpl;
 import jakarta.validation.Valid;
+import java.text.ParseException;
+import java.util.Objects;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.text.ParseException;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
-
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
 
     //Product 생성
     @PostMapping("/category/{parentCategory_name}/{childCategory_id}/products")
@@ -55,7 +63,8 @@ public class ProductController {
             @PathVariable String parentCategory_name,
             Model model) throws ParseException {
 
-        ProductReadResponseDTO res = productService.getProduct(pageable, productId, childCategory_id,
+        ProductReadResponseDTO res = productService.getProduct(pageable, productId,
+                childCategory_id,
                 parentCategory_name);
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("product");

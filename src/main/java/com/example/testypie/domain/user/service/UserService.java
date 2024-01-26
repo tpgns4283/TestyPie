@@ -10,9 +10,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@RequiredArgsConstructor
-@Transactional
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class UserService {
 
     private final PasswordEncoder passwordEncoder;
@@ -77,7 +77,7 @@ public class UserService {
 
     private void deleteUser(Long userId) {
         userRepository.findById(userId)
-                        .orElseThrow(() -> new IllegalArgumentException("유저를 확인하지 못했습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("유저를 확인하지 못했습니다."));
         userRepository.deleteById(userId);
     }
 }
