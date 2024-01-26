@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api//category/{parentCategory_name}/"
-        + "{childCategory_id}/products/{product_id}/comments")
+@RequestMapping("/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments")
 public class commentLikeController {
 
     private final CommentLikeService commentLikeService;
