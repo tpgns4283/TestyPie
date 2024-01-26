@@ -16,9 +16,19 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
+    // Header Key 값
     public static final String AUTHORIZATION_HEADER = "Authorization";
-    public static final String AUTHORIZATION_KEY = "auth";
+    public static final String REFRESH_AUTHORIZATION_HEADER = "Refresh-Authorization";
+    // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
+    public static final String REFRESH_TYPE = "REFRESH";
+    public static final String ACCESS_TYPE = "ACCESS";
+
+    // access token 1시간
+    public static final long ACTIVE_TOKEN_TIME = 60 * 60 * 1000;
+
+    // refresh token 48시간
+    public static final long REFRESH_TOKEN_TIME = 48 * 60 * 60 * 1000;
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -63,13 +73,22 @@ public class JwtUtil {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
-    public String createToken(String username) {
+    public String createAccessToken(String username) {
         Date date = new Date();
-        long TOKEN_TIME = 60 * 60 * 1000;
         return BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(username)
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME))
+                        .setExpiration(new Date(date.getTime() + ACTIVE_TOKEN_TIME))
+                        .setIssuedAt(date)
+                        .signWith(key, signatureAlgorithm)
+                        .compact();
+    }
+
+    public String createRefreshToken(String username) {
+        Date date = new Date();
+        return Jwts.builder()
+                        .setSubject(username)
+                        .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
                         .setIssuedAt(date)
                         .signWith(key, signatureAlgorithm)
                         .compact();
