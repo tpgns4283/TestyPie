@@ -31,6 +31,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllFeedbackUsersByProductId(@Param("productId") Long productId);
 
     Optional<User> getUserById(Long id);
+
+    Optional<User> findByKakaoId(Long kakaoId);
 }
 
 
