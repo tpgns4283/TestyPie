@@ -35,6 +35,8 @@ public class KakaoService {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getToken(code);
 
+        log.info("액세스토큰: " + accessToken);
+
         // 2. 토큰으로 카카오 API호출: "액세스 토큰"으로 카카오사용자 정보 가져오기
         KakaoUserInfoDto kakaoUserInfoDto = getKakaoUserInfo(accessToken);
 
@@ -80,6 +82,13 @@ public class KakaoService {
 
         // HTTP 응답 (JSON) -> 액세스 토큰 파싱
         JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
+
+        log.info(jsonNode.get("token_type").asText());
+        log.info(jsonNode.get("access_token").asText());
+        log.info(jsonNode.get("expires_in").asText());
+        log.info(jsonNode.get("refresh_token").asText());
+        log.info(jsonNode.get("refresh_token_expires_in").asText());
+
         return jsonNode.get("access_token").asText();
     }
 
