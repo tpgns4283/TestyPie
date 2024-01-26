@@ -25,8 +25,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -35,21 +35,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
     private final CommentService commentService;
-
-    @Autowired
-    public ProductService(ProductRepository productRepository, CategoryService categoryService,
-            CommentService commentService) {
-        this.productRepository = productRepository;
-        this.categoryService = categoryService;
-        this.commentService = commentService;
-    }
 
     //CREATE
     @Transactional
