@@ -2,90 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>TestyPie</title>
-    <link rel="stylesheet" type="text/css" href="./css/header.css">
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/js/category.js"></script>
 </head>
 <body>
-<div class="page">
-    <header>
-        <h2>TestyPie</h2>
-        <nav>
-            <ul>
-                <li><a href="/home">Home</a></li>
-                <li><a href="/home/login">로그인</a></li>
-                <li><a href="/home/signup">회원가입</a></li>
-                <li><a href="#" id="submitBtn">프로필</a></li>
-            </ul>
-        </nav>
-    </header>
-</div>
-<li id="categoryList"></li>
-<script>
-    function fetchCategories() {
-        fetch('/api/categories')
-            .then(response => response.json())
-            .then(data => {
-                const categoryList = document.getElementById('categoryList');
-                categoryList.appendChild(createCategoryTree(data));
-            })
-            .catch(error => console.error('Error:', error));
-    }
-
-    function createCategoryTree(categories, parentName = '') {
-        let ul = document.createElement('ul');
-        for (let category of categories.filter(c => (c.parentName === parentName) || (!parentName && !c.parentName))) {
-            let li = document.createElement('li');
-
-            if (!parentName) { // 최상위 카테고리 확인
-                li.textContent = category.name; // 텍스트만 추가
-            } else {
-                // 하위 카테고리에 링크 추가
-                let a = document.createElement('a');
-                a.textContent = category.name;
-                a.href = `/api/category/${encodeURIComponent(parentName)}/${category.id}`; // 링크 설정
-                li.appendChild(a);
-            }
-
-            // 재귀적으로 하위 카테고리 처리
-            let childrenUl = createCategoryTree(categories, category.name);
-            if (childrenUl.children.length > 0) {
-                li.appendChild(childrenUl);
-            }
-            ul.appendChild(li);
-        }
-        return ul;
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        fetchCategories();
-    });
-</script>
+<div th:replace="fragments/header :: headerFragment"></div>
 </body>
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- JavaScript 코드 -->
-<script>
-    $(document).ready(function() {
-        $('#submitBtn').click(function () {
-            var token = localStorage.getItem('jwtToken');
-            if (token) {
-                fetch('/api/user/profile', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': token
-                    }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        // 서버로부터 받은 사용자의 account 정보를 사용하여 URL을 설정
-                        console.log("DATA ::::::::::::::::::::"+ data.account)
-                        if (data && data.account) {
-                            window.location.href = '/api/users/' + data.account; // 사용자를 해당 URL로 리다이렉트
-                        }
-                    })
-            } else {
-                console.log("JWT 토큰이 존재하지 않습니다.");
-            }
-        });
-    });
-</script>
 </html>
