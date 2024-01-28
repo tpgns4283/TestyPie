@@ -37,6 +37,9 @@ public class FeedbackService {
                                                  Long childCategoryId, String parentCategoryName) {
     // 해당 product 존재 여부 검증
         Product product = productService.findProduct(productId);
+        if(product.getUser().getId().equals(user.getId())){
+            throw new IllegalStateException("Product작성자는 피드백을 제출할 수 없습니다.");
+        }
         Category category = categoryService.getCategory(childCategoryId, parentCategoryName);
         Survey survey = surveyService.getSurveyById(product.getSurvey().getId());
 
