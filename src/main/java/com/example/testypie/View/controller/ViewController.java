@@ -1,7 +1,6 @@
 package com.example.testypie.View.controller;
 
 import com.example.testypie.domain.user.entity.User;
-import com.example.testypie.global.security.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import com.example.testypie.domain.user.kakao.service.KakaoService;
 import com.example.testypie.global.jwt.JwtUtil;
@@ -10,7 +9,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -94,6 +92,28 @@ public class ViewController {
 
         model.addAttribute("account", account);
         return "updateProfileForm";
+    }
+
+    @GetMapping("/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/surveys")
+    public String addSurvey(@PathVariable Long product_id,
+                            @PathVariable Long childCategory_id,
+                            @PathVariable String parentCategory_name,
+                            Model model) {
+        model.addAttribute("parentName", parentCategory_name);
+        model.addAttribute("childId", childCategory_id);
+        model.addAttribute("productId", product_id);
+        return "addSurvey"; // 이동할 뷰의 이름을 반환
+    }
+
+    @GetMapping("/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/feedback")
+    public String addFeedback(@PathVariable Long product_id,
+                            @PathVariable Long childCategory_id,
+                            @PathVariable String parentCategory_name,
+                            Model model) {
+        model.addAttribute("parentName", parentCategory_name);
+        model.addAttribute("childId", childCategory_id);
+        model.addAttribute("productId", product_id);
+        return "addFeedback"; // 이동할 뷰의 이름을 반환
     }
 }
 

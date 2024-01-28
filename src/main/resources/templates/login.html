@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <link rel="stylesheet" href="/css/login.css">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
   <title>Testy Pie</title>
   <!-- jQuery 라이브러리 추가 -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -9,17 +13,16 @@
 <body>
 <div>
   <form id="loginForm">
-    <div class="mb-3">
-      <label for="account" class="form-label">ID</label>
-      <input type="text" class="form-control" id="account" name="account">
-    </div>
-    <div class="mb-3">
-      <label for="password" class="form-label">Password</label>
-      <input type="password" class="form-control" id="password" name="password">
-    </div>
-    <button type="submit" class="btn btn-primary">로그인</button>
-    <a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=58c7ccd47e3b71e699a7c7d0c56341e5&redirect_uri=http://localhost:8080/home/kakao-login/callback">
-      <img src="../static/images/kakao_login_medium.png" alt="카카오 로그인 이미지"></a>
+
+    <div class="main">
+      <p class="sign" align="center"> Testy Pie</p>
+      <form class="form1">
+        <input class="un " type="text" id="account" placeholder="아이디">
+        <input class="pass" type="password" id="password" placeholder="비밀번호">
+        <button type="submit" class="submit">로그인</button>
+        <p class="forgot" align="center"><a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=58c7ccd47e3b71e699a7c7d0c56341e5&redirect_uri=http://localhost:8080/home/kakao-login/callback">
+          <img src="../static/images/kakao_login_medium.png" alt="카카오 로그인 이미지"></a></p>
+
   </form>
 </div>
 

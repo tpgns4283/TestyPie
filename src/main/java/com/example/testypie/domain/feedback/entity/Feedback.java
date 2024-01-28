@@ -30,7 +30,7 @@ public class Feedback {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
     private Product product;
 

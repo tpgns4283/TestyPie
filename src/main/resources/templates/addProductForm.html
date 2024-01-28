@@ -131,7 +131,7 @@
                         console.log("상품 등록 성공:", response);
                         alert("상품이 생성되었습니다.");
                         // 상품 목록 페이지로 이동
-                        window.location.href = "/api/category/" + parentName + "/" + childId;
+                        window.location.href = "/api/category/" + parentName + "/" + childId + "/products/" + response.id + "/surveys";
                     },
                     error: function (error) {
                         // 오류 시 처리

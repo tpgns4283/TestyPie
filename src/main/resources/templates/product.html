@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <link th:href="@{/css/bootstrap.min.css}"
           href="../../../../../../../../week2/TestyPie/src/main/resources/static/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/js/category.js"></script>
     <style>
         .comment-section {
             width: 500px;
@@ -53,6 +56,7 @@
     </style>
 </head>
 <body onload="loadComments(), loadProductLikeStatus()">
+<div th:replace="fragments/header :: headerFragment"></div>
 <!-- section Start -->
 <div class="container" th:attr="data-parentname=${parentCategory_name}, data-childid=${childCategory_id}, data-productid=${productId}">
     <h2>상품 단일 조회</h2>
@@ -100,15 +104,17 @@
 <div class="row">
     <div class="d-grid gap-2 col-6 mx-auto">
         <button class="btn btn-dark"
-                onclick="location.href='updateProductForm.html'"
                 th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/update(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
                 type="button">상품 수정</button>
 
         <button class="btn btn-secondary"
-                onclick="location.href='productList.html'"
                 th:onclick="|location.href='@{/api/category/{parentName}/{childId}(parentName=${parentCategory_name}, childId=${childCategory_id})}'|"
                 type="button">상품 목록</button>
+        <button class="btn btn-secondary"
+                th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/feedback(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
+                type="button">피드백 등록</button>
         <button id="like-button" onclick="likeProduct()">좋아요</button>
+
     </div>
 </div>
 <div class="comment-section">
@@ -124,6 +130,9 @@
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
+    var productId = document.getElementById('productId').value;
+    var parentName = $(".container").data("parentname");
+    var childId = $(".container").data("childid");
     $(document).ready(function() {
         loadComments();
     });
@@ -132,9 +141,6 @@
     }
 
     function loadComments() {
-        var productId = document.getElementById('productId').value;
-        var parentName = $(".container").data("parentname");
-        var childId = $(".container").data("childid");
 
         // URL에 실제 값 포함
         const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments";
@@ -174,9 +180,6 @@
                 user: user,
                 content: commentText
             };
-            var productId = document.getElementById('productId').value;
-            var parentName = $(".container").data("parentname");
-            var childId = $(".container").data("childid");
 
             // URL에 실제 값 포함
             const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments";
@@ -247,10 +250,6 @@
             content: updatedContent
         };
 
-        var productId = document.getElementById('productId').value;
-        var parentName = $(".container").data("parentname");
-        var childId = $(".container").data("childid");
-
         // URL에 실제 값 포함
         const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments/" + commentId
         console.log("PATCH URL: "+ url)
@@ -288,9 +287,7 @@
         if (confirm('댓글을 삭제하시겠습니까?')) {
             const comment = button.parentNode.parentNode;
             const commentId = comment.getAttribute('data-comment-id');
-            var productId = document.getElementById('productId').value;
-            var parentName = $(".container").data("parentname");
-            var childId = $(".container").data("childid");
+
 
             // URL에 실제 값 포함
             const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments/" + commentId;
@@ -318,9 +315,6 @@
     }
 
     function likeProduct() {
-        var productId = document.getElementById('productId').value;
-        var parentName = $(".container").data("parentname");
-        var childId = $(".container").data("childid");
 
         // URL with actual values
         const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/product_like";
@@ -346,9 +340,7 @@
     }
 
     function loadProductLikeStatus() {
-        var productId = document.getElementById('productId').value;
-        var parentName = $(".container").data("parentname");
-        var childId = $(".container").data("childid");
+
         const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/product_like/status";
         $.ajax({
             url: url,
