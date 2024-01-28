@@ -1,6 +1,8 @@
 package com.example.testypie.domain.feedback.repository;
 
 import com.example.testypie.domain.feedback.entity.Feedback;
+import com.example.testypie.domain.survey.entity.Survey;
+import com.example.testypie.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +12,7 @@ import java.util.Optional;
 
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
 
-    List<Feedback> findAllByOrderByCreatedAtDesc();
+    boolean existsByUserAndSurvey(User user, Survey survey);
 
     Optional<Feedback> findByProductIdAndId(Long productId, Long feedbackId);
 

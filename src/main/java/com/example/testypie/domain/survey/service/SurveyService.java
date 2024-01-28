@@ -69,11 +69,14 @@ public class SurveyService {
 
         survey.setQuestionList(questions);
         Survey savedSurvey = surveyRepository.save(survey);
+
+        product.setSurvey(savedSurvey);
+
         return new SurveyCreateResponseDTO(savedSurvey);
     }
 
     @Transactional(readOnly = true)
-    public SurveyReadResponseDTO getSurvey(Long surveyId, Long productId, Long childCategoryId, String parentCategoryName) {
+    public SurveyReadResponseDTO getSurvey(Long productId, Long childCategoryId, String parentCategoryName) {
 
         Product product = productService.findProduct(productId);
         Category category = categoryService.getCategory(childCategoryId, parentCategoryName);
@@ -81,10 +84,9 @@ public class SurveyService {
             throw new IllegalArgumentException("카테고리와 Product의 카테고리가 일치하지 않습니다.");
         }
 
-        Survey survey = getSurveyById(surveyId);
-        checkSurveyUser(survey, productId);
+        checkSurveyUser(product.getSurvey(), productId);
 
-        return SurveyReadResponseDTO.of(survey);
+        return SurveyReadResponseDTO.of(product.getSurvey());
     }
 
     @Transactional(readOnly = true)

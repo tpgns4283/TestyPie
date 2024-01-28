@@ -94,7 +94,7 @@ public class ViewController {
         return "updateProfileForm";
     }
 
-    @GetMapping("/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/survey")
+    @GetMapping("/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/surveys")
     public String addSurvey(@PathVariable Long product_id,
                             @PathVariable Long childCategory_id,
                             @PathVariable String parentCategory_name,
@@ -103,6 +103,17 @@ public class ViewController {
         model.addAttribute("childId", childCategory_id);
         model.addAttribute("productId", product_id);
         return "addSurvey"; // 이동할 뷰의 이름을 반환
+    }
+
+    @GetMapping("/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/feedback")
+    public String addFeedback(@PathVariable Long product_id,
+                            @PathVariable Long childCategory_id,
+                            @PathVariable String parentCategory_name,
+                            Model model) {
+        model.addAttribute("parentName", parentCategory_name);
+        model.addAttribute("childId", childCategory_id);
+        model.addAttribute("productId", product_id);
+        return "addFeedback"; // 이동할 뷰의 이름을 반환
     }
 }
 

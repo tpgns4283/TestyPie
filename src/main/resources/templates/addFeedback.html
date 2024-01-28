@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>설문지 답변</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        form {
+            width: 80%;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .question {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+<h2>설문지 답변</h2>
+
+<form id="feedbackForm" >
+    <!-- 동적으로 질문이 추가될 위치 -->
+    <div class="container" th:attr="data-parentname=${parentName}, data-childid=${childId}, data-productid=${productId}">
+    <div id="questionsContainer"></div>
+
+    <button type="submit">답변 제출</button>
+    </div>
+</form>
+
+<!-- jQuery 라이브러리 포함 -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    var parentName = $(".container").data("parentname");
+    var childId = $(".container").data("childid");
+    var productId = $(".container").data("productid");
+    $(document).ready(function() {
+        loadSurveyQuestions();
+    });
+
+    function loadSurveyQuestions() {
+        const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/survey";
+
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function(survey) {
+
+                $('#questionsContainer').append('<h3>' + survey.title + '</h3>');
+
+                survey.questionList.forEach(function(question) {
+                    addQuestionToForm(question);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('설문지 데이터 로딩 실패:', error);
+            }
+        });
+    }
+
+    function addQuestionToForm(question) {
+        const container = $('#questionsContainer');
+        const questionDiv = $('<div class="question"></div>');
+        questionDiv.append('<label>' + question.text + '</label>');
+
+        if (question.questionType === 'SHORT_ANSWER') {
+            questionDiv.append('<input type="text" name="answer' + question.id + '">');
+        } else if (question.questionType === 'MULTI_CHOICE') {
+            const select = $('<select name="answer' + question.id + '"></select>');
+            question.optionList.forEach(function(option) {
+                select.append('<option value="' + option.text + '">' + option.text + '</option>');
+            });
+            questionDiv.append(select);
+        }
+
+        container.append(questionDiv);
+    }
+
+    $('#feedbackForm').submit(function(event) {
+        event.preventDefault();
+
+        const feedbackDetailsList = [];
+        $('#feedbackForm').find('input[type="text"], select').each(function() {
+            feedbackDetailsList.push({ "response": $(this).val() });
+        });
+
+        const feedbackData = {
+            "feedbackDetailsList": feedbackDetailsList
+        };
+
+        const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/feedback";
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            contentType: "application/json",
+            beforeSend: function (xhr) {
+                var token = localStorage.getItem("jwtToken");
+                if (token) {
+                    xhr.setRequestHeader("Authorization", token);
+                }
+            },
+            data: JSON.stringify(feedbackData),
+            success: function(response) {
+                alert('답변이 성공적으로 제출되었습니다!');
+                window.location.href = "/api/category/" + parentName + "/" + childId + "/products/" + productId;
+            },
+            error: function(xhr, status, error) {
+                alert('답변 제출 중 오류가 발생했습니다.');
+            }
+        });
+    });
+</script>
+</body>
+</html>

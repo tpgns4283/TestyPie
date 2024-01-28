@@ -5,6 +5,7 @@ import com.example.testypie.domain.comment.entity.Comment;
 import com.example.testypie.domain.feedback.entity.Feedback;
 import com.example.testypie.domain.productLike.entity.ProductLike;
 import com.example.testypie.domain.reward.entity.Reward;
+import com.example.testypie.domain.survey.entity.Survey;
 import com.example.testypie.domain.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -64,18 +65,22 @@ public class Product {
     @OneToMany(mappedBy = "product", targetEntity = Reward.class, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reward> rewardList = new ArrayList<>();
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
-    private Feedback feedback;
+    private List<Feedback> feedback = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", targetEntity = ProductLike.class, cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<ProductLike> productLikeList = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "survey_id")
+    private Survey survey;
 
     @Builder
     private Product(Long id, User user, String title, String content, Category category,
             List<Reward> rewardList, LocalDateTime createAt, LocalDateTime modifiedAt,
             LocalDateTime startedAt, LocalDateTime closedAt,
-            List<Comment> commentList, Feedback feedback, Long productLikeCnt) {
+            List<Comment> commentList, Long productLikeCnt, Survey survey) {
 
         this.id = id;
         this.user = user;
@@ -88,8 +93,8 @@ public class Product {
         this.startedAt = startedAt;
         this.closedAt = closedAt;
         this.commentList = commentList;
-        this.feedback = feedback;
         this.productLikeCnt = productLikeCnt;
+        this.survey = survey;
     }
 
     public void updateTitle(String title) {
@@ -141,5 +146,13 @@ public class Product {
             return;
         }
         this.productLikeCnt--;
+    }
+
+    public void setSurvey(Survey survey) {
+        if (survey != null) {
+            this.survey = survey;
+        } else{
+            throw new IllegalArgumentException("Product에 설문지는 반드시 들어가야 합니다.");
+        }
     }
 }
