@@ -18,7 +18,7 @@ public class commentLikeController {
 
     private final CommentLikeService commentLikeService;
 
-    @PatchMapping("/{comment_id}")
+    @PatchMapping("/{comment_id}/comment_like")
     public ResponseEntity<CommentLikeResponseDto> clickCommentLike(
             @PathVariable String parentCategory_name,
             @PathVariable Long childCategory_id,
