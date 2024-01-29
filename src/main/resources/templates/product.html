@@ -2,8 +2,8 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <link th:href="@{/css/bootstrap.min.css}"
-          href="../../../../../../../../week2/TestyPie/src/main/resources/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/product.css">
     <link rel="stylesheet" type="text/css" href="/css/header.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="/js/category.js"></script>
@@ -59,21 +59,18 @@
 <div th:replace="fragments/header :: headerFragment"></div>
 <!-- section Start -->
 <div class="container" th:attr="data-parentname=${parentCategory_name}, data-childid=${childCategory_id}, data-productid=${productId}">
-    <h2>상품 단일 조회</h2>
+    <h2 th:text="${product.title}"> </h2>
 </div>
 
 <div>
-    <label for="productId">상품 ID</label>
+    <label for="productId">글 번호</label>
     <input type="text" id="productId" name="productId" class="form-control form-control-sm" value="1" th:value="${product.id}" disabled>
 </div>
 <div>
     <label for="price">좋아요</label>
     <input type="text" id="productLike" name="productLike" class="form-control form-control-sm" value="0" th:value="${product.productLikeCnt}" disabled>
 </div>
-<div>
-    <label for="name">이름s</label>
-    <input type="text" id="name" name="name" class="form-control form-control-sm" value="상품이름" th:value="${product.title}" disabled>
-</div>
+
 <div>
     <label for="price">내용</label>
     <input type="text" id="price" name="price" class="form-control form-control-sm" value="1" th:value="${product.content}" disabled>
@@ -105,11 +102,11 @@
     <div class="d-grid gap-2 col-6 mx-auto">
         <button class="btn btn-dark"
                 th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/update(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
-                type="button">상품 수정</button>
+                type="button">게시글 수정</button>
 
         <button class="btn btn-secondary"
                 th:onclick="|location.href='@{/api/category/{parentName}/{childId}(parentName=${parentCategory_name}, childId=${childCategory_id})}'|"
-                type="button">상품 목록</button>
+                type="button">게시글 목록</button>
         <button class="btn btn-secondary"
                 th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/feedback(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
                 type="button">피드백 등록</button>

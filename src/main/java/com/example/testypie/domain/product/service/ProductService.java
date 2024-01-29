@@ -21,7 +21,9 @@ import com.example.testypie.domain.reward.dto.RewardReadResponseDTO;
 import com.example.testypie.domain.reward.entity.Reward;
 import com.example.testypie.domain.user.entity.User;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
@@ -53,6 +55,13 @@ public class ProductService {
 
         List<RewardCreateRequestDTO> rewardList = req.rewardList();
 
+        LocalDate startDate = LocalDate.parse(req.startAt());
+        LocalDate closedDate = LocalDate.parse(req.closedAt());
+
+        // 자정 시간과 함께 LocalDateTime 객체 생성
+        LocalDateTime startAt = startDate.atStartOfDay();
+        LocalDateTime closedAt = closedDate.atStartOfDay();
+
         Product product = Product.builder()
                 .user(user)
                 .title(req.title())
@@ -60,8 +69,8 @@ public class ProductService {
                 .category(category)
                 .productLikeCnt(DEFAULT_PRODUCT_LIKE_CNT)
                 .createAt(LocalDateTime.now())
-                .startedAt(req.startAt())
-                .closedAt(req.closedAt())
+                .startedAt(startAt)
+                .closedAt(closedAt)
                 .build();
 
         product.setRewardList(RewardMapper.mapToEntityList(rewardList, product));

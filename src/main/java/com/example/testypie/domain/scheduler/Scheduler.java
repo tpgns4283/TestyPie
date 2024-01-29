@@ -29,7 +29,7 @@ public class Scheduler {
         List<Product> productList = productRepository.findAll();
 
         for (Product p : productList) {
-            if (now.isBefore(p.getClosedAt())) {
+            if (now.isAfter(p.getClosedAt()) || now.isEqual(p.getClosedAt())) {
                 productRepository.delete(p);
             }
         }
