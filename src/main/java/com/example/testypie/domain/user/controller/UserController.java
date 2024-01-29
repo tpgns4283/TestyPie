@@ -12,6 +12,9 @@ import com.example.testypie.domain.user.entity.RefreshToken;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.service.RefreshTokenService;
 import com.example.testypie.domain.user.service.UserService;
+import com.example.testypie.global.exception.ErrorCode;
+import com.example.testypie.global.exception.ErrorResponse;
+import com.example.testypie.global.exception.GlobalExceptionHandler;
 import com.example.testypie.global.jwt.JwtUtil;
 import com.example.testypie.global.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
@@ -27,14 +30,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -48,12 +44,18 @@ public class UserController {
 
     private final JwtUtil jwtUtil;
 
+    @ExceptionHandler(GlobalExceptionHandler.CustomException.class)
+    public ResponseEntity<ErrorResponse> handleCustomException(GlobalExceptionHandler.CustomException e) {
+        return ResponseEntity.status(e.getErrorCode().getStatus())
+                .body(new ErrorResponse(e.getErrorCode().getStatus(), e.getErrorCode().getMessage()));
+    }
+
     //회원가입
     @PostMapping("/api/users/signup")
     public ResponseEntity<MessageDTO> signup(@RequestBody @Valid SignUpRequestDTO req,
             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.DUPLICATE_RESOURCE);
         }
 
         userService.signup(req);
@@ -68,7 +70,7 @@ public class UserController {
             BindingResult bindingResult,
             HttpServletResponse res) {
         if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.USER_NOT_FOUND);
         }
 
         userService.login(req);
@@ -137,14 +139,14 @@ public class UserController {
 
         if (refreshToken == null) {
             // 리프레시 토큰이 존재하지 않는 경우에 대한 처리
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰을 찾을 수 없습니다.");
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.UNAUTHENTICATED_USERS);
         }
 
         Claims claims = jwtUtil.getUserInfoFromToken(refreshToken.getTokenValue());
 
         if (claims == null) {
             // 리프레시 토큰이 유효하지 않거나 사용자 ID를 포함하지 않는 경우에 대한 처리
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 토큰입니다.");
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.ACCESS_DENIED);
         }
 
         String account = claims.getSubject();
@@ -164,14 +166,14 @@ public class UserController {
 
         if (refreshToken == null) {
             // 리프레시 토큰이 존재하지 않는 경우에 대한 처리
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰을 찾을 수 없습니다.");
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.UNAUTHENTICATED_USERS);
         }
 
         Claims claims = jwtUtil.getUserInfoFromToken(refreshToken.getTokenValue());
 
         if (claims == null) {
             // 리프레시 토큰이 유효하지 않거나 사용자 ID를 포함하지 않는 경우에 대한 처리
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 토큰입니다.");
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.ACCESS_DENIED);
         }
 
         userService.findUser(claims.getSubject());
