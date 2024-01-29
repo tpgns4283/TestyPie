@@ -3,7 +3,7 @@
 <head>
   <link rel="stylesheet" href="/css/login.css">
   <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
   <title>Testy Pie</title>
   <!-- jQuery 라이브러리 추가 -->
@@ -20,15 +20,18 @@
         <input class="un " type="text" id="account" placeholder="아이디">
         <input class="pass" type="password" id="password" placeholder="비밀번호">
         <button type="submit" class="submit">로그인</button>
-        <p class="forgot" align="center"><a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=58c7ccd47e3b71e699a7c7d0c56341e5&redirect_uri=http://localhost:8080/home/kakao-login/callback">
+        <p class="forgot" align="center"><a
+            href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=58c7ccd47e3b71e699a7c7d0c56341e5&redirect_uri=http://localhost:8080/home/kakao-login/callback">
           <img src="../static/images/kakao_login_medium.png" alt="카카오 로그인 이미지"></a></p>
 
+      </form>
+    </div>
   </form>
 </div>
 </body>
 <script>
-  $(document).ready(function() {
-    $("#loginForm").submit(function(event) {
+  $(document).ready(function () {
+    $("#loginForm").submit(function (event) {
       event.preventDefault();
       var account = $("#account").val();
       var password = $("#password").val();
@@ -41,7 +44,7 @@
           account: account,
           password: password
         }),
-        success: function(response, textStatus, xhr) {
+        success: function (response, textStatus, xhr) {
           // JWT 토큰을 응답 헤더에서 추출
           var token = xhr.getResponseHeader("Authorization");
           if (token) {
@@ -53,7 +56,7 @@
           console.log("로그인 성공:", response);
           window.location.href = "/home"; // 메인 페이지로 리디렉션
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.log("로그인 실패:", error);
         }
       });

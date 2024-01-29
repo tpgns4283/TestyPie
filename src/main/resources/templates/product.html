@@ -36,11 +36,6 @@
             background-color: #4cae4c;
         }
 
-        .comment {
-            border-bottom: 1px solid #eee;
-            padding: 10px 0;
-        }
-
         .comment-author {
             font-weight: bold;
             margin-bottom: 5px;
@@ -79,24 +74,24 @@
     <input type="text" id="price" name="price" class="form-control form-control-sm" value="1" th:value="${product.content}" disabled>
 </div>
 <div>
-    <label for="quantity">작성자</label>
-    <input type="text" id="quantity" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.account}" disabled>
+    <label for="writer">작성자</label>
+    <input type="text" id="writer" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.account}" disabled>
 </div>
 <div>
-    <label for="quantity">등록일</label>
-    <input type="text" id="quantity" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.createAt}" disabled>
+    <label for="created">등록일</label>
+    <input type="text" id="created" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.createAt}" disabled>
 </div>
 <div>
-    <label for="quantity">시작일</label>
-    <input type="text" id="quantity" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.startAt}" disabled>
+    <label for="started">시작일</label>
+    <input type="text" id="started" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.startAt}" disabled>
 </div>
 <div>
-    <label for="quantity">마감일</label>
-    <input type="text" id="quantity" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.closedAt}" disabled>
+    <label for="ended">마감일</label>
+    <input type="text" id="ended" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.closedAt}" disabled>
 </div>
 <div>
-    <label for="quantity">남은기간</label>
-    <input type="text" id="quantity" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.message}" disabled>
+    <label for="remain-time">남은기간</label>
+    <input type="text" id="remain-time" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.message}" disabled>
 </div>
 
 <hr class="my-4">
@@ -113,8 +108,7 @@
         <button class="btn btn-secondary"
                 th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/feedback(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
                 type="button">피드백 등록</button>
-        <button id="like-button" onclick="likeProduct()">좋아요</button>
-
+        <button id="product-like-button" onclick="likeProduct()">좋아요</button>
     </div>
 </div>
 <div class="comment-section">
@@ -141,25 +135,24 @@
     }
 
     function loadComments() {
-
-        // URL에 실제 값 포함
-        const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments";
+        const url = `/api/category/${parentName}/${childId}/products/${productId}/comments`;
 
         $.ajax({
             url: url,
             type: 'GET',
-            contentType: "application/json; charset=utf-8", // Content-Type을 명시적으로 설정
-            beforeSend: function (xhr) {
+            contentType: 'application/json; charset=utf-8',
+            beforeSend: function(xhr) {
                 var token = localStorage.getItem("jwtToken");
                 if (token) {
                     xhr.setRequestHeader("Authorization", token);
                 }
             },
             success: function(response) {
-                const commentList = document.getElementById('comment-page');
+                const commentList = document.getElementById('comment-list');
                 commentList.innerHTML = ''; // 댓글 목록 초기화
-                response.forEach(function(comment) {
-                    addCommentToDOM(comment.content, comment.id); // 또는 필요에 따라 comment.author 등 다른 필드를 사용
+                response.content.forEach(function(comment) {
+                    addCommentToDOM(comment.content, comment.id, comment.commentLikeCnt);
+                    loadCommentLikeStatus(comment.id);
                 });
             },
             error: function(xhr, status, error) {
@@ -174,23 +167,19 @@
 
         if (commentText) {
             const user = getUserFromToken();
-
-            // 서버로 보낼 데이터 준비
             const data = {
                 user: user,
                 content: commentText
             };
 
-            // URL에 실제 값 포함
-            const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments";
+            const url = `/api/category/${parentName}/${childId}/products/${productId}/comments`;
 
             $.ajax({
                 url: url,
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(data),
-                beforeSend: function (xhr) {
-                    // 로컬 스토리지에서 JWT 토큰을 가져와 헤더에 추가
+                beforeSend: function(xhr) {
                     var token = localStorage.getItem("jwtToken");
                     if (token) {
                         xhr.setRequestHeader("Authorization", token);
@@ -198,8 +187,8 @@
                 },
                 success: function(response) {
                     alert("댓글이 입력되었습니다.");
-                    addCommentToDOM(response.content, response.id);
-                    commentInput.value = ''; // 입력 필드 초기화
+                    loadComments(); // 댓글 입력 후 목록 다시 로드
+                    commentInput.value = '';
                 },
                 error: function(xhr, status, error) {
                     console.error('댓글 저장 실패:', error);
@@ -210,7 +199,7 @@
         }
     }
 
-    function addCommentToDOM(content, id) {
+    function addCommentToDOM(content, id, commentLikeCnt) {
         const commentList = document.getElementById('comment-list');
         const newComment = document.createElement('div');
         newComment.classList.add('content');
@@ -219,9 +208,11 @@
         var account = localStorage.getItem("account")
 
         newComment.innerHTML = `
-        <p class="comment-author">${account}</p>
+        <p class="comment-author">작성자 : ${account}</p>
         <p class="comment-body">${content}</p> <!-- 댓글 내용을 여기에 표시 -->
+        <p class="comment-author">좋아요 : ${commentLikeCnt}</p>
         <div class="comment-actions">
+            <button id="comment-like-button-${id}" onclick="likeComment(this)">좋아요</button>
             <button onclick="editComment(this)">수정</button>
             <button onclick="deleteComment(this)">삭제</button>
         </div>
@@ -283,20 +274,75 @@
         });
     }
 
+    function likeComment(button) {
+        const comment = button.parentNode.parentNode;
+        const commentId = comment.getAttribute('data-comment-id');
+
+        // URL with actual values
+        const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments/" + commentId + "/comment_like";
+
+        $.ajax({
+            url: url,
+            type: 'Patch',
+            contentType: 'application/json',
+            beforeSend: function (xhr) {
+                var token = localStorage.getItem("jwtToken");
+                if (token) {
+                    xhr.setRequestHeader("Authorization", token);
+                }
+            },
+            success: function(response) {
+                loadComments();
+                loadCommentLikeStatus(commentId);
+            },
+            error: function(xhr, status, error) {
+                console.error('좋아요 실패:', error);
+            }
+        });
+    }
+
+    function loadCommentLikeStatus(commentId) {
+        console.log(commentId)
+        const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments/" + commentId + "/comment_like/status";
+        $.ajax({
+            url: url,
+            type: 'GET',
+            beforeSend: function (xhr) {
+                var token = localStorage.getItem("jwtToken");
+                if (token) {
+                    xhr.setRequestHeader("Authorization", token);
+                }
+            },
+            success: function(response) {
+                console.log(response)
+                const likeButton = document.getElementById('comment-like-button-' + commentId);
+                if (response.isCommentLiked) {
+                    likeButton.innerText = '좋아요 취소';
+                }
+                if (!response.isCommentLiked){
+                    likeButton.innerText = '좋아요';
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('좋아요 상태 로딩 실패:', error);
+            }
+        });
+    }
+
     function deleteComment(button) {
         if (confirm('댓글을 삭제하시겠습니까?')) {
             const comment = button.parentNode.parentNode;
             const commentId = comment.getAttribute('data-comment-id');
 
-
             // URL에 실제 값 포함
-            const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments/" + commentId;
+            const url = `/api/category/${parentName}/${childId}/products/${productId}/comments/${commentId}`;
 
             // AJAX DELETE 요청
             $.ajax({
                 url: url,
                 type: 'DELETE',
-                beforeSend: function (xhr) {
+                contentType: 'application/json',
+                beforeSend: function(xhr) {
                     var token = localStorage.getItem("jwtToken");
                     if (token) {
                         xhr.setRequestHeader("Authorization", token);
@@ -309,6 +355,7 @@
                 },
                 error: function(xhr, status, error) {
                     console.error('댓글 삭제 실패:', error);
+                    alert("댓글 삭제에 실패했습니다.");
                 }
             });
         }
@@ -352,7 +399,7 @@
                 }
             },
             success: function(response) {
-                const likeButton = document.getElementById('like-button');
+                const likeButton = document.getElementById('product-like-button');
                 if (response.isProductLiked) {
                     likeButton.textContent = '좋아요 취소';
                 }

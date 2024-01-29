@@ -8,8 +8,17 @@ import com.example.testypie.domain.reward.entity.Reward;
 import com.example.testypie.domain.survey.entity.Survey;
 import com.example.testypie.domain.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +79,7 @@ public class Product {
     private List<Feedback> feedback = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", targetEntity = ProductLike.class, cascade = CascadeType.REMOVE, orphanRemoval = true)
-    List<ProductLike> productLikeList = new ArrayList<>();
+    private List<ProductLike> productLikeList = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "survey_id")
@@ -135,7 +144,7 @@ public class Product {
         if (rewardList != null) {
             this.rewardList = rewardList;
             rewardList.forEach(reward -> reward.setProduct(this));
-        } else{
+        } else {
             throw new IllegalArgumentException("Product에 Reward는 반드시 들어가야 합니다.");
         }
     }
