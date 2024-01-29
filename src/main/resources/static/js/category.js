@@ -60,3 +60,56 @@ $(document).ready(function() {
         }
     });
 });
+function checkLoginStatusAndUpdateLink() {
+    var loginLink = document.getElementById("loginLink");
+
+    // 로그인/로그아웃 링크 클릭 이벤트 핸들러
+    loginLink.onclick = function() {
+        var account = localStorage.getItem("account");
+        var jwtToken = localStorage.getItem("jwtToken");
+
+        if (account && jwtToken) {
+            // AJAX를 사용하여 서버에 로그아웃 요청
+            $.ajax({
+                type: "DELETE",
+                url: "/api/users/logout",
+                xhrFields: {
+                    withCredentials: true // 쿠키를 포함하도록 설정
+                },
+                success: function(response) {
+                    // 로컬 스토리지에서 계정 및 토큰 정보 삭제
+                    localStorage.removeItem("account");
+                    localStorage.removeItem("jwtToken");
+
+                    alert("로그아웃 되었습니다");
+                    window.location.href = "/home";
+                    loginLink.textContent = "로그인";
+                    loginLink.href = "/home/login";
+                },
+                error: function(xhr, status, error) {
+                    console.log("로그아웃 실패:", error);
+                }
+            });
+        } else {
+            // 로그인 페이지로 이동
+            window.location.href = "/home/login";
+        }
+
+        return false;
+    };
+
+    // 초기 로그인 상태 확인 및 링크 텍스트 설정
+    var account = localStorage.getItem("account");
+    var jwtToken = localStorage.getItem("jwtToken");
+    if (account && jwtToken) {
+        loginLink.textContent = "로그아웃";
+        loginLink.href = "#";
+    } else {
+        loginLink.textContent = "로그인";
+        loginLink.href = "/home/login";
+    }
+}
+
+window.onload = checkLoginStatusAndUpdateLink;
+
+
