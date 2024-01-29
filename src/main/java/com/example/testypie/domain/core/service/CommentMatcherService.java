@@ -57,6 +57,6 @@ public class CommentMatcherService {
 
         Product product = productService.findProduct(product_id);
         Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
-        commentService.deleteComment(category, product, user, childCategory_id);
+        commentService.deleteComment(category, product, user, comment_id);
     }
 }
