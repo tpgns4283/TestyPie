@@ -28,6 +28,9 @@
     <input type="text" id="description" name="description" class="form-control form-control-sm">
 </div>
 
+<div>
+    <input class="file" type="file" name="image" accept="image/*" id="multipartFile">
+</div>
 <hr class="my-4">
 
 <button class="btn btn-dark" id="saveBtn" type="button">수정내용 저장</button>
@@ -41,25 +44,25 @@
         // 저장 버튼 클릭 시
         $("#saveBtn").click(function () {
             if (confirm("프로필을 수정하시겠습니까?")) {
-                // 입력 필드의 값을 읽어와 JSON 객체로 만듭니다.
-                var productData = {
-                    password: $("#password").val(),
-                    email: $("#email").val(),
-                    nickname: $("#nickname").val(),
-                    description: $("#description").val()
-                };
-                var account = $('body').data('account'); // 사용자 아이디 가져오기
+                let formData = new FormData();
+                formData.append("password", $("#password").val());
+                formData.append("nickname", $("#nickname").val());
+                formData.append("description", $("#description").val());
+                formData.append("multipartFile", $("#multipartFile")[0].files[0]);
+
+                var account = $('body').attr('data-account'); // 사용자 아이디 가져오기
                 var url = "/api/users/" + account + "/update";
 
                 // JSON 데이터를 서버로 전송합니다.
                 $.ajax({
                     type: "PATCH", // PATCH 요청으로 변경
                     url: url,
-                    data: JSON.stringify(productData), // JSON 데이터를 문자열로 변환하여 전송
-                    contentType: "application/json; charset=utf-8", // Content-Type을 명시적으로 설정
+                    data: formData, // JSON 데이터를 문자열로 변환하여 전송
+                    contentType: false, // Content-Type을 false로 설정 (multipart/form-data를 사용할 때)
+                    processData: false, // 데이터 처리를 jQuery에게 맡기지 않음
                     success: function (response) {
                         // 성공 시 처리
-                        console.log("상품 수정 성공:", response);
+                        console.log("프로필 수정 성공:", response);
                         // 수정 성공 메시지를 표시하고 페이지 리로드
                         alert("프로필이 수정되었습니다.");
                         // 프로필 페이지로 이동
