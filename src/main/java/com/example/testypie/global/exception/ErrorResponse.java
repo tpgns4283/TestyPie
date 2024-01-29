@@ -1,11 +1,8 @@
 package com.example.testypie.global.exception;
 
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 
 @Getter
 @NoArgsConstructor
