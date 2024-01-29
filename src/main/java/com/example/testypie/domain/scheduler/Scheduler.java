@@ -1,5 +1,7 @@
 package com.example.testypie.domain.scheduler;
 
+import com.example.testypie.domain.commentLike.entity.CommentLike;
+import com.example.testypie.domain.commentLike.repository.CommentLikeRepository;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.repository.ProductRepository;
 import com.example.testypie.domain.productLike.entity.ProductLike;
@@ -20,6 +22,7 @@ public class Scheduler {
 
     private final ProductRepository productRepository;
     private final ProductLikeRepository productLikeRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     @Transactional
     @Scheduled(cron = "0 0 0 * *")
@@ -44,6 +47,19 @@ public class Scheduler {
         for (ProductLike isLiked : productLikes) {
             if (!isLiked.getIsProductLiked()) {
                 productLikeRepository.delete(isLiked);
+            }
+        }
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 5 * *")
+    public void commentLikeAutoDelete() {
+
+        List<CommentLike> commentLikes = commentLikeRepository.findAll();
+
+        for (CommentLike isLiked : commentLikes) {
+            if (!isLiked.getIsCommentLiked()) {
+                commentLikeRepository.delete(isLiked);
             }
         }
     }
