@@ -157,7 +157,7 @@ public class UserController {
     }
 
     @DeleteMapping("/api/users/logout")
-    public ResponseEntity<?> logout(@CookieValue(REFRESH_AUTHORIZATION_HEADER) String token) {
+    public ResponseEntity<?> logout(@CookieValue(REFRESH_AUTHORIZATION_HEADER) String token, HttpServletResponse res) {
         logger.info("리프레시 토큰: " + token);
 
         RefreshToken refreshToken = refreshTokenService.findToken(token);
@@ -177,6 +177,12 @@ public class UserController {
         userService.findUser(claims.getSubject());
 
         refreshTokenService.deleteRefreshToken(refreshToken);
+
+        Cookie cookie = new Cookie("Refresh-Authorization", null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        res.addCookie(cookie);
 
         return ResponseEntity.ok().body(new MessageDTO("토큰이 성공적으로 삭제됐습니다.", 200));
     }
