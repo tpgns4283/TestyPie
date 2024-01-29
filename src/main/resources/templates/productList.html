@@ -1,13 +1,14 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/default}">
+<html>
 
 <head>
     <meta charset="utf-8">
     <link th:href="@{/css/bootstrap.min.css}"
           href="../../../../../../../../week2/TestyPie/src/main/resources/static/css/bootstrap.min.css" rel="stylesheet">
+    <title>TestyPie</title>
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/js/category.js"></script>
     <style>
         .container {
             max-width: 800px;
@@ -16,7 +17,7 @@
 </head>
 
 <body>	<!-- body 없어도 무방 -->
-<div layout:fragment="content">
+<div th:replace="fragments/header :: headerFragment"></div>
     <div class="container">
         <div class="py-5 text-center">
             <h2>상품 목록</h2>
@@ -56,7 +57,5 @@
 
             </div>
         </div>
-    </div>
-</div>
 </body>
 </html>

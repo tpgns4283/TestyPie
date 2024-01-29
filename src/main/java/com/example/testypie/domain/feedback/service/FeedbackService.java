@@ -34,11 +34,20 @@ public class FeedbackService {
 
 
     public FeedbackCreateResponseDTO addFeedback(FeedbackCreateRequestDTO req, Long productId, User user,
-                                                 Long childCategoryId, String parentCategoryName, Long surveyId) {
+                                                 Long childCategoryId, String parentCategoryName) {
     // 해당 product 존재 여부 검증
         Product product = productService.findProduct(productId);
+        if(product.getUser().getId().equals(user.getId())){
+            throw new IllegalStateException("Product작성자는 피드백을 제출할 수 없습니다.");
+        }
         Category category = categoryService.getCategory(childCategoryId, parentCategoryName);
-        Survey survey = surveyService.getSurveyById(surveyId);
+        Survey survey = surveyService.getSurveyById(product.getSurvey().getId());
+
+        boolean hasSubmitted = feedbackRepository.existsByUserAndSurvey(user, survey);
+        if (hasSubmitted) {
+            throw new IllegalStateException("이미 피드백을 제출하셨습니다.");
+        }
+
         if (!category.getId().equals(product.getCategory().getId())) {
             throw new IllegalArgumentException("카테고리와 Product의 카테고리가 일치하지 않습니다.");
         }
@@ -64,7 +73,6 @@ public class FeedbackService {
         Feedback savedFeedback = feedbackRepository.save(feedback);
         return new FeedbackCreateResponseDTO(savedFeedback);
 }
-
 
     //=======================================================================//
     //    에러클래스 수정함
