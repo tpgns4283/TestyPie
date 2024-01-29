@@ -6,6 +6,7 @@ import com.example.testypie.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,20 @@ public class commentLikeController {
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         CommentLikeResponseDto res = commentLikeService.clickCommentLike(comment_id,
+                userDetails.getUser());
+
+        return ResponseEntity.ok().body(res);
+    }
+
+    @GetMapping("/{comment_id}/comment_like/status")
+    public ResponseEntity<CommentLikeResponseDto> getCommentLike(
+            @PathVariable String parentCategory_name,
+            @PathVariable Long childCategory_id,
+            @PathVariable Long product_id,
+            @PathVariable Long comment_id,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        CommentLikeResponseDto res = commentLikeService.getCommentLike(comment_id,
                 userDetails.getUser());
 
         return ResponseEntity.ok().body(res);
