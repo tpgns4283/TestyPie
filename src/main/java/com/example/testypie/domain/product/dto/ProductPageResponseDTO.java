@@ -1,7 +1,11 @@
 package com.example.testypie.domain.product.dto;
 
 import com.example.testypie.domain.product.entity.Product;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 
 public record ProductPageResponseDTO (
