@@ -42,7 +42,7 @@ public class UserInfoService {
                                             MultipartFile multipartfile) {
         try {
             User profileUser = userRepository.findByAccount(account)
-                    .orElseThrow(() -> new NoSuchElementException("해당하는 유저가 없습니다."));
+                    .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
             String fileUrl = req.fileUrl();
 
             if (multipartfile != null && !multipartfile.isEmpty()) {
@@ -59,7 +59,7 @@ public class UserInfoService {
                     profileUser.getFileUrl());
         } catch (IOException e) {
             e.printStackTrace();
-            throw new RuntimeException("프로필 업데이트에 실패했습니다.", e);
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.UPDATE_PROFILE_BAD_REQUEST);
         }
     }
 
