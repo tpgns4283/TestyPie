@@ -3,9 +3,6 @@ package com.example.testypie.global.exception;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
-
-import javax.swing.*;
 
 @Getter
 @JsonFormat(shape = Shape.OBJECT)
@@ -23,11 +20,11 @@ public enum ErrorCode {
      */
 
     /* 400 BAD_REQUEST : 잘못된 요청 */
-    INVALID_INPUT_VALUE(400,  "입력값이 올바르지 않습니다."),
+    INVALID_INPUT_VALUE(400, "입력값이 올바르지 않습니다."),
     BAD_REQUEST(400, "잘못된 요청입니다."),
 
     /* 500 INTERNAL_SERVER_ERROR */
-    SERVER_ERROR(500,  "예기치 못한 오류가 발생하였습니다."),
+    SERVER_ERROR(500, "예기치 못한 오류가 발생하였습니다."),
 
     /* Bugreport */
     SELECT_BUGREPORT_NOT_FOUND(404, "해당 버그 리포트는 존재하지 않습니다."),

@@ -1,10 +1,6 @@
 package com.example.testypie.domain.user.controller;
 
 
-import static com.example.testypie.global.jwt.JwtUtil.AUTHORIZATION_HEADER;
-import static com.example.testypie.global.jwt.JwtUtil.REFRESH_AUTHORIZATION_HEADER;
-import static com.example.testypie.global.jwt.JwtUtil.logger;
-
 import com.example.testypie.domain.user.dto.LoginRequestDTO;
 import com.example.testypie.domain.user.dto.MessageDTO;
 import com.example.testypie.domain.user.dto.SignUpRequestDTO;
@@ -19,11 +15,8 @@ import com.example.testypie.global.jwt.JwtUtil;
 import com.example.testypie.global.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -31,6 +24,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.example.testypie.global.jwt.JwtUtil.*;
 
 @Slf4j
 @RestController
@@ -53,7 +51,7 @@ public class UserController {
     //회원가입
     @PostMapping("/api/users/signup")
     public ResponseEntity<MessageDTO> signup(@RequestBody @Valid SignUpRequestDTO req,
-            BindingResult bindingResult) {
+                                             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_ACCOUNT);
         }
@@ -67,8 +65,8 @@ public class UserController {
     //로그인
     @PostMapping("/api/users/login")
     public ResponseEntity<MessageDTO> login(@RequestBody @Valid LoginRequestDTO req,
-            BindingResult bindingResult,
-            HttpServletResponse res) {
+                                            BindingResult bindingResult,
+                                            HttpServletResponse res) {
         if (bindingResult.hasErrors()) {
             throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND);
         }
@@ -133,7 +131,7 @@ public class UserController {
 
     @PostMapping("/api/users/refresh")
     public ResponseEntity<?> refresh(@CookieValue(REFRESH_AUTHORIZATION_HEADER) String token,
-            HttpServletResponse res) {
+                                     HttpServletResponse res) {
 
         RefreshToken refreshToken = refreshTokenService.findToken(token);
 

@@ -1,7 +1,5 @@
 package com.example.testypie.domain.reward.service;
 
-import com.example.testypie.domain.reward.dto.RewardCreateRequestDTO;
-import com.example.testypie.domain.reward.dto.RewardCreateResponseDTO;
 import com.example.testypie.domain.reward.dto.RewardDeleteResponseDTO;
 import com.example.testypie.domain.reward.dto.RewardReadResponseDTO;
 import com.example.testypie.domain.reward.entity.Reward;
@@ -11,12 +9,11 @@ import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.domain.user.service.UserInfoService;
 import com.example.testypie.global.exception.ErrorCode;
 import com.example.testypie.global.exception.GlobalExceptionHandler;
-import com.example.testypie.global.security.UserDetailsImpl;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.concurrent.RejectedExecutionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor

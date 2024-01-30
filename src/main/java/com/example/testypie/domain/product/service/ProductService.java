@@ -1,18 +1,9 @@
 package com.example.testypie.domain.product.service;
 
-import static com.example.testypie.domain.product.constant.ProductConstant.DEFAULT_PRODUCT_LIKE_CNT;
-
 import com.example.testypie.domain.category.entity.Category;
 import com.example.testypie.domain.category.service.CategoryService;
-import com.example.testypie.domain.comment.dto.CommentResponseDTO;
 import com.example.testypie.domain.comment.service.CommentService;
-import com.example.testypie.domain.product.dto.ProductCreateRequestDTO;
-import com.example.testypie.domain.product.dto.ProductCreateResponseDTO;
-import com.example.testypie.domain.product.dto.ProductDeleteResponseDTO;
-import com.example.testypie.domain.product.dto.ProductPageResponseDTO;
-import com.example.testypie.domain.product.dto.ProductReadResponseDTO;
-import com.example.testypie.domain.product.dto.ProductUpdateRequestDTO;
-import com.example.testypie.domain.product.dto.ProductUpdateResponseDTO;
+import com.example.testypie.domain.product.dto.*;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.repository.ProductRepository;
 import com.example.testypie.domain.reward.dto.RewardCreateRequestDTO;
@@ -20,23 +11,20 @@ import com.example.testypie.domain.reward.dto.RewardMapper;
 import com.example.testypie.domain.reward.dto.RewardReadResponseDTO;
 import com.example.testypie.domain.reward.entity.Reward;
 import com.example.testypie.domain.user.entity.User;
-import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.RejectedExecutionException;
-
 import com.example.testypie.global.exception.ErrorCode;
 import com.example.testypie.global.exception.GlobalExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.example.testypie.domain.product.constant.ProductConstant.DEFAULT_PRODUCT_LIKE_CNT;
 
 @Slf4j
 @Service
@@ -50,7 +38,7 @@ public class ProductService {
     //CREATE
     @Transactional
     public ProductCreateResponseDTO createProduct(User user, ProductCreateRequestDTO req,
-            String parentCategory_name, Long category_id) {
+                                                  String parentCategory_name, Long category_id) {
 
         Category category = categoryService.getCategory(category_id, parentCategory_name);
 
@@ -91,7 +79,7 @@ public class ProductService {
     }
 
     public Page<ProductPageResponseDTO> getProductPage(Pageable pageable,
-            String parentCategory_name)
+                                                       String parentCategory_name)
             throws ParseException {
         int page = pageable.getPageNumber() - 1;
         int pageLimit = 10;
@@ -103,8 +91,8 @@ public class ProductService {
     }
 
     public Page<ProductPageResponseDTO> getProductCategoryPage(Pageable pageable,
-            Long childCategory_id,
-            String parentCategory_name)
+                                                               Long childCategory_id,
+                                                               String parentCategory_name)
             throws ParseException {
         int page = pageable.getPageNumber() - 1;
         int pageLimit = 10;
@@ -118,7 +106,7 @@ public class ProductService {
     }
 
     private Page<ProductPageResponseDTO> getProductReadResponseDTOS(Pageable pageable,
-            Page<Product> productPage) {
+                                                                    Page<Product> productPage) {
 
         List<ProductPageResponseDTO> resList = new ArrayList<>();
 
@@ -131,8 +119,8 @@ public class ProductService {
 
     //UPDATE
     public ProductUpdateResponseDTO updateProduct(Long productId, ProductUpdateRequestDTO req,
-            User user, Long category_id,
-            String parentCategory_name) {
+                                                  User user, Long category_id,
+                                                  String parentCategory_name) {
 
         Product product = getUserProduct(productId, user);
         Category category = categoryService.getCategory(category_id, parentCategory_name);
@@ -140,21 +128,21 @@ public class ProductService {
             throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
         }
 
-            product.updateTitle(req.title());
-            product.updateContent(req.content());
-            product.updateCategory(category);
-            product.updateModifiedAt(LocalDateTime.now());
-            product.updateStartAt(req.startAt());
-            product.updateClosedAt(req.closedAt());
+        product.updateTitle(req.title());
+        product.updateContent(req.content());
+        product.updateCategory(category);
+        product.updateModifiedAt(LocalDateTime.now());
+        product.updateStartAt(req.startAt());
+        product.updateClosedAt(req.closedAt());
 
-            productRepository.save(product);
+        productRepository.save(product);
 
-            return ProductUpdateResponseDTO.of(product);
+        return ProductUpdateResponseDTO.of(product);
     }
 
     //DELETE
     public ProductDeleteResponseDTO deleteProduct(Long productId, User user, Long category_id,
-            String parentCategory_name) {
+                                                  String parentCategory_name) {
 
         Category category = categoryService.getCategory(category_id, parentCategory_name);
         Product product = getUserProduct(productId, user);
@@ -162,8 +150,8 @@ public class ProductService {
             throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
         }
 
-            productRepository.delete(product);
-            return ProductDeleteResponseDTO.of(product);
+        productRepository.delete(product);
+        return ProductDeleteResponseDTO.of(product);
     }
 
     //Product 존재여부 확인

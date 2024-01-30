@@ -37,7 +37,7 @@ public class FeedbackService {
 
     public FeedbackCreateResponseDTO addFeedback(FeedbackCreateRequestDTO req, Long productId, User user,
                                                  Long childCategoryId, String parentCategoryName, Long surveyId) {
-    // 해당 product 존재 여부 검증
+        // 해당 product 존재 여부 검증
         Product product = productService.findProduct(productId);
         Category category = categoryService.getCategory(childCategoryId, parentCategoryName);
         Survey survey = surveyService.getSurveyById(surveyId);
@@ -65,7 +65,7 @@ public class FeedbackService {
         feedback.setFeedbackDetailsList(detailslist);
         Feedback savedFeedback = feedbackRepository.save(feedback);
         return new FeedbackCreateResponseDTO(savedFeedback);
-}
+    }
 
 
     //=======================================================================//
@@ -89,6 +89,7 @@ public class FeedbackService {
     public double getAverageRating(User user) {
         return feedbackRepository.findAverageScoreByUserId(user.getId());
     }
+
     // productId와 feedbackId로 유효한 feedback 검색
     public Feedback getValidFeedback(Long productId, Long feedbackId) {
         //findByProductIdAndId를 사용하여 특정 prodcutId와 feedbackId에 해당하는 feedback검색
