@@ -1,8 +1,9 @@
 package com.example.testypie.domain.survey.dto;
 
-import java.util.List;
+import lombok.NonNull;
 
 public record OptionCreateRequestDTO(
+        @NonNull
         String text
 ) {
 }

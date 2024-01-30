@@ -3,7 +3,7 @@ $(document).ready(function() {
 });
 
 function refreshAccessToken() {
-    if(localStorage.getItem("jwtToken") || localStorage.getItem("account"))
+    if(localStorage.getItem("jwtToken"))
     $.ajax({
         type: "POST",
         url: "/api/users/refresh",
@@ -18,6 +18,7 @@ function refreshAccessToken() {
             }
         },
         error: function(xhr, status, error) {
+            alert("로그인 후 이용해주세요");
         }
     });
 }
