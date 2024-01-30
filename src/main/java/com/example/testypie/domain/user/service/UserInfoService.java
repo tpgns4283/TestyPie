@@ -10,6 +10,8 @@ import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.domain.util.S3Util;
 import com.example.testypie.domain.util.S3Util.FilePath;
+import com.example.testypie.global.exception.ErrorCode;
+import com.example.testypie.global.exception.GlobalExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,9 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Random;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,9 +38,9 @@ public class UserInfoService {
 
     @Transactional
     public ProfileResponseDTO updateProfile(String account, ProfileRequestDTO req,
-        MultipartFile multipartfile) {
+                                            MultipartFile multipartfile) {
         User profileUser = userRepository.findByAccount(account)
-            .orElseThrow(() -> new NoSuchElementException("해당하는 유저가 없습니다."));
+                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
         String fileUrl = profileUser.getFileUrl(); // 사용자가 가진 기존 파일
 
         if (multipartfile != null && !multipartfile.isEmpty()) {
@@ -54,7 +54,7 @@ public class UserInfoService {
 
         profileUser.update(req, fileUrl);
         return new ProfileResponseDTO(profileUser.getAccount(), profileUser.getNickname(), profileUser.getEmail(), profileUser.getDescription(),
-            profileUser.getFileUrl() );
+                profileUser.getFileUrl());
     }
 
     public ProfileResponseDTO getProfile(String account) {
@@ -68,7 +68,7 @@ public class UserInfoService {
 
     public User findProfile(String account) {
         return userRepository.findByAccount(account)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다."));
+                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PROFILE_USER_NOT_FOUND));
     }
 
     // 프로필 작성자와 사이트 이용자가 일치하는 메서드
@@ -76,7 +76,7 @@ public class UserInfoService {
         User profileUser = findProfile(profileAccount);
         User user = findProfile(userAccount);
         if (!profileUser.equals(user)) {
-            throw new IllegalArgumentException("요청하는 유저에게 권한이 없습니다.");
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_USER_INVALID_AUTHORIZATION);
         }
 
     }
@@ -110,7 +110,7 @@ public class UserInfoService {
     private void validateProduct(Long productId) {
         boolean isProductValid = userRepository.existsProductById(productId);
         if (!isProductValid) {
-            throw new IllegalArgumentException("유효하지 않은 product ID: " + productId);
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_PRODUCT_ID_NOT_FOUND);
         }
     }
 
@@ -118,7 +118,8 @@ public class UserInfoService {
         Feedback feedback = feedbackService.getValidFeedback(productId, feedbackId);
 
         if (feedback == null) {
-            throw new IllegalArgumentException("유효하지 않은 feedback ID: " + feedbackId);
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_FEEDBACK_ID_NOT_FOUND);
+
         }
 
         return feedback;
@@ -126,7 +127,7 @@ public class UserInfoService {
 
     private void validateFeedbackProductAssociation(Feedback feedback, Long productId) {
         if (!feedback.getProduct().getId().equals(productId)) {
-            throw new RejectedExecutionException("피드백 ID " + feedback.getId() + "가 제품 " + productId + "과 연관되어 있지 않습니다.");
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_PRODUCT_FEEDBACK_ID_NOT_FOUND);
         }
     }
 
