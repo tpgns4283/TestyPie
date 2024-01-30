@@ -47,11 +47,8 @@ public class S3Util {
         // 업로드할 파일의 고유한 파일명 생성
         String fileName = createFileName(multipartFile.getOriginalFilename());
         // 파일명을 UTF-8로 디코딩
-        try {
-            fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("ㅎㅇ");
-        }
+        fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
+        log.warn("제발 되주세요: " + filePath + fileName);
         // 업로드할 파일의 메타데이터 생성
         ObjectMetadata metadata = setObjectMetadata(multipartFile);
         try {
