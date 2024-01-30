@@ -105,7 +105,7 @@
         <button class="btn btn-secondary"
                 th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/feedback(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
                 type="button">피드백 등록</button>
-        <button id="product-like-button" onclick="likeProduct()">좋아요</button>
+        <button id="product-like-button" type="button" onclick="likeProduct()">좋아요</button>
     </div>
 </div>
 <div class="comment-section">
@@ -148,7 +148,7 @@
                 const commentList = document.getElementById('comment-list');
                 commentList.innerHTML = ''; // 댓글 목록 초기화
                 response.content.forEach(function(comment) {
-                    addCommentToDOM(comment.content, comment.id, comment.commentLikeCnt);
+                    addCommentToDOM(comment.content, comment.id, comment.account, comment.commentLikeCnt);
                     loadCommentLikeStatus(comment.id);
                 });
             },
@@ -188,7 +188,7 @@
                     commentInput.value = '';
                 },
                 error: function(xhr, status, error) {
-                    console.error('댓글 저장 실패:', error);
+                    alert('댓글 저장에 실패하였습니다.');
                 }
             });
         } else {
@@ -196,13 +196,11 @@
         }
     }
 
-    function addCommentToDOM(content, id, commentLikeCnt) {
+    function addCommentToDOM(content, id, account, commentLikeCnt) {
         const commentList = document.getElementById('comment-list');
         const newComment = document.createElement('div');
         newComment.classList.add('content');
         newComment.setAttribute('data-comment-id', id); // 댓글 식별자 설정
-
-        var account = localStorage.getItem("account")
 
         newComment.innerHTML = `
         <p class="comment-author">작성자 : ${account}</p>
@@ -266,7 +264,7 @@
                 button.onclick = function() { editComment(this); };
             },
             error: function(xhr, status, error) {
-                console.error('댓글 수정 실패:', error);
+                alert("댓글 수정에 실패하였습니다.");
             }
         });
     }
@@ -351,7 +349,7 @@
                     comment.parentNode.removeChild(comment);
                 },
                 error: function(xhr, status, error) {
-                    console.error('댓글 삭제 실패:', error);
+                    alert("댓글삭제에 실패하였습니다.");
                     alert("댓글 삭제에 실패했습니다.");
                 }
             });
@@ -378,7 +376,7 @@
                 location.reload();
             },
             error: function(xhr, status, error) {
-                console.error('좋아요 실패:', error);
+                alert("로그인 후 시도해주세요.");
             }
         });
     }
