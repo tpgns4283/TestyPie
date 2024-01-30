@@ -36,7 +36,7 @@ public class FeedbackService {
 
 
     public FeedbackCreateResponseDTO addFeedback(FeedbackCreateRequestDTO req, Long productId, User user,
-                                                 Long childCategoryId, String parentCategoryName, Long surveyId) {
+                                                 Long childCategoryId, String parentCategoryName) {
         // 해당 product 존재 여부 검증
         Product product = productService.findProduct(productId);
         if(product.getUser().getId().equals(user.getId())){

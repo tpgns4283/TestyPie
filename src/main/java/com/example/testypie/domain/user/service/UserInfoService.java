@@ -44,7 +44,7 @@ public class UserInfoService {
     public ProfileResponseDTO updateProfile(String account, ProfileRequestDTO req,
         MultipartFile multipartfile) {
         User profileUser = userRepository.findByAccount(account)
-            .orElseThrow(() -> new NoSuchElementException("해당하는 유저가 없습니다."));
+            .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
         String fileUrl = profileUser.getFileUrl(); // 사용자가 가진 기존 파일
 
         if (multipartfile != null && !multipartfile.isEmpty()) {
