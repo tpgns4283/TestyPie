@@ -10,7 +10,7 @@ import java.util.Date;
 
 public record ProductPageResponseDTO (
         Long id,
-        String account,
+        String nickname,
         String title,
         String content,
         Long childCategoryId,
@@ -24,7 +24,7 @@ public record ProductPageResponseDTO (
     public static ProductPageResponseDTO of(Product product) {
         return new ProductPageResponseDTO(
                 product.getId(),
-                product.getUser().getAccount(),
+                product.getUser().getNickname(),
                 product.getTitle(),
                 product.getContent(),
                 product.getCategory().getId(),

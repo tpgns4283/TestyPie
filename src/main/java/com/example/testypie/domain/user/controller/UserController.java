@@ -157,8 +157,17 @@ public class UserController {
     }
 
     @DeleteMapping("/api/users/logout")
-    public ResponseEntity<?> logout(@CookieValue(REFRESH_AUTHORIZATION_HEADER) String token, HttpServletResponse res) {
+    public ResponseEntity<?> logout(@CookieValue(value = "Refresh-Authorization", required = false) String token, HttpServletResponse res) {
         logger.info("리프레시 토큰: " + token);
+
+        if (token == null || token.isEmpty()) {
+            Cookie cookie = new Cookie("Refresh-Authorization", null);
+            cookie.setPath("/");
+            cookie.setHttpOnly(true);
+            cookie.setMaxAge(0); // 쿠키를 즉시 만료시킵니다.
+            res.addCookie(cookie);
+            return ResponseEntity.ok().body(new MessageDTO("로그아웃 되었습니다.", 200));
+        }
 
         RefreshToken refreshToken = refreshTokenService.findToken(token);
 

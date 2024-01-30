@@ -63,62 +63,48 @@ $(document).ready(function() {
 function checkLoginStatusAndUpdateLink() {
     var loginLink = document.getElementById("loginLink");
 
-    // 쿠키에서 refreshToken 확인
-    function hasRefreshToken() {
-        return document.cookie.split(';').some((item) => item.trim().startsWith('Refresh-Authorization='));
-    }
-
-    // 로그인/로그아웃 링크 클릭 이벤트 핸들러
     loginLink.onclick = function() {
-        var account = localStorage.getItem("account");
         var jwtToken = localStorage.getItem("jwtToken");
 
-        // 로그인 상태 확인
-        if (account || jwtToken) {
-            // 로그인 상태이고 refreshToken 쿠키가 없으면 직접 로그아웃 처리
-            if (!hasRefreshToken()) {
+        // 로그인 상태가 아닐 경우 로그인 페이지로 이동
+        if (!jwtToken) {
+            window.location.href = "/home/login";
+            return false;
+        }
+
+        // 로그인 상태일 경우 서버에 로그아웃 요청
+        $.ajax({
+            type: "DELETE",
+            url: "/api/users/logout",
+            xhrFields: {
+                withCredentials: true // 쿠키를 포함하도록 설정
+            },
+            success: function(response) {
+                // 로그아웃 성공 시 로컬 스토리지에서 계정 정보 제거
                 localStorage.removeItem("account");
                 localStorage.removeItem("jwtToken");
-                document.cookie = "Refresh-Authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+
                 alert("로그아웃 되었습니다");
                 window.location.href = "/home";
                 loginLink.textContent = "로그인";
                 loginLink.href = "/home/login";
-                return false;
+            },
+            error: function(xhr, status, error) {
+                console.log("로그아웃 실패:", error);
             }
-
-            // AJAX를 사용하여 서버에 로그아웃 요청
-            $.ajax({
-                type: "DELETE",
-                url: "/api/users/logout",
-                xhrFields: {
-                    withCredentials: true // 쿠키를 포함하도록 설정
-                },
-                success: function(response) {
-                    localStorage.removeItem("account");
-                    localStorage.removeItem("jwtToken");
-
-                    alert("로그아웃 되었습니다");
-                    window.location.href = "/home";
-                    loginLink.textContent = "로그인";
-                    loginLink.href = "/home/login";
-                },
-                error: function(xhr, status, error) {
-                    console.log("로그아웃 실패:", error);
-                }
-            });
-        } else {
-            // 로그인 상태가 아니면 로그인 페이지로 이동
-            window.location.href = "/home/login";
-        }
+        });
 
         return false;
     };
 
-    // 초기 로그인 상태 확인 및 링크 텍스트 설정
-    var account = localStorage.getItem("account");
+    updateLinkText();
+}
+
+function updateLinkText() {
+    var loginLink = document.getElementById("loginLink");
     var jwtToken = localStorage.getItem("jwtToken");
-    if (account && jwtToken) {
+
+    if (jwtToken) {
         loginLink.textContent = "로그아웃";
         loginLink.href = "#";
     } else {
@@ -128,6 +114,9 @@ function checkLoginStatusAndUpdateLink() {
 }
 
 window.onload = checkLoginStatusAndUpdateLink;
+
+
+
 
 
 

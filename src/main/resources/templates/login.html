@@ -19,7 +19,10 @@
       <form class="form1">
         <input class="un " type="text" id="account" placeholder="아이디">
         <input class="pass" type="password" id="password" placeholder="비밀번호">
-        <button type="submit" class="submit">로그인</button>
+        <div class="buttons-container">
+          <button type="submit" class="submit">로그인</button>
+          <button type="button" class="button">회원가입</button>
+        </div>
         <p class="forgot" align="center"><a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=58c7ccd47e3b71e699a7c7d0c56341e5&redirect_uri=http://localhost:8080/home/kakao-login/callback">
           <img src="../static/images/kakao_login_medium.png" alt="카카오 로그인 이미지"></a></p>
 
@@ -27,6 +30,15 @@
 </div>
 </body>
 <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var signupButton = document.querySelector('.signup-button');
+    if (signupButton) {
+      signupButton.addEventListener('click', function() {
+        window.location.href = "/home/signup";
+      });
+    }
+  });
+
   $(document).ready(function() {
     $("#loginForm").submit(function(event) {
       event.preventDefault();
@@ -47,7 +59,7 @@
           if (token) {
             // 로컬 스토리지에 토큰 저장
             localStorage.setItem("jwtToken", token);
-            localStorage.setItem("account", account);
+            // localStorage.setItem("account", account);
           }
           alert("로그인 되었습니다")
           console.log("로그인 성공:", response);
@@ -58,6 +70,9 @@
         }
       });
     });
+  });
+  $(".button").click(function() {
+    window.location.href = "/home/signup";
   });
 </script>
 </html>
