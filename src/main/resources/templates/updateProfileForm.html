@@ -2,8 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <link th:href="@{/css/bootstrap.min.css}"
-          href="../../../../../../../../week2/TestyPie/src/main/resources/static/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/updateProfile.css">
 </head>
 <body th:attr="data-account=${account}">
 <!-- section Start -->
@@ -27,10 +26,11 @@
     <label for="description">자기소개</label>
     <input type="text" id="description" name="description" class="form-control form-control-sm">
 </div>
-
 <div>
+    <label for="description">프로필 사진</label>
     <input class="file" type="file" name="image" accept="image/*" id="multipartFile">
 </div>
+
 <hr class="my-4">
 
 <button class="btn btn-dark" id="saveBtn" type="button">수정내용 저장</button>
