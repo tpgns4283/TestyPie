@@ -55,7 +55,7 @@ public class UserController {
     public ResponseEntity<MessageDTO> signup(@RequestBody @Valid SignUpRequestDTO req,
             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.DUPLICATE_RESOURCE);
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_ACCOUNT);
         }
 
         userService.signup(req);
@@ -70,7 +70,7 @@ public class UserController {
             BindingResult bindingResult,
             HttpServletResponse res) {
         if (bindingResult.hasErrors()) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.USER_NOT_FOUND);
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND);
         }
 
         userService.login(req);
@@ -139,14 +139,14 @@ public class UserController {
 
         if (refreshToken == null) {
             // 리프레시 토큰이 존재하지 않는 경우에 대한 처리
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.UNAUTHENTICATED_USERS);
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
         }
 
         Claims claims = jwtUtil.getUserInfoFromToken(refreshToken.getTokenValue());
 
         if (claims == null) {
             // 리프레시 토큰이 유효하지 않거나 사용자 ID를 포함하지 않는 경우에 대한 처리
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.ACCESS_DENIED);
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.REFRESH_TOKEN_INVALID);
         }
 
         String account = claims.getSubject();
@@ -166,14 +166,14 @@ public class UserController {
 
         if (refreshToken == null) {
             // 리프레시 토큰이 존재하지 않는 경우에 대한 처리
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.UNAUTHENTICATED_USERS);
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
         }
 
         Claims claims = jwtUtil.getUserInfoFromToken(refreshToken.getTokenValue());
 
         if (claims == null) {
             // 리프레시 토큰이 유효하지 않거나 사용자 ID를 포함하지 않는 경우에 대한 처리
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.ACCESS_DENIED);
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.REFRESH_TOKEN_INVALID);
         }
 
         userService.findUser(claims.getSubject());

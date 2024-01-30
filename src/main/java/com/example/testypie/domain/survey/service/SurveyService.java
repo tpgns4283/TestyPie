@@ -15,6 +15,8 @@ import com.example.testypie.domain.survey.dto.SurveyReadResponseDTO;
 import com.example.testypie.domain.survey.entity.Survey;
 import com.example.testypie.domain.survey.repository.SurveyRepository;
 import com.example.testypie.domain.user.entity.User;
+import com.example.testypie.global.exception.ErrorCode;
+import com.example.testypie.global.exception.GlobalExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +39,7 @@ public class SurveyService {
         Product product = productService.getUserProduct(product_id, user);
         Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
         if (!category.getId().equals(product.getCategory().getId())) {
-            throw new IllegalArgumentException("카테고리와 Product의 카테고리가 일치하지 않습니다.");
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_NOT_FOUND);
         }
 
         Survey survey = Survey.builder()
@@ -78,7 +80,7 @@ public class SurveyService {
         Product product = productService.findProduct(productId);
         Category category = categoryService.getCategory(childCategoryId, parentCategoryName);
         if (!category.getId().equals(product.getCategory().getId())) {
-            throw new IllegalArgumentException("카테고리와 Product의 카테고리가 일치하지 않습니다.");
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
         }
 
         Survey survey = getSurveyById(surveyId);
@@ -90,12 +92,12 @@ public class SurveyService {
     @Transactional(readOnly = true)
     public Survey getSurveyById(Long id) {
         return surveyRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당한 설문지가 없습니다."));
+                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_SURVEY_NOT_FOUND));
     }
 
     public void checkSurveyUser(Survey survey, Long product_id) {
         if (!survey.getProduct().getId().equals(product_id)) { // product 생성자와 유저가 일치하지 않으면
-            throw new IllegalArgumentException("설문지는 본인만 조회 가능합니다.");
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_SURVEY_INVALID_AUTHORIZATION);
         }
     }
 }

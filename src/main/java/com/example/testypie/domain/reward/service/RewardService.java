@@ -9,6 +9,8 @@ import com.example.testypie.domain.reward.repository.RewardRepository;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.domain.user.service.UserInfoService;
+import com.example.testypie.global.exception.ErrorCode;
+import com.example.testypie.global.exception.GlobalExceptionHandler;
 import com.example.testypie.global.security.UserDetailsImpl;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -51,14 +53,14 @@ public class RewardService {
     private Reward getUserReward(User user, Long rewardId) {
         Reward reward = findReward(rewardId);
         if (!user.getId().equals(reward.getUser().getId())) {
-            throw new RejectedExecutionException("본인만 수정할 수 있습니다.");
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_REWARD_INVALID_AUTHORIZATION);
         }
         return reward;
     }
 
     public Reward findReward(Long reward_Id) {
         return rewardRepository.findById(reward_Id).orElseThrow(
-                () -> new IllegalArgumentException("reward id")
+                () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_REWARD_NOT_FOUND)
         );
     }
 }

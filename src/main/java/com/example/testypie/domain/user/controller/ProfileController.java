@@ -4,6 +4,8 @@ import com.example.testypie.domain.feedback.entity.Feedback;
 import com.example.testypie.domain.user.dto.*;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.service.UserInfoService;
+import com.example.testypie.global.exception.ErrorCode;
+import com.example.testypie.global.exception.GlobalExceptionHandler;
 import com.example.testypie.global.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,10 +54,9 @@ public class ProfileController {
             model.addAttribute("account", res);
             return ResponseEntity.ok(res);
         } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PROFILE_USER_NOT_FOUND);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body(new MessageDTO("업데이트에 실패했습니다.", HttpStatus.BAD_REQUEST.value()));
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.UPDATE_PROFILE_BAD_REQUEST);
         }
     }
 
@@ -127,7 +128,6 @@ public class ProfileController {
                                                                  @PathVariable Long feedbackId,
                                                                  @Valid @RequestBody RatingStarRequestDTO req,
                                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
 
         // 1.
         userInfoService.checkSameUser(account, userDetails.getUsername());

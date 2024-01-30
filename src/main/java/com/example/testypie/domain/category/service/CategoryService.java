@@ -4,6 +4,8 @@ import com.example.testypie.domain.category.dto.CategoryCreateRequestDTO;
 import com.example.testypie.domain.category.dto.CategoryCreateResponseDTO;
 import com.example.testypie.domain.category.entity.Category;
 import com.example.testypie.domain.category.repository.CategoryRepository;
+import com.example.testypie.global.exception.ErrorCode;
+import com.example.testypie.global.exception.GlobalExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,14 +26,14 @@ public class CategoryService {
 
     public Category getCategory(Long categoryId, String parentCategory_name) {
         Category childCategory = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
+                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_CATEGORY_NOT_FOUND));
 
         Category parentCategory = categoryRepository.findByName(parentCategory_name);
 
         if (childCategory.getParent() == parentCategory) {
             return childCategory;
         } else {
-            throw new IllegalArgumentException("부모카테고리와 자식카테고리가 일치하지 않습니다.");
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_CATEGORY_NOT_MATCH);
         }
     }
 }

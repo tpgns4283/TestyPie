@@ -7,6 +7,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Optional;
+
+import com.example.testypie.global.exception.ErrorCode;
+import com.example.testypie.global.exception.GlobalExceptionHandler;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +39,7 @@ public class S3Uploader {
 
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
         File uploadFile = convert(multipartFile).orElseThrow(
-                () -> new IllegalArgumentException("MultipartFile -> File로 전환이 실패했습니다."));
+                () -> new GlobalExceptionHandler.CustomException(ErrorCode.CREATE_IMAGE_FAIL));
 
         return upload(uploadFile, dirName);
     }

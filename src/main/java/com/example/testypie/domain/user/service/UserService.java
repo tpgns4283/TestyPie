@@ -30,11 +30,14 @@ public class UserService {
         String nickname = signUpRequestDTO.nickname();
         String description = signUpRequestDTO.description();
 
-        if (userRepository.findByAccount(account).isPresent()
-                || userRepository.findByEmail(email).isPresent()
-                || userRepository.findByNickname(nickname).isPresent()
-        ) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.DUPLICATE_RESOURCE);
+        if (userRepository.findByAccount(account).isPresent()) {
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_ACCOUNT);
+        }
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_EMAIL);
+        }
+        if (userRepository.findByNickname(nickname).isPresent()) {
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_NICKNAME);
         }
 
         User user = User.builder().account(account).password(password).email(email)
@@ -48,21 +51,21 @@ public class UserService {
         String password = req.password();
 
         User user = userRepository.findByAccount(account)
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.DUPLICATE_RESOURCE));
+                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.LOGIN_INVALID_ACCOUNT));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.INVALID_INPUT_VALUE);
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.LOGIN_INVALID_PASSWORD);
         }
     }
 
     public User findUser(String account) {
         return userRepository.findByAccount(account)
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
     }
 
     public User findUserByUserId(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
     }
 
     public void signOut(User user) {
@@ -73,7 +76,7 @@ public class UserService {
 
     private void deleteUser(Long userId) {
         userRepository.findById(userId)
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.DELETE_USER_NOT_FOUND));
         userRepository.deleteById(userId);
     }
 }

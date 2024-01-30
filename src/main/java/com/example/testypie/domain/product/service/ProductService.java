@@ -25,6 +25,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
+
+import com.example.testypie.global.exception.ErrorCode;
+import com.example.testypie.global.exception.GlobalExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -83,7 +86,7 @@ public class ProductService {
         if (category.getId().equals(product.getCategory().getId())) {
             return ProductReadResponseDTO.of(product, rewardDTOList);
         } else {
-            throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
         }
     }
 
@@ -134,7 +137,7 @@ public class ProductService {
         Product product = getUserProduct(productId, user);
         Category category = categoryService.getCategory(category_id, parentCategory_name);
         if (!category.getId().equals(product.getCategory().getId())) {
-            throw new IllegalArgumentException("카테고리와 Product의 카테고리가 일치하지 않습니다.");
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
         }
 
             product.updateTitle(req.title());
@@ -156,7 +159,7 @@ public class ProductService {
         Category category = categoryService.getCategory(category_id, parentCategory_name);
         Product product = getUserProduct(productId, user);
         if (!category.getId().equals(product.getCategory().getId())) {
-            throw new IllegalArgumentException("카테고리와 Product의 카테고리가 일치하지 않습니다.");
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
         }
 
             productRepository.delete(product);
@@ -167,7 +170,7 @@ public class ProductService {
     public Product findProduct(Long productId) {
         //RuntimeException으로 변경 예정
         return productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 Product입니다."));
+                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_NOT_FOUND));
     }
 
     //Product 본인 인증
@@ -175,7 +178,7 @@ public class ProductService {
         Product product = findProduct(productId);
         //RuntimeException으로 변경 예정
         if (!user.getId().equals(product.getUser().getId())) {
-            throw new RejectedExecutionException("본인만 수정할 수 있습니다.");
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND);
         }
         return product;
     }
