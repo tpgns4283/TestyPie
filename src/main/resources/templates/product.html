@@ -119,8 +119,8 @@
 </div>
 </div>
 </body>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
+    window.onload = checkLoginStatusAndUpdateLink;
     var productId = document.getElementById('productId').value;
     var parentName = $(".container").data("parentname");
     var childId = $(".container").data("childid");
