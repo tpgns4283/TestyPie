@@ -4,7 +4,6 @@ import com.example.testypie.domain.user.dto.LoginRequestDTO;
 import com.example.testypie.domain.user.dto.SignUpRequestDTO;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.repository.UserRepository;
-//import com.example.testypie.domain.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,7 +45,8 @@ public class UserService {
         }
 
         User user = User.builder().account(account).password(password).email(email)
-                .nickname(nickname).description(description).fileUrl(defaultProfileImageUrl).build();
+                .nickname(nickname).description(description).fileUrl(defaultProfileImageUrl)
+                .build();
 
         userRepository.save(user);
     }
