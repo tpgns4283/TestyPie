@@ -1,6 +1,5 @@
 package com.example.testypie.domain.user.dto;
 
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.web.multipart.MultipartFile;
 

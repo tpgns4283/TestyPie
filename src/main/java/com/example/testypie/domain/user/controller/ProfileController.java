@@ -42,12 +42,14 @@ public class ProfileController {
     }
 
     //프로필 수정
+    //프로필 수정
     @PatchMapping(value = "/{account}/update", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateProfile(
-        @PathVariable String account,
-        ProfileRequestDTO req
-        // MultipartHttpServletRequest multipartreq,
-        // Model model
+            @PathVariable String account,
+            @RequestPart("req") ProfileRequestDTO req,
+            @RequestPart("file") MultipartFile multipartFile
+            // MultipartHttpServletRequest multipartreq,
+            // Model model
     ) {
 
         try { //log.info(multipartreq.getFiles("multipartFile").toString());
