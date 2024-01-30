@@ -51,7 +51,7 @@ public class CommentController {
         Page<CommentResponseDTO> resList = commentMatcherService.getComments(pageable, product_id,
                 childCategory_id, parentCategory_name);
 
-        return ResponseEntity.ok(resList);
+        return ResponseEntity.ok().body(resList);
     }
 
     @PatchMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments/{comment_id}")

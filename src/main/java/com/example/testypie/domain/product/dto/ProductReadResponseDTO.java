@@ -7,6 +7,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -18,9 +19,9 @@ public record ProductReadResponseDTO(
         String content,
         String category,
         Long productLikeCnt,
-        LocalDateTime createAt,
-        LocalDateTime startAt,
-        LocalDateTime closedAt,
+        String createAt,
+        String startAt,
+        String closedAt,
         List<RewardReadResponseDTO> rewardList,
         String message
 
@@ -29,6 +30,12 @@ public record ProductReadResponseDTO(
     public static ProductReadResponseDTO of(Product product,
             List<RewardReadResponseDTO> rewardDTOList)
             throws ParseException {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        String createDate = product.getCreatedAt().format(formatter);
+        String startDate = product.getClosedAt().format(formatter);
+        String endDate = product.getClosedAt().format(formatter);
 
         String end = product.getClosedAt().toString();
         String now = LocalDateTime.now().toString();
@@ -42,8 +49,12 @@ public record ProductReadResponseDTO(
         String message;
 
         if (LocalDateTime.now().isBefore(product.getStartedAt())) {
-            message = "Product 시작 전입니다.";
-        } else {
+            message = "테스트 시작 전입니다.";
+        }
+        else if(LocalDateTime.now().isAfter(product.getClosedAt())){
+            message = "마감된 테스트 입니다.";
+        }
+        else {
             long diffSec = (endFormat.getTime() - nowFormat.getTime()) / 1000;
             diffDays = (diffSec / (24 * 60 * 60));
             message = "마감 " + diffDays + "일 전";
@@ -56,9 +67,9 @@ public record ProductReadResponseDTO(
                 product.getContent(),
                 product.getCategory().getName(),
                 product.getProductLikeCnt(),
-                product.getCreatedAt(),
-                product.getStartedAt(),
-                product.getClosedAt(),
+                createDate,
+                startDate,
+                endDate,
                 rewardDTOList,
                 message
         );

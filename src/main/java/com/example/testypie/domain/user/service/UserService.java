@@ -7,6 +7,7 @@ import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.global.exception.ErrorCode;
 import com.example.testypie.global.exception.GlobalExceptionHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,9 @@ public class UserService {
     private final UserRepository userRepository;
 
 //    private final S3Uploader s3Uploader;
+
+    @Value("${default.image.address}")
+    private String defaultProfileImageUrl;
 
     public void signup(SignUpRequestDTO signUpRequestDTO) {
 
@@ -41,7 +45,7 @@ public class UserService {
         }
 
         User user = User.builder().account(account).password(password).email(email)
-                .nickname(nickname).description(description).build();
+                .nickname(nickname).description(description).fileUrl(defaultProfileImageUrl).build();
 
         userRepository.save(user);
     }

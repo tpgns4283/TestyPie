@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>설문지 생성</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        form {
+            width: 80%;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            box-sizing: border-box;
+        }
+
+        .question {
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        button {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+
+<h2>설문지 생성</h2>
+
+<form id="surveyForm" >
+    <div class="container" th:attr="data-parentname=${parentName}, data-childid=${childId}, data-productid=${productId}">
+    <label for="title">설문지 제목:</label><br>
+    <input type="text" id="title" name="title"><br>
+
+    <div id="questionsContainer">
+        <!-- 질문 양식이 여기에 동적으로 추가됩니다. -->
+    </div>
+
+    <button type="button" onclick="addQuestion()">질문 추가</button><br>
+    <button type="submit">설문지 제출</button>
+    </div>
+</form>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    let questionCount = 0;
+
+    function addQuestion() {
+        questionCount++;
+        const questionId = `question${questionCount}`;
+
+        const container = document.getElementById('questionsContainer');
+        const questionDiv = document.createElement('div');
+        questionDiv.classList.add('question');
+        questionDiv.id = questionId;
+
+        questionDiv.innerHTML = `
+            <label>질문:</label><br>
+            <input type="text" id="questionText${questionCount}" name="questionText"><br>
+            <label>질문 유형:</label><br>
+            <select id="questionType${questionCount}" name="questionType" onchange="addOptions('${questionId}')">
+                <option value="">--유형 선택--</option>
+                <option value="SHORT_ANSWER">단답형</option>
+                <option value="MULTI_CHOICE">객관식</option>
+            </select><br>
+        `;
+
+        const optionsContainer = document.createElement('div');
+        optionsContainer.classList.add('optionsContainer');
+        questionDiv.appendChild(optionsContainer);
+
+        container.appendChild(questionDiv);
+    }
+
+    function addOptions(questionId) {
+        const questionDiv = document.getElementById(questionId);
+        const select = questionDiv.querySelector(`select[name="questionType"]`);
+        const optionsContainer = questionDiv.querySelector('.optionsContainer');
+
+        optionsContainer.innerHTML = '';
+
+        if (select.value === 'MULTI_CHOICE') {
+            for (let i = 0; i < 4; i++) {
+                const optionInput = document.createElement('input');
+                optionInput.type = 'text';
+                optionInput.id = `option${questionCount}-${i + 1}`;
+                optionInput.name = `option${questionCount}-${i + 1}`;
+                optionInput.placeholder = `선택지 ${i + 1}`;
+                optionsContainer.appendChild(optionInput);
+                optionsContainer.appendChild(document.createElement('br'));
+            }
+        }
+    }
+
+    $('#surveyForm').submit(function(event) {
+        event.preventDefault();
+
+        const surveyData = {
+            title: $('#title').val(),
+            questionList: []
+        };
+
+        for (let i = 1; i <= questionCount; i++) {
+            const questionText = $(`#questionText${i}`).val();
+            const questionType = $(`#questionType${i}`).val();
+            const question = {
+                text: questionText,
+                questionType: questionType
+            };
+
+            if (questionType === 'MULTI_CHOICE') {
+                question.optionList = [];
+                for (let j = 1; j <= 4; j++) {
+                    const optionValue = $(`#option${i}-${j}`).val();
+                    if (optionValue) {
+                        question.optionList.push({ text: optionValue });
+                    }
+                }
+            }
+
+            surveyData.questionList.push(question);
+            console.log(surveyData);
+        }
+
+        var productId = $(".container").data("productid");
+        var parentName = $(".container").data("parentname");
+        var childId = $(".container").data("childid");
+
+        const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/surveys";
+        console.log(url)
+
+        // $.ajax를 사용하여 서버로 POST 요청 보내기
+        $.ajax({
+            type: "POST",
+            url: url,
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(surveyData),
+            beforeSend: function (xhr) {
+                // 로컬 스토리지에서 JWT 토큰을 가져와 헤더에 추가
+                var token = localStorage.getItem("jwtToken");
+                if (token) {
+                    xhr.setRequestHeader("Authorization", token);
+                }
+            },
+            success: function(response) {
+                alert('설문지가 성공적으로 제출되었습니다!');
+                window.location.href = "/api/category/" + parentName + "/" + childId;
+            },
+            error: function(xhr, status, error) {
+                alert('설문지 제출 중 오류가 발생했습니다.');
+            }
+        });
+    });
+</script>
+</body>
+</html>

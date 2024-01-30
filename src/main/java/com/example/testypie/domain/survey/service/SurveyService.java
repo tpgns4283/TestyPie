@@ -71,11 +71,14 @@ public class SurveyService {
 
         survey.setQuestionList(questions);
         Survey savedSurvey = surveyRepository.save(survey);
+
+        product.setSurvey(savedSurvey);
+
         return new SurveyCreateResponseDTO(savedSurvey);
     }
 
     @Transactional(readOnly = true)
-    public SurveyReadResponseDTO getSurvey(Long surveyId, Long productId, Long childCategoryId, String parentCategoryName) {
+    public SurveyReadResponseDTO getSurvey(Long productId, Long childCategoryId, String parentCategoryName) {
 
         Product product = productService.findProduct(productId);
         Category category = categoryService.getCategory(childCategoryId, parentCategoryName);
@@ -83,10 +86,9 @@ public class SurveyService {
             throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
         }
 
-        Survey survey = getSurveyById(surveyId);
-        checkSurveyUser(survey, productId);
+        checkSurveyUser(product.getSurvey(), productId);
 
-        return SurveyReadResponseDTO.of(survey);
+        return SurveyReadResponseDTO.of(product.getSurvey());
     }
 
     @Transactional(readOnly = true)

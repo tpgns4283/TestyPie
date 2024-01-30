@@ -32,6 +32,15 @@ public class ProductLikeService {
         return ProductLikeResponseDto.of(productLike.getIsProductLiked());
     }
 
+    public ProductLikeResponseDto getProductLike(Long productId, User user) {
+
+        Product product = productService.findProduct(productId);
+        ProductLike productLike = productLikeRepository.findByProductAndUser(product, user)
+                .orElseGet(() -> saveProductLike(product, user));
+
+        return ProductLikeResponseDto.of(productLike.getIsProductLiked());
+    }
+
     private ProductLike saveProductLike(Product product, User user) {
 
         ProductLike productLike = ProductLike.builder()

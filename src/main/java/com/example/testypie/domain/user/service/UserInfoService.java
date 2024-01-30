@@ -11,6 +11,8 @@ import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.domain.util.S3Uploader;
 import com.example.testypie.global.exception.ErrorCode;
 import com.example.testypie.global.exception.GlobalExceptionHandler;
+import com.example.testypie.domain.util.S3Util;
+import com.example.testypie.domain.util.S3Util.FilePath;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,7 +34,7 @@ public class UserInfoService {
     private final UserRepository userRepository;
     private final FeedbackService feedbackService;
     private final ProductService productService;
-    private final S3Uploader s3Uploader;
+    private final S3Util s3Util;
     private final Random random = new Random();
 
     @Value("${default.image.address}")
@@ -39,28 +42,23 @@ public class UserInfoService {
 
     @Transactional
     public ProfileResponseDTO updateProfile(String account, ProfileRequestDTO req,
-                                            MultipartFile multipartfile) {
-        try {
-            User profileUser = userRepository.findByAccount(account)
-                    .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
-            String fileUrl = req.fileUrl();
+        MultipartFile multipartfile) {
+        User profileUser = userRepository.findByAccount(account)
+            .orElseThrow(() -> new NoSuchElementException("해당하는 유저가 없습니다."));
+        String fileUrl = profileUser.getFileUrl(); // 사용자가 가진 기존 파일
 
-            if (multipartfile != null && !multipartfile.isEmpty()) {
-                s3Uploader.upload(multipartfile, "profile/");
-                fileUrl = s3Uploader.upload(multipartfile, "profile/");
-            } else if (!fileUrl.equals(defaultProfileImageUrl)) {
-                s3Uploader.upload(multipartfile, "profile/");
-            } else {
-                fileUrl = defaultProfileImageUrl;
+        if (multipartfile != null && !multipartfile.isEmpty()) {
+            if (!fileUrl.equals(defaultProfileImageUrl)) {
+                s3Util.deleteFile(fileUrl, FilePath.PROFILE);
             }
-
-            profileUser.update(req);
-            return new ProfileResponseDTO(profileUser.getAccount(), profileUser.getNickname(), profileUser.getEmail(), profileUser.getDescription(),
-                    profileUser.getFileUrl());
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.UPDATE_PROFILE_BAD_REQUEST);
+            fileUrl = s3Util.uploadFile(multipartfile, FilePath.PROFILE);
+        } else {
+            fileUrl = defaultProfileImageUrl;
         }
+
+        profileUser.update(req, fileUrl);
+        return new ProfileResponseDTO(profileUser.getAccount(), profileUser.getNickname(), profileUser.getEmail(), profileUser.getDescription(),
+            profileUser.getFileUrl() );
     }
 
     public ProfileResponseDTO getProfile(String account) {

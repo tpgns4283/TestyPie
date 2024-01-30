@@ -1,144 +1,144 @@
-    <!DOCTYPE HTML>
-    <html>
-    <head>
-        <meta charset="utf-8">
-        <link th:href="@{/css/bootstrap.min.css}"
-              href="../../../../../../../../week2/TestyPie/src/main/resources/static/css/bootstrap.min.css" rel="stylesheet">
-        <style>
-            .comment-section {
-                width: 500px;
-                margin: auto;
-                font-family: Arial, sans-serif;
-            }
-
-            .comment-input textarea, .comment-edit textarea {
-                width: 100%;
-                padding: 10px;
-                margin-bottom: 10px;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                resize: vertical;
-            }
-
-            .comment-input button, .comment-edit button {
-                padding: 10px 20px;
-                border: none;
-                border-radius: 5px;
-                background-color: #5cb85c;
-                color: white;
-                cursor: pointer;
-            }
-
-            .comment-input button:hover, .comment-edit button:hover {
-                background-color: #4cae4c;
-            }
-
-            .comment {
-                border-bottom: 1px solid #eee;
-                padding: 10px 0;
-            }
-
-            .comment-author {
-                font-weight: bold;
-                margin-bottom: 5px;
-            }
-
-            .comment-body {
-                margin-top: 0;
-            }
-
-            .comment-actions {
-                margin-top: 10px;
-            }
-        </style>
-    </head>
-    <body onload="loadComments()">
-    <!-- section Start -->
-        <div class="container" th:attr="data-parentname=${parentCategory_name}, data-childid=${childCategory_id}, data-productid=${productId}">
-            <h2>상품 단일 조회</h2>
-        </div>
-
-        <div>
-            <label for="productId">상품 ID</label>
-            <input type="text" id="productId" name="productId" class="form-control form-control-sm" value="1" th:value="${product.id}" disabled>
-        </div>
-        <div>
-            <label for="name">이름s</label>
-            <input type="text" id="name" name="name" class="form-control form-control-sm" value="상품이름" th:value="${product.title}" disabled>
-        </div>
-        <div>
-            <label for="price">내용</label>
-            <input type="text" id="price" name="price" class="form-control form-control-sm" value="1" th:value="${product.content}" disabled>
-        </div>
-        <div>
-            <label for="quantity">작성자</label>
-            <input type="text" id="quantity" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.account}" disabled>
-        </div>
-        <div>
-            <label for="quantity">등록일</label>
-            <input type="text" id="quantity" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.createAt}" disabled>
-        </div>
-        <div>
-            <label for="quantity">시작일</label>
-            <input type="text" id="quantity" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.startAt}" disabled>
-        </div>
-        <div>
-            <label for="quantity">마감일</label>
-            <input type="text" id="quantity" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.closedAt}" disabled>
-        </div>
-        <div>
-            <label for="quantity">남은기간</label>
-            <input type="text" id="quantity" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.message}" disabled>
-        </div>
-
-        <hr class="my-4">
-
-        <div class="row">
-            <div class="d-grid gap-2 col-6 mx-auto">
-                <button class="btn btn-dark"
-                        onclick="location.href='updateProductForm.html'"
-                        th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/update(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
-                        type="button">상품 수정</button>
-
-                <button class="btn btn-secondary"
-                        onclick="location.href='productList.html'"
-                        th:onclick="|location.href='@{/api/category/{parentName}/{childId}(parentName=${parentCategory_name}, childId=${childCategory_id})}'|"
-                        type="button">상품 목록</button>
-            </div>
-        </div>
-        <div class="comment-section">
-            <div class="comment-input">
-                <textarea id="comment-input" placeholder="댓글을 입력하세요..."></textarea>
-                <button onclick="addComment()">게시</button>
-            </div>
-            <div id="comment-list" class="comment-list">
-                <!-- 댓글이 여기에 표시됩니다 -->
-            </div>
-        </div>
-    </div>
-    </body>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/product.css">
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            loadComments();
-        });
-        function getUserFromToken() {
-            return localStorage.getItem("account")
+    <script src="/js/category.js"></script>
+    <style>
+        .comment-section {
+            width: 500px;
+            margin: auto;
+            font-family: Arial, sans-serif;
         }
 
-    function loadComments() {
-        var productId = document.getElementById('productId').value;
-        var parentName = $(".container").data("parentname");
-        var childId = $(".container").data("childid");
+        .comment-input textarea, .comment-edit textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+        }
 
-        // URL에 실제 값 포함
-        const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments";
+        .comment-input button, .comment-edit button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #5cb85c;
+            color: white;
+            cursor: pointer;
+        }
+
+        .comment-input button:hover, .comment-edit button:hover {
+            background-color: #4cae4c;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .comment-body {
+            margin-top: 0;
+        }
+
+        .comment-actions {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body onload="loadComments(), loadProductLikeStatus()">
+<div th:replace="fragments/header :: headerFragment"></div>
+<!-- section Start -->
+<div class="container" th:attr="data-parentname=${parentCategory_name}, data-childid=${childCategory_id}, data-productid=${productId}">
+    <h2 th:text="${product.title}"> </h2>
+</div>
+
+<div>
+    <label for="productId">글 번호</label>
+    <input type="text" id="productId" name="productId" class="form-control form-control-sm" value="1" th:value="${product.id}" disabled>
+</div>
+<div>
+    <label for="price">좋아요</label>
+    <input type="text" id="productLike" name="productLike" class="form-control form-control-sm" value="0" th:value="${product.productLikeCnt}" disabled>
+</div>
+
+<div>
+    <label for="price">내용</label>
+    <input type="text" id="price" name="price" class="form-control form-control-sm" value="1" th:value="${product.content}" disabled>
+</div>
+<div>
+    <label for="writer">작성자</label>
+    <input type="text" id="writer" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.account}" disabled>
+</div>
+<div>
+    <label for="created">등록일</label>
+    <input type="text" id="created" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.createAt}" disabled>
+</div>
+<div>
+    <label for="started">시작일</label>
+    <input type="text" id="started" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.startAt}" disabled>
+</div>
+<div>
+    <label for="ended">마감일</label>
+    <input type="text" id="ended" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.closedAt}" disabled>
+</div>
+<div>
+    <label for="remain-time">남은기간</label>
+    <input type="text" id="remain-time" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.message}" disabled>
+</div>
+
+<hr class="my-4">
+
+<div class="row">
+    <div class="d-grid gap-2 col-6 mx-auto">
+        <button class="btn btn-dark"
+                th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/update(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
+                type="button">게시글 수정</button>
+
+        <button class="btn btn-secondary"
+                th:onclick="|location.href='@{/api/category/{parentName}/{childId}(parentName=${parentCategory_name}, childId=${childCategory_id})}'|"
+                type="button">게시글 목록</button>
+        <button class="btn btn-secondary"
+                th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/feedback(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
+                type="button">피드백 등록</button>
+        <button id="product-like-button" type="button" onclick="likeProduct()">좋아요</button>
+    </div>
+</div>
+<div class="comment-section">
+    <div class="comment-input">
+        <textarea id="comment-input" placeholder="댓글을 입력하세요..."></textarea>
+        <button onclick="addComment()">게시</button>
+    </div>
+    <div id="comment-list" class="comment-list">
+        <!-- 댓글이 여기에 표시됩니다 -->
+    </div>
+</div>
+</div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    var productId = document.getElementById('productId').value;
+    var parentName = $(".container").data("parentname");
+    var childId = $(".container").data("childid");
+    $(document).ready(function() {
+        loadComments();
+    });
+    function getUserFromToken() {
+        return localStorage.getItem("account")
+    }
+
+    function loadComments() {
+        const url = `/api/category/${parentName}/${childId}/products/${productId}/comments`;
 
         $.ajax({
             url: url,
             type: 'GET',
-            contentType: "application/json; charset=utf-8", // Content-Type을 명시적으로 설정
-            beforeSend: function (xhr) {
+            contentType: 'application/json; charset=utf-8',
+            beforeSend: function(xhr) {
                 var token = localStorage.getItem("jwtToken");
                 if (token) {
                     xhr.setRequestHeader("Authorization", token);
@@ -147,8 +147,9 @@
             success: function(response) {
                 const commentList = document.getElementById('comment-list');
                 commentList.innerHTML = ''; // 댓글 목록 초기화
-                response.forEach(function(comment) {
-                    addCommentToDOM(comment.content, comment.id); // 또는 필요에 따라 comment.author 등 다른 필드를 사용
+                response.content.forEach(function(comment) {
+                    addCommentToDOM(comment.content, comment.id, comment.account, comment.commentLikeCnt);
+                    loadCommentLikeStatus(comment.id);
                 });
             },
             error: function(xhr, status, error) {
@@ -157,159 +158,254 @@
         });
     }
 
-        function addComment() {
-            const commentInput = document.getElementById('comment-input');
-            const commentText = commentInput.value.trim();
+    function addComment() {
+        const commentInput = document.getElementById('comment-input');
+        const commentText = commentInput.value.trim();
 
-            if (commentText) {
-                const user = getUserFromToken();
+        if (commentText) {
+            const user = getUserFromToken();
+            const data = {
+                user: user,
+                content: commentText
+            };
 
-                // 서버로 보낼 데이터 준비
-                const data = {
-                    user: user,
-                    content: commentText
-                };
-                var productId = document.getElementById('productId').value;
-                var parentName = $(".container").data("parentname");
-                var childId = $(".container").data("childid");
+            const url = `/api/category/${parentName}/${childId}/products/${productId}/comments`;
 
-                // URL에 실제 값 포함
-                const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments";
-
-                $.ajax({
-                    url: url,
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(data),
-                    beforeSend: function (xhr) {
-                        // 로컬 스토리지에서 JWT 토큰을 가져와 헤더에 추가
-                        var token = localStorage.getItem("jwtToken");
-                        if (token) {
-                            xhr.setRequestHeader("Authorization", token);
-                        }
-                    },
-                    success: function(response) {
-                        alert("댓글이 입력되었습니다.");
-                        addCommentToDOM(response.content, response.id);
-                        commentInput.value = ''; // 입력 필드 초기화
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('댓글 저장 실패:', error);
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                beforeSend: function(xhr) {
+                    var token = localStorage.getItem("jwtToken");
+                    if (token) {
+                        xhr.setRequestHeader("Authorization", token);
                     }
-                });
-            } else {
-                alert('댓글을 입력해주세요.');
-            }
+                },
+                success: function(response) {
+                    alert("댓글이 입력되었습니다.");
+                    loadComments(); // 댓글 입력 후 목록 다시 로드
+                    commentInput.value = '';
+                },
+                error: function(xhr, status, error) {
+                    alert('댓글 저장에 실패하였습니다.');
+                }
+            });
+        } else {
+            alert('댓글을 입력해주세요.');
         }
+    }
 
-        function addCommentToDOM(content, id) {
-            const commentList = document.getElementById('comment-list');
-            const newComment = document.createElement('div');
-            newComment.classList.add('content');
-            newComment.setAttribute('data-comment-id', id); // 댓글 식별자 설정
+    function addCommentToDOM(content, id, account, commentLikeCnt) {
+        const commentList = document.getElementById('comment-list');
+        const newComment = document.createElement('div');
+        newComment.classList.add('content');
+        newComment.setAttribute('data-comment-id', id); // 댓글 식별자 설정
 
-            var account = localStorage.getItem("account")
-
-            newComment.innerHTML = `
-        <p class="comment-author">${account}</p>
+        newComment.innerHTML = `
+        <p class="comment-author">작성자 : ${account}</p>
         <p class="comment-body">${content}</p> <!-- 댓글 내용을 여기에 표시 -->
+        <p class="comment-author">좋아요 : ${commentLikeCnt}</p>
         <div class="comment-actions">
+            <button id="comment-like-button-${id}" onclick="likeComment(this)">좋아요</button>
             <button onclick="editComment(this)">수정</button>
             <button onclick="deleteComment(this)">삭제</button>
         </div>
         `;
-            commentList.appendChild(newComment);
-        }
+        commentList.appendChild(newComment);
+    }
 
 
-        function editComment(button) {
+    function editComment(button) {
+        const comment = button.parentNode.parentNode;
+        const body = comment.querySelector('.comment-body');
+        const editInput = document.createElement('textarea');
+        editInput.value = body.textContent;
+        comment.replaceChild(editInput, body);
+        button.textContent = '저장';
+        button.onclick = function() { saveEditComment(this, editInput); };
+    }
+
+    function saveEditComment(button, editInput) {
+        const comment = button.parentNode.parentNode;
+        const commentId = comment.getAttribute('data-comment-id'); // 댓글 식별자 가져오기
+        const updatedContent = editInput.value;
+
+        // 서버로 보낼 데이터 준비
+        const data = {
+            content: updatedContent
+        };
+
+        // URL에 실제 값 포함
+        const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments/" + commentId
+        console.log("PATCH URL: "+ url)
+        // AJAX PATCH 요청
+        $.ajax({
+            url: url,
+            type: 'PATCH',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            beforeSend: function (xhr) {
+                // 로컬 스토리지에서 JWT 토큰을 가져와 헤더에 추가
+                var token = localStorage.getItem("jwtToken");
+                console.log("JWT Token : " + token)
+                if (token) {
+                    xhr.setRequestHeader("Authorization", token);
+                }
+            },
+            success: function(response) {
+                // 댓글 수정 성공 시 UI 업데이트
+                alert("댓글이 수정되었습니다.");
+                const body = document.createElement('p');
+                body.classList.add('comment-body');
+                body.textContent = updatedContent;
+                comment.replaceChild(body, editInput);
+                button.textContent = '수정';
+                button.onclick = function() { editComment(this); };
+            },
+            error: function(xhr, status, error) {
+                alert("댓글 수정에 실패하였습니다.");
+            }
+        });
+    }
+
+    function likeComment(button) {
+        const comment = button.parentNode.parentNode;
+        const commentId = comment.getAttribute('data-comment-id');
+
+        // URL with actual values
+        const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments/" + commentId + "/comment_like";
+
+        $.ajax({
+            url: url,
+            type: 'Patch',
+            contentType: 'application/json',
+            beforeSend: function (xhr) {
+                var token = localStorage.getItem("jwtToken");
+                if (token) {
+                    xhr.setRequestHeader("Authorization", token);
+                }
+            },
+            success: function(response) {
+                loadComments();
+                loadCommentLikeStatus(commentId);
+            },
+            error: function(xhr, status, error) {
+                console.error('좋아요 실패:', error);
+            }
+        });
+    }
+
+    function loadCommentLikeStatus(commentId) {
+        console.log(commentId)
+        const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments/" + commentId + "/comment_like/status";
+        $.ajax({
+            url: url,
+            type: 'GET',
+            beforeSend: function (xhr) {
+                var token = localStorage.getItem("jwtToken");
+                if (token) {
+                    xhr.setRequestHeader("Authorization", token);
+                }
+            },
+            success: function(response) {
+                console.log(response)
+                const likeButton = document.getElementById('comment-like-button-' + commentId);
+                if (response.isCommentLiked) {
+                    likeButton.innerText = '좋아요 취소';
+                }
+                if (!response.isCommentLiked){
+                    likeButton.innerText = '좋아요';
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('좋아요 상태 로딩 실패:', error);
+            }
+        });
+    }
+
+    function deleteComment(button) {
+        if (confirm('댓글을 삭제하시겠습니까?')) {
             const comment = button.parentNode.parentNode;
-            const body = comment.querySelector('.comment-body');
-            const editInput = document.createElement('textarea');
-            editInput.value = body.textContent;
-            comment.replaceChild(editInput, body);
-            button.textContent = '저장';
-            button.onclick = function() { saveEditComment(this, editInput); };
-        }
+            const commentId = comment.getAttribute('data-comment-id');
 
-            function saveEditComment(button, editInput) {
-                const comment = button.parentNode.parentNode;
-                const commentId = comment.getAttribute('data-comment-id'); // 댓글 식별자 가져오기
-                const updatedContent = editInput.value;
+            // URL에 실제 값 포함
+            const url = `/api/category/${parentName}/${childId}/products/${productId}/comments/${commentId}`;
 
-                // 서버로 보낼 데이터 준비
-                const data = {
-                    content: updatedContent
-                };
-
-                var productId = document.getElementById('productId').value;
-                var parentName = $(".container").data("parentname");
-                var childId = $(".container").data("childid");
-
-                // URL에 실제 값 포함
-                const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments/" + commentId
-                console.log("PATCH URL: "+ url)
-                // AJAX PATCH 요청
-                $.ajax({
-                    url: url,
-                    type: 'PATCH',
-                    contentType: 'application/json',
-                    data: JSON.stringify(data),
-                    beforeSend: function (xhr) {
-                        // 로컬 스토리지에서 JWT 토큰을 가져와 헤더에 추가
-                        var token = localStorage.getItem("jwtToken");
-                        console.log("JWT Token : " + token)
-                        if (token) {
-                            xhr.setRequestHeader("Authorization", token);
-                        }
-                    },
-                    success: function(response) {
-                        // 댓글 수정 성공 시 UI 업데이트
-                        alert("댓글이 수정되었습니다.");
-                        const body = document.createElement('p');
-                        body.classList.add('comment-body');
-                        body.textContent = updatedContent;
-                        comment.replaceChild(body, editInput);
-                        button.textContent = '수정';
-                        button.onclick = function() { editComment(this); };
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('댓글 수정 실패:', error);
+            // AJAX DELETE 요청
+            $.ajax({
+                url: url,
+                type: 'DELETE',
+                contentType: 'application/json',
+                beforeSend: function(xhr) {
+                    var token = localStorage.getItem("jwtToken");
+                    if (token) {
+                        xhr.setRequestHeader("Authorization", token);
                     }
-                });
-            }
-
-        function deleteComment(button) {
-            if (confirm('댓글을 삭제하시겠습니까?')) {
-                const comment = button.parentNode.parentNode;
-                const commentId = comment.getAttribute('data-comment-id');
-                var productId = document.getElementById('productId').value;
-                var parentName = $(".container").data("parentname");
-                var childId = $(".container").data("childid");
-
-                // URL에 실제 값 포함
-                const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments/" + commentId;
-
-                // AJAX DELETE 요청
-                $.ajax({
-                    url: url,
-                    type: 'DELETE',
-                    beforeSend: function (xhr) {
-                        var token = localStorage.getItem("jwtToken");
-                        if (token) {
-                            xhr.setRequestHeader("Authorization", token);
-                        }
-                    },
-                    success: function(response) {
-                        // 성공적으로 삭제된 경우, DOM에서 댓글 제거
-                        alert("댓글이 삭제되었습니다.");
-                        comment.parentNode.removeChild(comment);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('댓글 삭제 실패:', error);
-                    }
-                });
-            }
+                },
+                success: function(response) {
+                    // 성공적으로 삭제된 경우, DOM에서 댓글 제거
+                    alert("댓글이 삭제되었습니다.");
+                    comment.parentNode.removeChild(comment);
+                },
+                error: function(xhr, status, error) {
+                    alert("댓글삭제에 실패하였습니다.");
+                    alert("댓글 삭제에 실패했습니다.");
+                }
+            });
         }
-    </script>
-    </html>
+    }
+
+    function likeProduct() {
+
+        // URL with actual values
+        const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/product_like";
+
+        $.ajax({
+            url: url,
+            type: 'Patch',
+            contentType: 'application/json',
+            beforeSend: function (xhr) {
+                var token = localStorage.getItem("jwtToken");
+                if (token) {
+                    xhr.setRequestHeader("Authorization", token);
+                }
+            },
+            success: function(response) {
+                // Toggle the like button text
+                location.reload();
+            },
+            error: function(xhr, status, error) {
+                alert("로그인 후 시도해주세요.");
+            }
+        });
+    }
+
+    function loadProductLikeStatus() {
+
+        const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/product_like/status";
+        $.ajax({
+            url: url,
+            type: 'GET',
+            beforeSend: function (xhr) {
+                var token = localStorage.getItem("jwtToken");
+                if (token) {
+                    xhr.setRequestHeader("Authorization", token);
+                }
+            },
+            success: function(response) {
+                const likeButton = document.getElementById('product-like-button');
+                if (response.isProductLiked) {
+                    likeButton.textContent = '좋아요 취소';
+                }
+                if (!response.isProductLiked){
+                    likeButton.textContent = '좋아요';
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('좋아요 상태 로딩 실패:', error);
+            }
+        });
+    }
+</script>
+</html>

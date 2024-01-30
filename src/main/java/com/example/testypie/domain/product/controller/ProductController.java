@@ -63,8 +63,7 @@ public class ProductController {
             Model model) throws ParseException {
 
         ProductReadResponseDTO res = productService.getProduct(productId,
-                childCategory_id,
-                parentCategory_name);
+                childCategory_id, parentCategory_name);
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("product");
         model.addAttribute("parentCategory_name", parentCategory_name);

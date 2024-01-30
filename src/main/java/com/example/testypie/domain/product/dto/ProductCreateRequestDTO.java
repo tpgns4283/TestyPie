@@ -9,7 +9,7 @@ public record ProductCreateRequestDTO (
         String title,
         String content,
         List<RewardCreateRequestDTO> rewardList,
-        LocalDateTime startAt,
-        LocalDateTime closedAt
+        String startAt,
+        String closedAt
 ) {
 }

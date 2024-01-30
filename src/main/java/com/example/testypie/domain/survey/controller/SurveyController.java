@@ -22,17 +22,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class SurveyController {
     private final SurveyService surveyService;
 
-    @GetMapping("/category/{parentCategoryName}/{childCategoryId}/products/{productId}/survey/{surveyId}")
+    @GetMapping("/category/{parentCategoryName}/{childCategoryId}/products/{productId}/survey")
     public ResponseEntity<SurveyReadResponseDTO> getSurvey(
-            @PathVariable Long surveyId,
             @PathVariable Long productId,
             @PathVariable Long childCategoryId,
             @PathVariable String parentCategoryName) {
-        SurveyReadResponseDTO res = surveyService.getSurvey(surveyId, productId, childCategoryId, parentCategoryName);
+        SurveyReadResponseDTO res = surveyService.getSurvey(productId, childCategoryId, parentCategoryName);
         return ResponseEntity.ok(res);
     }
 
-    @PostMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/survey")
+    @PostMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/surveys")
     public ResponseEntity<SurveyCreateResponseDTO> addSurvey(@RequestBody SurveyCreateRequestDTO req,
                                                              @AuthenticationPrincipal UserDetailsImpl userDetails,
                                                              @PathVariable Long product_id,
