@@ -15,10 +15,6 @@
     <input type="text" id="password" name="password" class="form-control form-control-sm">
 </div>
 <div>
-    <label for="email">이메일</label>
-    <input type="text" id="email" name="email" class="form-control form-control-sm">
-</div>
-<div>
     <label for="nickname">닉네임</label>
     <input type="text" id="nickname" name="nickname" class="form-control form-control-sm">
 </div>
@@ -41,35 +37,38 @@
 
 <script>
     $(document).ready(function () {
-        // 저장 버튼 클릭 시
         $("#saveBtn").click(function () {
             if (confirm("프로필을 수정하시겠습니까?")) {
                 let formData = new FormData();
-                formData.append("password", $("#password").val());
-                formData.append("nickname", $("#nickname").val());
-                formData.append("description", $("#description").val());
-                formData.append("multipartFile", $("#multipartFile")[0].files[0]);
+
+                // 사용자 정보를 객체로 만듭니다.
+                let userInfo = {
+                    password: $("#password").val(),
+                    nickname: $("#nickname").val(),
+                    description: $("#description").val()
+                };
+
+                // 사용자 정보 객체를 JSON 문자열로 변환하고, formData에 추가합니다.
+                formData.append("req", new Blob([JSON.stringify(userInfo)], {type: "application/json"}));
+
+                // 파일 데이터 추가
+                formData.append("file", $("#multipartFile")[0].files[0]);
 
                 var account = $('body').attr('data-account'); // 사용자 아이디 가져오기
                 var url = "/api/users/" + account + "/update";
 
-                // JSON 데이터를 서버로 전송합니다.
                 $.ajax({
-                    type: "PATCH", // PATCH 요청으로 변경
+                    type: "PATCH",
                     url: url,
-                    data: formData, // JSON 데이터를 문자열로 변환하여 전송
-                    contentType: false, // Content-Type을 false로 설정 (multipart/form-data를 사용할 때)
-                    processData: false, // 데이터 처리를 jQuery에게 맡기지 않음
+                    data: formData,
+                    contentType: false,
+                    processData: false,
                     success: function (response) {
-                        // 성공 시 처리
                         console.log("프로필 수정 성공:", response);
-                        // 수정 성공 메시지를 표시하고 페이지 리로드
                         alert("프로필이 수정되었습니다.");
-                        // 프로필 페이지로 이동
                         window.location.href = "/api/users/" + account;
                     },
                     error: function (error) {
-                        // 오류 시 처리
                         console.error("프로필 수정 오류:", error);
                     }
                 });
