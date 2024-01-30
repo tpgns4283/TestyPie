@@ -56,7 +56,7 @@
     $(document).ready(function () {
         // 저장 버튼 클릭 시
         $("#saveBtn").click(function () {
-            if (confirm("상품을 수정하시겠습니까?")) {
+            if (confirm("게시글을 수정하시겠습니까?")) {
                 // 입력 필드의 값을 읽어와 JSON 객체로 만듭니다.
                 var productData = {
                     title: $("#title").val(),
@@ -87,13 +87,12 @@
                         // 성공 시 처리
                         console.log("상품 수정 성공:", response);
                         // 수정 성공 메시지를 표시하고 페이지 리로드
-                        alert("상품이 수정되었습니다.");
+                        alert("게시글이 수정되었습니다.");
                         // 상품 목록 페이지로 이동
                         window.location.href = "/api/category/" + parentName + "/" + childId + "/products/" + productId;
                     },
                     error: function (error) {
-                        // 오류 시 처리
-                        console.error("상품 수정 오류:", error);
+                        alert("게시글 수정에 실패하였습니다.");
                     }
                 });
             }
@@ -101,7 +100,7 @@
 
         $('#deleteBtn').on('click', function () {
             // 확인 대화상자를 표시하고 사용자가 확인을 누른 경우만 삭제 진행
-            if (confirm("상품을 삭제하시겠습니까?")) {
+            if (confirm("게시글을 삭제하시겠습니까?")) {
                 // 데이터 속성을 통해 값을 가져옵니다.
                 var parentName = $(".container").data("parentname");
                 var childId = $(".container").data("childid");
@@ -124,14 +123,12 @@
                         }
                     },
                     success: function (response) {
-                        console.log("상품 삭제 성공:", response);
-                        alert("상품이 삭제되었습니다.");
+                        alert("게시글이 삭제되었습니다.");
                         // 상품 목록 페이지로 이동
                         window.location.href = "/api/category/" + parentName + "/" + childId;
                     },
                     error: function (error) {
-                        console.error("상품 삭제 오류:", error);
-                        alert("상품 삭제에 실패했습니다.");
+                        alert("게시글 삭제에 실패했습니다.");
                     }
                 });
             }
