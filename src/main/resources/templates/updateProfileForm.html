@@ -28,7 +28,7 @@
 </div>
 <div>
     <label for="description">프로필 사진</label>
-    <input class="file" type="file" name="image" accept="image/*" id="image">
+    <input class="file" type="file" name="image" accept="image/*" id="multipartFile">
 </div>
 
 <hr class="my-4">
@@ -41,39 +41,35 @@
 
 <script>
     $(document).ready(function () {
+        // 저장 버튼 클릭 시
         $("#saveBtn").click(function () {
             if (confirm("프로필을 수정하시겠습니까?")) {
-                var account = $('body').data('account');
+                let formData = new FormData();
+                formData.append("password", $("#password").val());
+                formData.append("nickname", $("#nickname").val());
+                formData.append("description", $("#description").val());
+                formData.append("multipartFile", $("#multipartFile")[0].files[0]);
+
+                var account = $('body').attr('data-account'); // 사용자 아이디 가져오기
                 var url = "/api/users/" + account + "/update";
 
-                var formData = new FormData();
-
-                // 'req' 객체에 JSON 데이터를 객체로 추가
-                formData.append('req', new Blob([JSON.stringify({
-                    password: $("#password").val(),
-                    email: $("#email").val(),
-                    nickname: $("#nickname").val(),
-                    description: $("#description").val()
-                })], {type : 'application/json'}));
-
-                // 이미지 파일을 'file' 키에 추가
-                var imageFile = $('#image')[0].files[0];
-                if (imageFile) {
-                    formData.append('file', imageFile);
-                }
-
+                // JSON 데이터를 서버로 전송합니다.
                 $.ajax({
-                    type: "PATCH",
+                    type: "PATCH", // PATCH 요청으로 변경
                     url: url,
-                    data: formData,
-                    processData: false,  // jQuery가 데이터를 처리하지 않도록 설정
-                    contentType: false,  // 적절한 multipart/form-data 경계를 설정하도록 jQuery에게 맡김
+                    data: formData, // JSON 데이터를 문자열로 변환하여 전송
+                    contentType: false, // Content-Type을 false로 설정 (multipart/form-data를 사용할 때)
+                    processData: false, // 데이터 처리를 jQuery에게 맡기지 않음
                     success: function (response) {
+                        // 성공 시 처리
                         console.log("프로필 수정 성공:", response);
+                        // 수정 성공 메시지를 표시하고 페이지 리로드
                         alert("프로필이 수정되었습니다.");
+                        // 프로필 페이지로 이동
                         window.location.href = "/api/users/" + account;
                     },
                     error: function (error) {
+                        // 오류 시 처리
                         console.error("프로필 수정 오류:", error);
                     }
                 });

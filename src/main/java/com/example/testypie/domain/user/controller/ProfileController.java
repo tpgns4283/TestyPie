@@ -45,14 +45,13 @@ public class ProfileController {
     @PatchMapping(value = "/{account}/update", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateProfile(
         @PathVariable String account,
-        @RequestPart("req") ProfileRequestDTO req,
-        @RequestPart("file") MultipartFile multipartFile
+        ProfileRequestDTO req
         // MultipartHttpServletRequest multipartreq,
         // Model model
     ) {
 
         try { //log.info(multipartreq.getFiles("multipartFile").toString());
-            ProfileResponseDTO res = userInfoService.updateProfile(account, req, multipartFile);
+            ProfileResponseDTO res = userInfoService.updateProfile(account, req, req.multipartFile());
             return ResponseEntity.ok(res);
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
@@ -106,7 +105,7 @@ public class ProfileController {
     // 3. 결과는 AverageRatingResponseDTO에 담겨 보내집니다.
     @GetMapping("{account}/averageStarRating")
     public ResponseEntity<AverageRatingResponseDTO> getAverageStarRating(@PathVariable String account,
-                                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 1.
         userInfoService.checkSameUser(account, userDetails.getUsername());
 
@@ -127,9 +126,9 @@ public class ProfileController {
     // 4. 별점을 double rating column에 넣습니다.
     @PostMapping("/{account}/ratingStar/{productId}/{feedbackId}")
     public ResponseEntity<MessageDTO> assignRatingStarToFeedback(@PathVariable String account, @PathVariable Long productId,
-                                                                 @PathVariable Long feedbackId,
-                                                                 @Valid @RequestBody RatingStarRequestDTO req,
-                                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        @PathVariable Long feedbackId,
+        @Valid @RequestBody RatingStarRequestDTO req,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
 
         // 1.
@@ -156,8 +155,8 @@ public class ProfileController {
     // 5. reward에 user를 넣습니다.
     @GetMapping("/{account}/lotto/{productId}")
     public ResponseEntity<LottoResponseDTO> chooseRewardUser(@PathVariable String account,
-                                                             @PathVariable Long productId,
-                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        @PathVariable Long productId,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 1.
         userInfoService.checkSameUser(account, userDetails.getUsername());
 
@@ -165,8 +164,8 @@ public class ProfileController {
         List<User> userList = userInfoService.drawUsers(productId);
 
         return ResponseEntity.ok().body(new LottoResponseDTO(userList.stream()
-                .map(User::getAccount)
-                .collect(Collectors.toList())
+            .map(User::getAccount)
+            .collect(Collectors.toList())
         ));
     }
 }
