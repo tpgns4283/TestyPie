@@ -12,7 +12,7 @@ public record CommentResponseDTO(
         Long commentLikeCnt,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt,
-        String account,
+        String nickname,
         @JsonIgnore
         Long productId
 ) {
@@ -24,7 +24,7 @@ public record CommentResponseDTO(
                 saveComment.getCommentLikeCnt(),
                 saveComment.getCreateAt(),
                 saveComment.getModifiedAt(),
-                saveComment.getUser().getAccount(),
+                saveComment.getUser().getNickname(),
                 saveComment.getProduct().getId()
         );
     }

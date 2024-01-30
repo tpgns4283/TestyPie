@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="/css/header.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="/js/category.js"></script>
+    <script src="/js/getNewToken.js"></script>
     <style>
         .comment-section {
             width: 500px;
@@ -65,14 +66,13 @@
     <label for="price">좋아요</label>
     <input type="text" id="productLike" name="productLike" class="form-control form-control-sm" value="0" th:value="${product.productLikeCnt}" disabled>
 </div>
-
 <div>
     <label for="price">내용</label>
     <input type="text" id="price" name="price" class="form-control form-control-sm" value="1" th:value="${product.content}" disabled>
 </div>
 <div>
     <label for="writer">작성자</label>
-    <input type="text" id="writer" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.account}" disabled>
+    <input type="text" id="writer" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.nickname}" disabled>
 </div>
 <div>
     <label for="created">등록일</label>
@@ -119,8 +119,8 @@
 </div>
 </div>
 </body>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
+    window.onload = checkLoginStatusAndUpdateLink;
     var productId = document.getElementById('productId').value;
     var parentName = $(".container").data("parentname");
     var childId = $(".container").data("childid");
@@ -148,7 +148,7 @@
                 const commentList = document.getElementById('comment-list');
                 commentList.innerHTML = ''; // 댓글 목록 초기화
                 response.content.forEach(function(comment) {
-                    addCommentToDOM(comment.content, comment.id, comment.account, comment.commentLikeCnt);
+                    addCommentToDOM(comment.content, comment.id, comment.nickname, comment.commentLikeCnt);
                     loadCommentLikeStatus(comment.id);
                 });
             },
@@ -196,14 +196,14 @@
         }
     }
 
-    function addCommentToDOM(content, id, account, commentLikeCnt) {
+    function addCommentToDOM(content, id, nickname, commentLikeCnt) {
         const commentList = document.getElementById('comment-list');
         const newComment = document.createElement('div');
         newComment.classList.add('content');
         newComment.setAttribute('data-comment-id', id); // 댓글 식별자 설정
 
         newComment.innerHTML = `
-        <p class="comment-author">작성자 : ${account}</p>
+        <p class="comment-author">작성자 : ${nickname}</p>
         <p class="comment-body">${content}</p> <!-- 댓글 내용을 여기에 표시 -->
         <p class="comment-author">좋아요 : ${commentLikeCnt}</p>
         <div class="comment-actions">
@@ -214,7 +214,6 @@
         `;
         commentList.appendChild(newComment);
     }
-
 
     function editComment(button) {
         const comment = button.parentNode.parentNode;

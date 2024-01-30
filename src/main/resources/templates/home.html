@@ -5,8 +5,16 @@
     <link rel="stylesheet" type="text/css" href="/css/header.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="/js/category.js"></script>
+    <script src="/js/getNewToken.js"></script>
 </head>
 <body>
 <div th:replace="fragments/header :: headerFragment"></div>
 </body>
+<script th:inline="javascript">
+    var accessToken = /*[[${token}]]*/ null;
+    if (accessToken) {
+        // 로컬 스토리지에 accessToken 저장
+        localStorage.setItem("jwtToken", accessToken);
+    }
+</script>
 </html>

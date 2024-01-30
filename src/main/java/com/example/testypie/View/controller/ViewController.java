@@ -48,7 +48,7 @@ public class ViewController {
 
     //카카오 로그인시 accessToken을 헤더에 refreshToken을 쿠키에 넣습니다.
     @GetMapping("/home/kakao-login/callback")
-    public String kakaoCallback(@RequestParam String code, HttpServletResponse res) throws JsonProcessingException {
+    public String kakaoCallback(@RequestParam String code, HttpServletResponse res, Model model) throws JsonProcessingException {
         //Data를 리턴해주는 컨트롤러 함수
         List<String> tokens = kakaoService.kakaoLogin(code);
 
@@ -60,7 +60,8 @@ public class ViewController {
         log.info("잘린 토큰: " + tokens.get(0).substring(7));
 
         // jwt토큰 access토큰 만들기
-        res.setHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken.substring(7));
+        model.addAttribute("token", accessToken);
+//        res.setHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken.substring(7));
 
         // token으로 리프레시 토큰만들어주기
         Cookie cookie = new Cookie(REFRESH_AUTHORIZATION_HEADER, refreshToken.substring(7));
