@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -51,15 +52,7 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-                    .requestMatchers("/").permitAll()
-                    .requestMatchers("/login").permitAll()
-                    .requestMatchers("/signup").permitAll()
-                    .requestMatchers("/kakao-login/callback").permitAll()
-                    .requestMatchers("/api/users/signup").permitAll()
-                    .requestMatchers("/api/users/login" , "/api/users/logout").permitAll()
-                    .requestMatchers("/api/users/refresh").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/categories").permitAll()
-                    .requestMatchers("/api/category/{parentCategory_name}/{childCategory_id}").permitAll()
+                    .requestMatchers("/**").permitAll()
                     .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
