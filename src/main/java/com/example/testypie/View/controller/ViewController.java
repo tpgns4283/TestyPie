@@ -33,7 +33,7 @@ public class ViewController {
     private final UserInfoService userInfoService;
     private final JwtUtil jwtUtil;
 
-    @GetMapping("/home")
+    @GetMapping("/")
     public String home(Model model, HttpServletRequest request) {
         User user = (User) request.getSession().getAttribute("LOGGED_IN_USER");
         // 사용자 정보가 있다면, 모델에 추가
@@ -43,18 +43,18 @@ public class ViewController {
         return "home";
     }
 
-    @GetMapping("/home/login")
+    @GetMapping("/login")
     public String loginSuccess() {
         return "login";
     }
 
-    @GetMapping("/home/signup")
+    @GetMapping("/signup")
     public String signup() {
         return "signup";
     }
 
     //카카오 로그인시 accessToken을 헤더에 refreshToken을 쿠키에 넣습니다.
-    @GetMapping("/home/kakao-login/callback")
+    @GetMapping("/kakao-login/callback")
     public String kakaoCallback(@RequestParam String code, HttpServletResponse res, Model model) throws JsonProcessingException {
         //Data를 리턴해주는 컨트롤러 함수
         List<String> tokens = kakaoService.kakaoLogin(code); //리프레시 저장
