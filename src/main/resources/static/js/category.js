@@ -56,7 +56,9 @@ $(document).ready(function() {
                     }
                 })
         } else {
-            console.log("JWT 토큰이 존재하지 않습니다.");
+            alert("로그인 후 이용해주세요");
+            window.location.href = '/home/login';
+
         }
     });
 });
@@ -110,6 +112,12 @@ function updateLinkText() {
     } else {
         loginLink.textContent = "로그인";
         loginLink.href = "/home/login";
+    }
+}
+function checkUserhasAccessToken(){
+    if (!localStorage.getItem("jwtToken")){
+        alert("로그인 후 이용해주세요")
+        window.location.href = '/home/login';
     }
 }
 

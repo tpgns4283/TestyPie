@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 
 public record ProductReadResponseDTO(
         Long id,
+        String account,
         String nickname,
         String title,
         String content,
@@ -62,6 +63,7 @@ public record ProductReadResponseDTO(
 
         return new ProductReadResponseDTO(
                 product.getId(),
+                product.getUser().getAccount(),
                 product.getUser().getNickname(),
                 product.getTitle(),
                 product.getContent(),

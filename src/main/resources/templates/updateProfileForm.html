@@ -3,6 +3,18 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="/css/updateProfile.css">
+    <script>
+        function checkUserhasAccessToken() {
+            var jwtToken = localStorage.getItem("jwtToken");
+            return !!jwtToken;
+        }
+
+        if (!checkUserhasAccessToken()) {
+            // 여기에서 로그인 페이지로 리디렉트하거나 경고를 표시할 수 있습니다.
+            alert("로그인 후 이용해주세요.");
+            window.location.href = '/home/login'; // 로그인 페이지로 리디렉트
+        }
+    </script>
 </head>
 <body th:attr="data-account=${account}">
 <!-- section Start -->
@@ -34,7 +46,6 @@
 <!-- section END -->
 </body>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 <script>
     $(document).ready(function () {
         $("#saveBtn").click(function () {
@@ -63,13 +74,19 @@
                     data: formData,
                     contentType: false,
                     processData: false,
+                    beforeSend: function (xhr) {
+                        var token = localStorage.getItem("jwtToken");
+                        if (token) {
+                            xhr.setRequestHeader("Authorization", token);
+                        }
+                    },
                     success: function (response) {
                         console.log("프로필 수정 성공:", response);
                         alert("프로필이 수정되었습니다.");
                         window.location.href = "/api/users/" + account;
                     },
                     error: function (error) {
-                        console.error("프로필 수정 오류:", error);
+                        alert("본인만 수정가능합니다.");
                     }
                 });
             }

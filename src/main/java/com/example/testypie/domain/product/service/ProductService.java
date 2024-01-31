@@ -115,7 +115,7 @@ public class ProductService {
     }
 
     private Page<ProductPageResponseDTO> getProductReadResponseDTOS(Pageable pageable,
-                                                                    Page<Product> productPage) {
+                                                                    Page<Product> productPage) throws ParseException {
 
         List<ProductPageResponseDTO> resList = new ArrayList<>();
 

@@ -14,6 +14,7 @@ import com.example.testypie.global.exception.ErrorCode;
 import com.example.testypie.global.exception.GlobalExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +31,7 @@ public class UserInfoService {
     private final UserRepository userRepository;
     private final FeedbackService feedbackService;
     private final ProductService productService;
+    private final PasswordEncoder passwordEncoder;
     private final S3Util s3Util;
     private final Random random = new Random();
 
@@ -38,9 +40,15 @@ public class UserInfoService {
 
     @Transactional
     public ProfileResponseDTO updateProfile(String account, ProfileRequestDTO req,
-                                            MultipartFile multipartfile) {
+                                            MultipartFile multipartfile, User user) {
+
         User profileUser = userRepository.findByAccount(account)
                 .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
+
+        getUserValid(profileUser, user);
+
+        String password = passwordEncoder.encode(req.password());
+
         String fileUrl = profileUser.getFileUrl(); // 사용자가 가진 기존 파일
 
         if (multipartfile != null && !multipartfile.isEmpty()) {
@@ -52,7 +60,7 @@ public class UserInfoService {
             fileUrl = defaultProfileImageUrl;
         }
 
-        profileUser.update(req, fileUrl);
+        profileUser.update(req, fileUrl, password);
         return new ProfileResponseDTO(profileUser.getAccount(), profileUser.getNickname(), profileUser.getEmail(), profileUser.getDescription(),
                 profileUser.getFileUrl());
     }
@@ -78,7 +86,6 @@ public class UserInfoService {
         if (!profileUser.equals(user)) {
             throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_USER_INVALID_AUTHORIZATION);
         }
-
     }
 
     // product 등록 이력 가져오기
@@ -179,5 +186,10 @@ public class UserInfoService {
         return random.ints(totalSize, 0, maxSize)
                 .boxed()
                 .toList();
+    }
+    private void getUserValid(User profileUser, User user) {
+        if(!profileUser.getId().equals(user.getId())) {
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.UPDATE_USER_INVALID_AUTHORIZATION);
+        }
     }
 }

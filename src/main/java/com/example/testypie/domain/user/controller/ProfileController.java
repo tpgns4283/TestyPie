@@ -49,11 +49,14 @@ public class ProfileController {
     public ResponseEntity<?> updateProfile(
             @PathVariable String account,
             @RequestPart(value = "req", required = false) ProfileRequestDTO req,
-            @RequestPart(value = "file", required = false) MultipartFile multipartFile
+            @RequestPart(value = "file", required = false) MultipartFile multipartFile,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
 
         try { //log.info(multipartreq.getFiles("multipartFile").toString());
-            ProfileResponseDTO res = userInfoService.updateProfile(account, req, multipartFile);
+            User user = userDetails.getUser();
+            ProfileResponseDTO res = userInfoService.updateProfile(account, req, multipartFile, user);
+//            ProfileResponseDTO res = userInfoService.updateProfile(account, req, multipartFile);
             return ResponseEntity.ok(res);
         } catch (NoSuchElementException e) {
             throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PROFILE_USER_NOT_FOUND);

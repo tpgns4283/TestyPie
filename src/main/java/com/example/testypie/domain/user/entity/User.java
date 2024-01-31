@@ -67,8 +67,8 @@ public class User {
         this.kakaoId = kakaoId;
     }
 
-    public void update(ProfileRequestDTO req, String fileUrl) {
-        if (password != null && !password.isEmpty())
+    public void update(ProfileRequestDTO req, String fileUrl, String password) {
+        if (this.password != null && !this.password.isEmpty())
             this.password = password;
         if (req.nickname() != null && !req.nickname().isEmpty())
             this.nickname = req.nickname();

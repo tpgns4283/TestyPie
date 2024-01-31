@@ -49,6 +49,10 @@ public class FeedbackService {
         if (hasSubmitted) {
             throw new IllegalStateException("이미 피드백을 제출하셨습니다.");
         }
+        
+        if(LocalDateTime.now().isAfter(product.getClosedAt())){
+            throw new IllegalStateException("해당 Product의 기간이 만료되었습니다.");
+        }
 
         if (!category.getId().equals(product.getCategory().getId())) {
             throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);

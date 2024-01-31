@@ -8,6 +8,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="/js/category.js"></script>
     <script src="/js/getNewToken.js"></script>
+    <script>
+        checkUserhasAccessToken();
+    </script>
     <style>
         .comment-section {
             width: 500px;
@@ -32,7 +35,6 @@
             color: white;
             cursor: pointer;
         }
-
         .comment-input button:hover, .comment-edit button:hover {
             background-color: #4cae4c;
         }
@@ -73,6 +75,7 @@
 <div>
     <label for="writer">작성자</label>
     <input type="text" id="writer" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.nickname}" disabled>
+
 </div>
 <div>
     <label for="created">등록일</label>
@@ -97,14 +100,14 @@
     <div class="d-grid gap-2 col-6 mx-auto">
         <button class="btn btn-dark"
                 th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/update(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
-                type="button">게시글 수정</button>
+                type="button" id="productEdit">게시글 수정</button>
 
         <button class="btn btn-secondary"
                 th:onclick="|location.href='@{/api/category/{parentName}/{childId}(parentName=${parentCategory_name}, childId=${childCategory_id})}'|"
                 type="button">게시글 목록</button>
         <button class="btn btn-secondary"
                 th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/feedback(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
-                type="button">피드백 등록</button>
+                type="button" id="productFeedback">피드백 등록</button>
         <button id="product-like-button" type="button" onclick="likeProduct()">좋아요</button>
     </div>
 </div>
@@ -120,7 +123,12 @@
 </div>
 </body>
 <script>
-    window.onload = checkLoginStatusAndUpdateLink;
+    //페이지 로딩 함수 실행 순서
+    window.onload = function() {
+        checkLoginStatusAndUpdateLink();
+        loadProductLikeStatus();
+    }
+
     var productId = document.getElementById('productId').value;
     var parentName = $(".container").data("parentname");
     var childId = $(".container").data("childid");
@@ -153,7 +161,6 @@
                 });
             },
             error: function(xhr, status, error) {
-                console.error('댓글 로딩 실패:', error);
             }
         });
     }
@@ -188,7 +195,7 @@
                     commentInput.value = '';
                 },
                 error: function(xhr, status, error) {
-                    alert('댓글 저장에 실패하였습니다.');
+                    checkUserhasAccessToken();
                 }
             });
         } else {
@@ -216,6 +223,7 @@
     }
 
     function editComment(button) {
+        checkUserhasAccessToken();
         const comment = button.parentNode.parentNode;
         const body = comment.querySelector('.comment-body');
         const editInput = document.createElement('textarea');
@@ -226,9 +234,15 @@
     }
 
     function saveEditComment(button, editInput) {
+        checkUserhasAccessToken();
         const comment = button.parentNode.parentNode;
         const commentId = comment.getAttribute('data-comment-id'); // 댓글 식별자 가져오기
         const updatedContent = editInput.value;
+
+        if (!updatedContent) {
+            alert('댓글을 입력해주세요.');
+            return;
+        }
 
         // 서버로 보낼 데이터 준비
         const data = {
@@ -237,7 +251,6 @@
 
         // URL에 실제 값 포함
         const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments/" + commentId
-        console.log("PATCH URL: "+ url)
         // AJAX PATCH 요청
         $.ajax({
             url: url,
@@ -247,7 +260,6 @@
             beforeSend: function (xhr) {
                 // 로컬 스토리지에서 JWT 토큰을 가져와 헤더에 추가
                 var token = localStorage.getItem("jwtToken");
-                console.log("JWT Token : " + token)
                 if (token) {
                     xhr.setRequestHeader("Authorization", token);
                 }
@@ -263,7 +275,7 @@
                 button.onclick = function() { editComment(this); };
             },
             error: function(xhr, status, error) {
-                alert("댓글 수정에 실패하였습니다.");
+                alert("본인만 수정이 가능합니다.");
             }
         });
     }
@@ -290,13 +302,12 @@
                 loadCommentLikeStatus(commentId);
             },
             error: function(xhr, status, error) {
-                console.error('좋아요 실패:', error);
+                checkUserhasAccessToken();
             }
         });
     }
 
     function loadCommentLikeStatus(commentId) {
-        console.log(commentId)
         const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/comments/" + commentId + "/comment_like/status";
         $.ajax({
             url: url,
@@ -308,7 +319,7 @@
                 }
             },
             success: function(response) {
-                console.log(response)
+
                 const likeButton = document.getElementById('comment-like-button-' + commentId);
                 if (response.isCommentLiked) {
                     likeButton.innerText = '좋아요 취소';
@@ -318,7 +329,6 @@
                 }
             },
             error: function(xhr, status, error) {
-                console.error('좋아요 상태 로딩 실패:', error);
             }
         });
     }
@@ -348,17 +358,15 @@
                     comment.parentNode.removeChild(comment);
                 },
                 error: function(xhr, status, error) {
-                    alert("댓글삭제에 실패하였습니다.");
-                    alert("댓글 삭제에 실패했습니다.");
+                    alert("본인만 삭제가 가능합니다." + error);
                 }
             });
         }
     }
 
     function likeProduct() {
-
-        // URL with actual values
         const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/product_like";
+        const likeCountElement = document.getElementById('productLike'); // 좋아요 개수를 표시하는 요소
 
         $.ajax({
             url: url,
@@ -371,18 +379,25 @@
                 }
             },
             success: function(response) {
-                // Toggle the like button text
-                location.reload();
+                // 응답에 따라 '좋아요' 개수 업데이트
+                if (response.isProductLiked) {
+                    likeCountElement.value = parseInt(likeCountElement.value) + 1;
+                } else {
+                    likeCountElement.value = Math.max(0, parseInt(likeCountElement.value) - 1);
+                }
+                // 상태를 업데이트하는 함수를 호출
+                loadProductLikeStatus();
             },
             error: function(xhr, status, error) {
-                alert("로그인 후 시도해주세요.");
+                checkUserhasAccessToken();
             }
         });
     }
 
     function loadProductLikeStatus() {
-
         const url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/product_like/status";
+        const likeButton = document.getElementById('product-like-button');
+
         $.ajax({
             url: url,
             type: 'GET',
@@ -393,16 +408,14 @@
                 }
             },
             success: function(response) {
-                const likeButton = document.getElementById('product-like-button');
+                // 서버 응답에 따라 버튼 상태 변경
                 if (response.isProductLiked) {
                     likeButton.textContent = '좋아요 취소';
-                }
-                if (!response.isProductLiked){
+                } else {
                     likeButton.textContent = '좋아요';
                 }
             },
             error: function(xhr, status, error) {
-                console.error('좋아요 상태 로딩 실패:', error);
             }
         });
     }
