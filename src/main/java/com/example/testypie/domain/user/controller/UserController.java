@@ -122,7 +122,7 @@ public class UserController {
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         userService.signOut(user);
-        return ResponseEntity.ok(new MessageDTO("유저가 탈퇴했습니다.", 200));
+        return ResponseEntity.ok(new MessageDTO("유저가 탈퇴했습니다.", HttpStatus.OK.value()));
     }
 
     // 1. 토큰으로 refresh token을 찾는다.
@@ -166,7 +166,7 @@ public class UserController {
             cookie.setHttpOnly(true);
             cookie.setMaxAge(0); // 쿠키를 즉시 만료시킵니다.
             res.addCookie(cookie);
-            return ResponseEntity.ok().body(new MessageDTO("로그아웃 되었습니다.", 200));
+            return ResponseEntity.ok().body(new MessageDTO("로그아웃 되었습니다.", HttpStatus.OK.value()));
         }
 
         RefreshToken refreshToken = refreshTokenService.findToken(token);
