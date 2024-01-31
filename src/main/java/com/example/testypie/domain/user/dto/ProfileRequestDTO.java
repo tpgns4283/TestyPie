@@ -5,9 +5,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 public record ProfileRequestDTO(
 
-    @Pattern(regexp = "^[a-zA-Z0-9]{8,16}$", message = "비밀번호는 소문자, 대문자, 숫자로 이루어진 8~16자리입니다.")
+        @Pattern(regexp = "^[a-zA-Z0-9]{8,16}$", message = "8~16자 사이의 소문자, 대문자, 숫자")
     String password,
-    @Pattern(regexp = "^[a-zA-Z0-9가-힣_]{3,20}$", message = "닉네임 형식이 올바르지 않습니다.")
+    @Pattern(regexp = "^[a-zA-Z0-9가-힣_]{1,20}$", message = "1~20자 사이의 소문자, 대문자, 숫자")
     String nickname,
+    @Pattern(regexp = "^[a-zA-Z0-9가-힣_]{0,20}$", message = "20자 미만의 소문자, 대문자, 숫자")
     String description
 ) {}
