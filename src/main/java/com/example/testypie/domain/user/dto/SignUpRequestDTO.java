@@ -22,5 +22,6 @@ public record SignUpRequestDTO(
         String nickname,
 
         @NotBlank
+        @Pattern(regexp = "^[a-zA-Z0-9가-힣_]{8,16}$", message = "자기소개는 소문자, 대문자, 숫자로 이루어진 8~16자리입니다.")
         String description
 ) {}
