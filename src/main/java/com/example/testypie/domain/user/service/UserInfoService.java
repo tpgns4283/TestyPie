@@ -8,22 +8,18 @@ import com.example.testypie.domain.reward.entity.Reward;
 import com.example.testypie.domain.user.dto.*;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.repository.UserRepository;
-import com.example.testypie.domain.util.S3Uploader;
-import com.example.testypie.global.exception.ErrorCode;
-import com.example.testypie.global.exception.GlobalExceptionHandler;
 import com.example.testypie.domain.util.S3Util;
 import com.example.testypie.domain.util.S3Util.FilePath;
+import com.example.testypie.global.exception.ErrorCode;
+import com.example.testypie.global.exception.GlobalExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Random;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,9 +38,9 @@ public class UserInfoService {
 
     @Transactional
     public ProfileResponseDTO updateProfile(String account, ProfileRequestDTO req,
-        MultipartFile multipartfile) {
+                                            MultipartFile multipartfile) {
         User profileUser = userRepository.findByAccount(account)
-            .orElseThrow(() -> new NoSuchElementException("해당하는 유저가 없습니다."));
+                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
         String fileUrl = profileUser.getFileUrl(); // 사용자가 가진 기존 파일
 
         if (multipartfile != null && !multipartfile.isEmpty()) {
@@ -58,7 +54,7 @@ public class UserInfoService {
 
         profileUser.update(req, fileUrl);
         return new ProfileResponseDTO(profileUser.getAccount(), profileUser.getNickname(), profileUser.getEmail(), profileUser.getDescription(),
-            profileUser.getFileUrl() );
+                profileUser.getFileUrl());
     }
 
     public ProfileResponseDTO getProfile(String account) {

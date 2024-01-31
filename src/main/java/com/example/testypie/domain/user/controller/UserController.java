@@ -153,7 +153,7 @@ public class UserController {
 
         res.setHeader(AUTHORIZATION_HEADER, jwtUtil.createAccessToken(user.getAccount()));
 
-        return ResponseEntity.ok().body(new MessageDTO("토큰이 성공적으로 생성됐습니다.", 200));
+        return ResponseEntity.ok().body(new MessageDTO("토큰이 성공적으로 생성됐습니다.", HttpStatus.OK.value()));
     }
 
     @DeleteMapping("/api/users/logout")
@@ -184,6 +184,6 @@ public class UserController {
         cookie.setMaxAge(0);
         res.addCookie(cookie);
 
-        return ResponseEntity.ok().body(new MessageDTO("토큰이 성공적으로 삭제됐습니다.", 200));
+        return ResponseEntity.ok().body(new MessageDTO("토큰이 성공적으로 삭제됐습니다.", HttpStatus.OK.value()));
     }
 }

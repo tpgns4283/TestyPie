@@ -55,10 +55,6 @@ public class ViewController {
         String accessToken = tokens.get(0);
         String refreshToken = tokens.get(1);
 
-        log.info(refreshToken);
-
-        log.info("잘린 토큰: " + tokens.get(0).substring(7));
-
         // jwt토큰 access토큰 만들기
         res.setHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken.substring(7));
 
