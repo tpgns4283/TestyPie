@@ -15,6 +15,7 @@
     if (accessToken) {
         // 로컬 스토리지에 accessToken 저장
         localStorage.setItem("jwtToken", accessToken);
+        window.location.href = "/";
     }
 </script>
 </html>
