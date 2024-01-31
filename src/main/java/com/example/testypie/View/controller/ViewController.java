@@ -1,17 +1,22 @@
 package com.example.testypie.View.controller;
 
+import com.example.testypie.domain.user.entity.RefreshToken;
 import com.example.testypie.domain.user.entity.User;
-import jakarta.servlet.http.HttpServletRequest;
 import com.example.testypie.domain.user.kakao.service.KakaoService;
+import com.example.testypie.domain.user.service.RefreshTokenService;
 import com.example.testypie.global.jwt.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -48,18 +53,19 @@ public class ViewController {
 
     //카카오 로그인시 accessToken을 헤더에 refreshToken을 쿠키에 넣습니다.
     @GetMapping("/home/kakao-login/callback")
-    public String kakaoCallback(@RequestParam String code, HttpServletResponse res) throws JsonProcessingException {
+    public String kakaoCallback(@RequestParam String code, HttpServletResponse res, Model model) throws JsonProcessingException {
         //Data를 리턴해주는 컨트롤러 함수
-        List<String> tokens = kakaoService.kakaoLogin(code);
+        List<String> tokens = kakaoService.kakaoLogin(code); //리프레시 저장
 
         String accessToken = tokens.get(0);
         String refreshToken = tokens.get(1);
 
         // jwt토큰 access토큰 만들기
-        res.setHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken.substring(7));
+        model.addAttribute("token", accessToken);
+//        res.setHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken.substring(7));
 
         // token으로 리프레시 토큰만들어주기
-        Cookie cookie = new Cookie(REFRESH_AUTHORIZATION_HEADER, refreshToken.substring(7));
+        Cookie cookie = new Cookie(REFRESH_AUTHORIZATION_HEADER, refreshToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         res.addCookie(cookie);
@@ -103,9 +109,9 @@ public class ViewController {
 
     @GetMapping("/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/feedback")
     public String addFeedback(@PathVariable Long product_id,
-                            @PathVariable Long childCategory_id,
-                            @PathVariable String parentCategory_name,
-                            Model model) {
+                              @PathVariable Long childCategory_id,
+                              @PathVariable String parentCategory_name,
+                              Model model) {
         model.addAttribute("parentName", parentCategory_name);
         model.addAttribute("childId", childCategory_id);
         model.addAttribute("productId", product_id);

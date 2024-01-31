@@ -1,7 +1,9 @@
 package com.example.testypie.domain.user.kakao.service;
 
+import com.example.testypie.domain.user.entity.RefreshToken;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.kakao.dto.KakaoUserInfoDto;
+import com.example.testypie.domain.user.repository.RefreshTokenRepository;
 import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.global.jwt.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,6 +34,7 @@ public class KakaoService {
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
     private final JwtUtil jwtUtil;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public List<String> kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
@@ -46,9 +49,18 @@ public class KakaoService {
         // 4. access 토큰, refresh 토큰 발급
         String accessToken = jwtUtil.createAccessToken(kakaoUser.getAccount());
         String refreshToken = jwtUtil.createRefreshToken(kakaoUser.getAccount());
+        
         List<String> tokens = new ArrayList<>();
         tokens.add(accessToken);
         tokens.add(refreshToken);
+
+        //카카오 유저 Refresh토큰 저장하기
+        RefreshToken saveRefreshToken = RefreshToken.builder()
+                .account(kakaoUser.getAccount())
+                .tokenValue(refreshToken)
+                .build();
+        
+        refreshTokenRepository.save(saveRefreshToken);
 
         return tokens;
     }

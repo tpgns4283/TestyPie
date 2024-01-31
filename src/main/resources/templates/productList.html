@@ -8,6 +8,7 @@
     <link rel="stylesheet" type="text/css" href="/css/productList.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="/js/category.js"></script>
+    <script src="/js/getNewToken.js"></script>
     <style>
         .container {
             max-width: 800px;
@@ -40,7 +41,7 @@
                            th:text="${product.title}">상품명</a></td>
                     <td th:text="${product.productLikeCnt}">0</td>
                     <td th:text="${product.content}">1</td>
-                    <td th:text="${product.account}">1</td>
+                    <td th:text="${product.nickname}">1</td>
                 </tr>
                 </tbody>
             </table>

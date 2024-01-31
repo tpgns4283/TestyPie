@@ -45,7 +45,8 @@ public class UserService {
         }
 
         User user = User.builder().account(account).password(password).email(email)
-                .nickname(nickname).description(description).fileUrl(defaultProfileImageUrl).build();
+                .nickname(nickname).description(description).fileUrl(defaultProfileImageUrl)
+                .build();
 
         userRepository.save(user);
     }
