@@ -50,9 +50,13 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-                    .requestMatchers("/**").permitAll()
-                    .requestMatchers("/api/users/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
-                    .requestMatchers("/home/**").permitAll()
+                    .requestMatchers("/").permitAll()
+                    .requestMatchers("/login").permitAll()
+                    .requestMatchers("/signup").permitAll()
+                    .requestMatchers("/kakao-login/callback").permitAll()
+                    .requestMatchers("/api/users/signup").permitAll()
+                    .requestMatchers("/api/users/login").permitAll()
+                    .requestMatchers("/api/category/{parentCategory_name}/{childCategory_id}").permitAll()
                     .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 

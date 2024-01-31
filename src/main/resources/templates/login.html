@@ -34,7 +34,7 @@
     var signupButton = document.querySelector('.signup-button');
     if (signupButton) {
       signupButton.addEventListener('click', function() {
-        window.location.href = "/home/signup";
+        window.location.href = "/signup";
       });
     }
   });
@@ -63,7 +63,7 @@
           }
           alert("로그인 되었습니다")
           console.log("로그인 성공:", response);
-          window.location.href = "/home"; // 메인 페이지로 리디렉션
+          window.location.href = "/"; // 메인 페이지로 리디렉션
         },
         error: function(xhr, status, error) {
           console.log("로그인 실패:", error);
@@ -72,7 +72,7 @@
     });
   });
   $(".button").click(function() {
-    window.location.href = "/home/signup";
+    window.location.href = "/signup";
   });
 </script>
 </html>
