@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -56,6 +57,8 @@ public class WebSecurityConfig {
                     .requestMatchers("/kakao-login/callback").permitAll()
                     .requestMatchers("/api/users/signup").permitAll()
                     .requestMatchers("/api/users/login").permitAll()
+                    .requestMatchers("/api/api/users/refresh").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/categories").permitAll()
                     .requestMatchers("/api/category/{parentCategory_name}/{childCategory_id}").permitAll()
                     .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
