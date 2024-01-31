@@ -57,7 +57,7 @@ public class WebSecurityConfig {
                     .requestMatchers("/kakao-login/callback").permitAll()
                     .requestMatchers("/api/users/signup").permitAll()
                     .requestMatchers("/api/users/login").permitAll()
-                    .requestMatchers("/api/api/users/refresh").permitAll()
+                    .requestMatchers("/api/users/refresh").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/categories").permitAll()
                     .requestMatchers("/api/category/{parentCategory_name}/{childCategory_id}").permitAll()
                     .anyRequest().authenticated() // 그 외 모든 요청 인증처리
