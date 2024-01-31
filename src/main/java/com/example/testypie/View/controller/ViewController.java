@@ -33,7 +33,7 @@ public class ViewController {
     private final UserInfoService userInfoService;
     private final JwtUtil jwtUtil;
 
-    @GetMapping("/")
+    @GetMapping("/home")
     public String home(Model model, HttpServletRequest request) {
         User user = (User) request.getSession().getAttribute("LOGGED_IN_USER");
         // 사용자 정보가 있다면, 모델에 추가
