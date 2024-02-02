@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.UUID;
 import javax.imageio.ImageIO;
 import lombok.Getter;
@@ -52,31 +53,33 @@ public class S3Util {
         // 업로드할 파일이 존재하지 않거나 비어있으면 null 반환
         if (multipartFile == null || multipartFile.isEmpty()) {
             return null;
-        }
-        // 업로드할 파일의 고유한 파일명 생성
-        String fileName = createFileName(multipartFile.getOriginalFilename());
-        String fileFormatName = multipartFile.getContentType()
-                .substring(multipartFile.getContentType().lastIndexOf("/") + 1);
+        } else {
+            // 업로드할 파일의 고유한 파일명 생성
+            String fileName = createFileName(multipartFile.getOriginalFilename());
+            String fileFormatName = Objects.requireNonNull(multipartFile.getContentType())
+                    .substring(multipartFile.getContentType().lastIndexOf("/") + 1);
 
-        MultipartFile resizedImage = resizer(fileName, fileFormatName, multipartFile, 400);
+            MultipartFile resizedImage = resizer(fileName, fileFormatName, multipartFile, 768);
 
-        // 파일명을 UTF-8로 디코딩
-        fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
-        log.warn("업로드 파일 디코딩 완료 : " + filePath + fileName);
-        // 업로드할 파일의 메타데이터 생성
-        ObjectMetadata metadata = setObjectMetadata(resizedImage);
-        try {
-            // S3에 파일 업로드
-            amazonS3Client.putObject(bucketName, filePath.getPath() + fileName,
-                    resizedImage.getInputStream(), metadata);
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다.");
-        } catch (Exception e) {
-            // 업로드 중에 예외 발생 시 전역 예외(GlobalException) 발생
-            throw new IllegalArgumentException("파일 업로드 실패");
+            // 파일명을 UTF-8로 디코딩
+            fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
+            log.warn("업로드 파일 디코딩 완료 : " + filePath + fileName);
+            // 업로드할 파일의 메타데이터 생성
+            ObjectMetadata metadata = setObjectMetadata(resizedImage);
+            try {
+                // S3에 파일 업로드
+                amazonS3Client.putObject(bucketName, filePath.getPath() + fileName,
+                        resizedImage.getInputStream(), metadata);
+            } catch (IOException e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "이미지 업로드에 실패했습니다.");
+            } catch (Exception e) {
+                // 업로드 중에 예외 발생 시 전역 예외(GlobalException) 발생
+                throw new IllegalArgumentException("파일 업로드 실패");
+            }
+            // 업로드한 파일의 URL 반환
+            return getFileUrl(fileName, filePath);
         }
-        // 업로드한 파일의 URL 반환
-        return getFileUrl(fileName, filePath);
     }
 
     public void deleteFile(String fileUrl, FilePath filePath) {
