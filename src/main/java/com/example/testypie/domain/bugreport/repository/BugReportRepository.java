@@ -1,10 +1,15 @@
 package com.example.testypie.domain.bugreport.repository;
 
 import com.example.testypie.domain.bugreport.entity.BugReport;
-import org.springframework.data.repository.RepositoryDefinition;
+import com.example.testypie.domain.user.entity.User;
+import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@RepositoryDefinition(domainClass = BugReport.class, idClass = Long.class)
-public interface BugReportRepository {
-    BugReport save(BugReport bugReport);
+public interface BugReportRepository extends JpaRepository<BugReport, Long> {
+
+    Page<BugReport> findAllByProductId(Long productId, Pageable pageable);
+    Optional<BugReport> findByProductIdAndBugReportId(Long productId, Long bugReportId);
 
 }

@@ -6,9 +6,12 @@
     <title>TestyPie</title>
     <link rel="stylesheet" type="text/css" href="/css/header.css">
     <link rel="stylesheet" type="text/css" href="/css/productList.css">
+    <link rel="stylesheet" type="text/css" href="/css/modal.css">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="/js/category.js"></script>
     <script src="/js/getNewToken.js"></script>
+
     <style>
         .container {
             max-width: 800px;
@@ -25,23 +28,24 @@
                     <th>글 번호</th>
                     <th>제목</th>
                     <th>좋아요</th>
-                    <th>내용</th>
                     <th>작성자</th>
+                    <th>기한</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="product : ${productList}">
-                    <td><a href="product.html" th:href="@{/api/category/{parent_name}/{children_id}/products/{productId}
+                    <td><a th:href="@{/api/category/{parent_name}/{children_id}/products/{productId}
                                                     (productId=${product.id}, parent_name=${product.parentCategoryName()}
                                                     , children_id=${product.childCategoryId()})}"
-                           th:text="${product.id}">ID</a></td>
-                    <td><a href="product.html" th:href="@{/api/category/{parent_name}/{children_id}/products/{productId}
+                           th:text="${product.id}"></a></td>
+                    <td><a th:href="@{/api/category/{parent_name}/{children_id}/products/{productId}
                                                     (productId=${product.id}, parent_name=${product.parentCategoryName()}
                                                     , children_id=${product.childCategoryId()})}"
-                           th:text="${product.title}">상품명</a></td>
-                    <td th:text="${product.productLikeCnt}">0</td>
-                    <td th:text="${product.content}">1</td>
-                    <td th:text="${product.nickname}">1</td>
+                           th:text="${product.title}"></a></td>
+                    <td th:text="${product.productLikeCnt}"></td>
+                    <td th:text="${product.nickname}" th:attr="onclick='fetchUserProfile(\'' + ${product.account} + '\')'"></td>
+
+                    <td th:text="${product.message}"></td>
                 </tr>
                 </tbody>
             </table>
@@ -53,10 +57,12 @@
                 </li>
             </ul>
         </div>
-        <a th:href="@{/api/category/{parentName}/{childId}/products(parentName=${parentCategory_name}, childId=${childCategory_id})}" class="btn btn-primary">상품 추가</a>
+        <a th:href="@{/api/category/{parentName}/{childId}/products(parentName=${parentCategory_name}, childId=${childCategory_id})}" class="btn btn-primary">게시글 작성</a>
             <div class="d-grid gap-2 col-6 mx-auto">
 
             </div>
         </div>
+<th:block th:replace="fragments/modal.html"></th:block>
+<script src="/js/modal.js"></script>
 </body>
 </html>

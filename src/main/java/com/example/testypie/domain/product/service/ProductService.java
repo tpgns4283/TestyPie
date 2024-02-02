@@ -40,7 +40,7 @@ public class ProductService {
     //CREATE
     @Transactional
     public ProductCreateResponseDTO createProduct(User user, ProductCreateRequestDTO req,
-                                                  String parentCategory_name, Long category_id) {
+            String parentCategory_name, Long category_id) {
 
         Category category = categoryService.getCategory(category_id, parentCategory_name);
 
@@ -71,7 +71,7 @@ public class ProductService {
 
     //READ
     public ProductReadResponseDTO getProduct(Long productId, Long category_id,
-                                             String parentCategory_name)
+            String parentCategory_name)
             throws ParseException {
 
         Category category = categoryService.getCategory(category_id, parentCategory_name);
@@ -83,12 +83,13 @@ public class ProductService {
         if (category.getId().equals(product.getCategory().getId())) {
             return ProductReadResponseDTO.of(product, rewardDTOList);
         } else {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
+            throw new GlobalExceptionHandler.CustomException(
+                    ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
         }
     }
 
     public Page<ProductPageResponseDTO> getProductPage(Pageable pageable,
-                                                       String parentCategory_name)
+            String parentCategory_name)
             throws ParseException {
         int page = pageable.getPageNumber() - 1;
         int pageLimit = 10;
@@ -100,8 +101,8 @@ public class ProductService {
     }
 
     public Page<ProductPageResponseDTO> getProductCategoryPage(Pageable pageable,
-                                                               Long childCategory_id,
-                                                               String parentCategory_name)
+            Long childCategory_id,
+            String parentCategory_name)
             throws ParseException {
         int page = pageable.getPageNumber() - 1;
         int pageLimit = 10;
@@ -115,7 +116,7 @@ public class ProductService {
     }
 
     private Page<ProductPageResponseDTO> getProductReadResponseDTOS(Pageable pageable,
-                                                                    Page<Product> productPage) {
+            Page<Product> productPage) throws ParseException {
 
         List<ProductPageResponseDTO> resList = new ArrayList<>();
 
@@ -128,13 +129,14 @@ public class ProductService {
 
     //UPDATE
     public ProductUpdateResponseDTO updateProduct(Long productId, ProductUpdateRequestDTO req,
-                                                  User user, Long category_id,
-                                                  String parentCategory_name) {
+            User user, Long category_id,
+            String parentCategory_name) {
 
         Product product = getUserProduct(productId, user);
         Category category = categoryService.getCategory(category_id, parentCategory_name);
         if (!category.getId().equals(product.getCategory().getId())) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
+            throw new GlobalExceptionHandler.CustomException(
+                    ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
         }
 
         product.updateTitle(req.title());
@@ -151,12 +153,13 @@ public class ProductService {
 
     //DELETE
     public ProductDeleteResponseDTO deleteProduct(Long productId, User user, Long category_id,
-                                                  String parentCategory_name) {
+            String parentCategory_name) {
 
         Category category = categoryService.getCategory(category_id, parentCategory_name);
         Product product = getUserProduct(productId, user);
         if (!category.getId().equals(product.getCategory().getId())) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
+            throw new GlobalExceptionHandler.CustomException(
+                    ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
         }
 
         productRepository.delete(product);
@@ -167,7 +170,8 @@ public class ProductService {
     public Product findProduct(Long productId) {
         //RuntimeException으로 변경 예정
         return productRepository.findById(productId)
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(
+                        ErrorCode.SELECT_PRODUCT_NOT_FOUND));
     }
 
     //Product 본인 인증

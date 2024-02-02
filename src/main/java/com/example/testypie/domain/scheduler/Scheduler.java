@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,7 @@ public class Scheduler {
     private final CommentLikeRepository commentLikeRepository;
 
     @Transactional
-    @Scheduled(cron = "0 0 0 * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void autoDelete() {
         LocalDateTime now = LocalDateTime.now();
 
@@ -39,7 +40,7 @@ public class Scheduler {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 5 * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void productLikeAutoDelete() {
 
         List<ProductLike> productLikes = productLikeRepository.findAll();
@@ -52,7 +53,7 @@ public class Scheduler {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 5 * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void commentLikeAutoDelete() {
 
         List<CommentLike> commentLikes = commentLikeRepository.findAll();
@@ -62,5 +63,11 @@ public class Scheduler {
                 commentLikeRepository.delete(isLiked);
             }
         }
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void deleteProductsWithoutSurveyId() {
+        List<Product> products = productRepository.findBySurveyIdIsNull();
+        productRepository.deleteAll(products);
     }
 }

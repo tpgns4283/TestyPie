@@ -12,23 +12,23 @@
   <form id="signupForm">
     <div class="mb-3">
       <label for="account" class="form-label">ID</label>
-      <input type="text" class="form-control" id="account" aria-describedby="emailHelp">
+      <input type="text" class="form-control" id="account" aria-describedby="emailHelp" placeholder="6~12자 사이의 소문자, 숫자">
     </div>
     <div class="mb-3">
-      <label for="password" class="form-label">Password</label>
-      <input type="password" class="form-control" id="password">
+      <label for="password" class="form-label">Password </label>
+      <input type="password" class="form-control" id="password" placeholder="8~16자 사이의 소문자, 대문자, 숫자">
     </div>
     <div class="mb-3">
       <label for="email" class="form-label">Email</label>
-      <input type="email" class="form-control" id="email">
+      <input type="email" class="form-control" id="email" placeholder="이메일 형식을 지켜주세요">
     </div>
     <div class="mb-3">
       <label for="nickname" class="form-label">Nick Name</label>
-      <input type="text" class="form-control" id="nickname">
+      <input type="text" class="form-control" id="nickname" placeholder="1~20자 사이의 소문자, 대문자, 숫자">
     </div>
     <div class="mb-3">
       <label for="Description" class="form-label">Description</label>
-      <input type="text" class="form-control" id="description">
+      <input type="text" class="form-control" id="description" placeholder="20자 미만의 소문자, 대문자, 숫자">
     </div>
     <!-- 저장 버튼을 추가합니다. -->
     <button class="btn btn-dark" id="submitBtn" type="submit">회원 가입</button>
@@ -60,7 +60,7 @@
           // 요청이 성공하면 실행될 함수
           console.log("회원 가입 성공:", response);
           alert("가입되었습니다.");
-          window.location.href = "/home"; // 성공 후 페이지 리디렉션
+          window.location.href = "/"; // 성공 후 페이지 리디렉션
         },
         error: function (error) {
           // 요청이 실패하면 실행될 함수

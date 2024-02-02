@@ -56,7 +56,9 @@ $(document).ready(function() {
                     }
                 })
         } else {
-            console.log("JWT 토큰이 존재하지 않습니다.");
+            alert("로그인 후 이용해주세요");
+            window.location.href = '/login';
+
         }
     });
 });
@@ -68,7 +70,7 @@ function checkLoginStatusAndUpdateLink() {
 
         // 로그인 상태가 아닐 경우 로그인 페이지로 이동
         if (!jwtToken) {
-            window.location.href = "/home/login";
+            window.location.href = "/login";
             return false;
         }
 
@@ -85,9 +87,9 @@ function checkLoginStatusAndUpdateLink() {
                 localStorage.removeItem("jwtToken");
 
                 alert("로그아웃 되었습니다");
-                window.location.href = "/home";
+                window.location.href = "/";
                 loginLink.textContent = "로그인";
-                loginLink.href = "/home/login";
+                loginLink.href = "/login";
             },
             error: function(xhr, status, error) {
                 console.log("로그아웃 실패:", error);
@@ -109,7 +111,13 @@ function updateLinkText() {
         loginLink.href = "#";
     } else {
         loginLink.textContent = "로그인";
-        loginLink.href = "/home/login";
+        loginLink.href = "/login";
+    }
+}
+function checkUserhasAccessToken(){
+    if (!localStorage.getItem("jwtToken")){
+        alert("로그인 후 이용해주세요")
+        window.location.href = '/login';
     }
 }
 

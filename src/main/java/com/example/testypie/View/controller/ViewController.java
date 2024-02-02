@@ -1,9 +1,9 @@
 package com.example.testypie.View.controller;
 
-import com.example.testypie.domain.user.entity.RefreshToken;
+import com.example.testypie.domain.user.dto.ProfileResponseDTO;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.kakao.service.KakaoService;
-import com.example.testypie.domain.user.service.RefreshTokenService;
+import com.example.testypie.domain.user.service.UserInfoService;
 import com.example.testypie.global.jwt.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.Cookie;
@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,9 +30,10 @@ import static com.example.testypie.global.jwt.JwtUtil.REFRESH_AUTHORIZATION_HEAD
 @RequiredArgsConstructor
 public class ViewController {
     private final KakaoService kakaoService;
+    private final UserInfoService userInfoService;
     private final JwtUtil jwtUtil;
 
-    @GetMapping("/home")
+    @GetMapping("/")
     public String home(Model model, HttpServletRequest request) {
         User user = (User) request.getSession().getAttribute("LOGGED_IN_USER");
         // 사용자 정보가 있다면, 모델에 추가
@@ -41,18 +43,18 @@ public class ViewController {
         return "home";
     }
 
-    @GetMapping("/home/login")
+    @GetMapping("/login")
     public String loginSuccess() {
         return "login";
     }
 
-    @GetMapping("/home/signup")
+    @GetMapping("/signup")
     public String signup() {
         return "signup";
     }
 
     //카카오 로그인시 accessToken을 헤더에 refreshToken을 쿠키에 넣습니다.
-    @GetMapping("/home/kakao-login/callback")
+    @GetMapping("/kakao-login/callback")
     public String kakaoCallback(@RequestParam String code, HttpServletResponse res, Model model) throws JsonProcessingException {
         //Data를 리턴해주는 컨트롤러 함수
         List<String> tokens = kakaoService.kakaoLogin(code); //리프레시 저장
@@ -116,6 +118,13 @@ public class ViewController {
         model.addAttribute("childId", childCategory_id);
         model.addAttribute("productId", product_id);
         return "addFeedback"; // 이동할 뷰의 이름을 반환
+    }
+
+    @GetMapping("/api/user/{account}")
+    public ResponseEntity<ProfileResponseDTO> getProfile(@PathVariable String account, Model model) {
+        User user = userInfoService.findProfile(account);
+        ProfileResponseDTO res = ProfileResponseDTO.of(user);
+        return ResponseEntity.ok(res);
     }
 }
 
