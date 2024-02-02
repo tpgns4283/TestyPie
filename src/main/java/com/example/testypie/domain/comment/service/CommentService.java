@@ -26,93 +26,95 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CommentService {
 
-    private final CommentRepository commentRepository;
+  private final CommentRepository commentRepository;
 
-    public CommentResponseDTO createComment(Category category, Product product, User user,
-            CommentRequestDTO req) {
+  public CommentResponseDTO createComment(
+      Category category, Product product, User user, CommentRequestDTO req) {
 
-        if (category.getId().equals(product.getCategory().getId())) {
-            Comment comment = Comment.builder()
-                    .user(user)
-                    .content(req.content())
-                    .commentLikeCnt(DEFAULT_COMMENT_LIKE_CNT)
-                    .createAt(LocalDateTime.now())
-                    .product(product)
-                    .build();
-            Comment saveComment = commentRepository.save(comment);
-            return CommentResponseDTO.of(saveComment);
-        } else {
-            throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
-        }
+    if (category.getId().equals(product.getCategory().getId())) {
+      Comment comment =
+          Comment.builder()
+              .user(user)
+              .content(req.content())
+              .commentLikeCnt(DEFAULT_COMMENT_LIKE_CNT)
+              .createAt(LocalDateTime.now())
+              .product(product)
+              .build();
+      Comment saveComment = commentRepository.save(comment);
+      return CommentResponseDTO.of(saveComment);
+    } else {
+      throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
+    }
+  }
+
+  public Page<CommentResponseDTO> getComments(
+      Pageable pageable, Category category, Product product) {
+    int page = pageable.getPageNumber() - 1;
+    int pageLimit = 10;
+
+    if (category.getId().equals(product.getCategory().getId())) {
+      Page<Comment> commentPage =
+          commentRepository.findAllByProduct(
+              product, PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
+
+      List<CommentResponseDTO> resList = new ArrayList<>();
+
+      for (Comment comment : commentPage) {
+        CommentResponseDTO res = CommentResponseDTO.of(comment);
+        resList.add(res);
+      }
+      return new PageImpl<>(resList, pageable, commentPage.getTotalElements());
     }
 
-    public Page<CommentResponseDTO> getComments(Pageable pageable, Category category,
-            Product product) {
-        int page = pageable.getPageNumber() - 1;
-        int pageLimit = 10;
+    throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
+  }
 
-        if (category.getId().equals(product.getCategory().getId())) {
-            Page<Comment> commentPage = commentRepository.findAllByProduct(product,
-                    PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
+  @Transactional
+  public CommentResponseDTO updateComment(
+      Category category, Product product, User user, Long comment_id, CommentRequestDTO req) {
 
-            List<CommentResponseDTO> resList = new ArrayList<>();
-
-            for (Comment comment : commentPage) {
-                CommentResponseDTO res = CommentResponseDTO.of(comment);
-                resList.add(res);
-            }
-            return new PageImpl<>(resList, pageable, commentPage.getTotalElements());
-        }
-
-        throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
+    if (category.getId().equals(product.getCategory().getId())) {
+      Comment comment = getCommentEntity(comment_id);
+      checkProduct(comment, product.getId());
+      checkUser(comment, user.getId());
+      comment.update(req, product);
+      return CommentResponseDTO.of(comment);
+    } else {
+      throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
     }
+  }
 
-    @Transactional
-    public CommentResponseDTO updateComment(Category category, Product product, User user,
-            Long comment_id, CommentRequestDTO req) {
+  public void deleteComment(Category category, Product product, User user, Long comment_id) {
 
-        if (category.getId().equals(product.getCategory().getId())) {
-            Comment comment = getCommentEntity(comment_id);
-            checkProduct(comment, product.getId());
-            checkUser(comment, user.getId());
-            comment.update(req, product);
-            return CommentResponseDTO.of(comment);
-        } else {
-            throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
-        }
+    if (category.getId().equals(product.getCategory().getId())) {
+      Comment comment = getCommentEntity(comment_id);
+      checkProduct(comment, product.getId());
+      checkUser(comment, user.getId());
+      commentRepository.delete(comment);
+    } else {
+      throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
     }
+  }
 
-    public void deleteComment(Category category, Product product, User user, Long comment_id) {
+  // comment id로 댓글 조회
+  @Transactional(readOnly = true)
+  public Comment getCommentEntity(Long comment_id) {
+    return commentRepository
+        .findById(comment_id)
+        .orElseThrow(() -> new IllegalArgumentException("comment id"));
+  }
 
-        if (category.getId().equals(product.getCategory().getId())) {
-            Comment comment = getCommentEntity(comment_id);
-            checkProduct(comment, product.getId());
-            checkUser(comment, user.getId());
-            commentRepository.delete(comment);
-        } else {
-            throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
-        }
+  // 게시글에 달린 댓글이 맞는지 확인
+  public void checkProduct(Comment comment, Long product_id) {
+    if (!comment.getProduct().getId().equals(product_id)) {
+      throw new IllegalArgumentException("comment's product_id");
     }
+  }
 
-    // comment id로 댓글 조회
-    @Transactional(readOnly = true)
-    public Comment getCommentEntity(Long comment_id) {
-        return commentRepository.findById(comment_id).orElseThrow(
-                () -> new IllegalArgumentException("comment id")
-        );
+  // 수정 삭제 user 일치 확인
+  public void checkUser(Comment comment, Long user_id) {
+    if (!comment.getUser().getId().equals(user_id)) {
+      throw new IllegalArgumentException("comment's modifier");
     }
-
-    // 게시글에 달린 댓글이 맞는지 확인
-    public void checkProduct(Comment comment, Long product_id) {
-        if (!comment.getProduct().getId().equals(product_id)) {
-            throw new IllegalArgumentException("comment's product_id");
-        }
-    }
-
-    // 수정 삭제 user 일치 확인
-    public void checkUser(Comment comment, Long user_id) {
-        if (!comment.getUser().getId().equals(user_id)) {
-            throw new IllegalArgumentException("comment's modifier");
-        }
-    }
+  }
 }

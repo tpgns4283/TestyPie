@@ -1,27 +1,27 @@
-//package com.example.testypie.domain.feedback;
+// package com.example.testypie.domain.feedback;
 //
-//import static org.junit.jupiter.api.Assertions.assertEquals;
+// import static org.junit.jupiter.api.Assertions.assertEquals;
 //
-//import com.example.testypie.domain.feedback.entity.Feedback;
-//import com.example.testypie.domain.feedback.repository.FeedbackRepository;
-//import com.example.testypie.domain.product.entity.Product;
-//import com.example.testypie.domain.product.repository.ProductRepository;
-//import com.example.testypie.domain.user.entity.User;
-//import com.example.testypie.domain.user.repository.UserRepository;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-//import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-//import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-//import org.springframework.test.annotation.DirtiesContext;
-//import org.springframework.test.context.ActiveProfiles;
+// import com.example.testypie.domain.feedback.entity.Feedback;
+// import com.example.testypie.domain.feedback.repository.FeedbackRepository;
+// import com.example.testypie.domain.product.entity.Product;
+// import com.example.testypie.domain.product.repository.ProductRepository;
+// import com.example.testypie.domain.user.entity.User;
+// import com.example.testypie.domain.user.repository.UserRepository;
+// import org.junit.jupiter.api.BeforeEach;
+// import org.junit.jupiter.api.DisplayName;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+// import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
+// import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+// import org.springframework.test.annotation.DirtiesContext;
+// import org.springframework.test.context.ActiveProfiles;
 //
-//@DataJpaTest
-//@ActiveProfiles("test")
-//@AutoConfigureTestDatabase(replace = Replace.NONE)
-//class FeedbackRepositoryTest {
+// @DataJpaTest
+// @ActiveProfiles("test")
+// @AutoConfigureTestDatabase(replace = Replace.NONE)
+// class FeedbackRepositoryTest {
 //
 //    @Autowired
 //    private FeedbackRepository feedbackRepository;
@@ -85,4 +85,4 @@
 //        //then
 //        assertEquals(3.0, average, 0.1);
 //    }
-//}
+// }

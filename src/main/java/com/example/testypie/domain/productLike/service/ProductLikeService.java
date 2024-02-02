@@ -16,39 +16,44 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ProductLikeService {
 
-    private final ProductLikeRepository productLikeRepository;
-    private final ProductService productService;
+  private final ProductLikeRepository productLikeRepository;
+  private final ProductService productService;
 
-    @Transactional
-    public ProductLikeResponseDto clickProductLike(Long productId, User user) {
+  @Transactional
+  public ProductLikeResponseDto clickProductLike(Long productId, User user) {
 
-        Product product = productService.findProduct(productId);
-        ProductLike productLike = productLikeRepository.findByProductAndUser(product, user)
-                .orElseGet(() -> saveProductLike(product, user));
+    Product product = productService.findProduct(productId);
+    ProductLike productLike =
+        productLikeRepository
+            .findByProductAndUser(product, user)
+            .orElseGet(() -> saveProductLike(product, user));
 
-        boolean clickProductLike = productLike.clickProductLike();
-        product.updateProductLikeCnt(clickProductLike);
+    boolean clickProductLike = productLike.clickProductLike();
+    product.updateProductLikeCnt(clickProductLike);
 
-        return ProductLikeResponseDto.of(productLike.getIsProductLiked());
-    }
+    return ProductLikeResponseDto.of(productLike.getIsProductLiked());
+  }
 
-    public ProductLikeResponseDto getProductLike(Long productId, User user) {
+  public ProductLikeResponseDto getProductLike(Long productId, User user) {
 
-        Product product = productService.findProduct(productId);
-        ProductLike productLike = productLikeRepository.findByProductAndUser(product, user)
-                .orElseGet(() -> saveProductLike(product, user));
+    Product product = productService.findProduct(productId);
+    ProductLike productLike =
+        productLikeRepository
+            .findByProductAndUser(product, user)
+            .orElseGet(() -> saveProductLike(product, user));
 
-        return ProductLikeResponseDto.of(productLike.getIsProductLiked());
-    }
+    return ProductLikeResponseDto.of(productLike.getIsProductLiked());
+  }
 
-    private ProductLike saveProductLike(Product product, User user) {
+  private ProductLike saveProductLike(Product product, User user) {
 
-        ProductLike productLike = ProductLike.builder()
-                .user(user)
-                .product(product)
-                .isProductLiked(DEFAULT_PRODUCT_LIKE)
-                .build();
+    ProductLike productLike =
+        ProductLike.builder()
+            .user(user)
+            .product(product)
+            .isProductLiked(DEFAULT_PRODUCT_LIKE)
+            .build();
 
-        return productLikeRepository.save(productLike);
-    }
+    return productLikeRepository.save(productLike);
+  }
 }

@@ -2,7 +2,6 @@ package com.example.testypie.domain.user.service;
 
 import com.example.testypie.domain.user.dto.LoginRequestDTO;
 import com.example.testypie.domain.user.dto.SignUpRequestDTO;
-import com.example.testypie.domain.user.dto.SignUpResponseDTO;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.global.exception.ErrorCode;
@@ -18,74 +17,86 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final PasswordEncoder passwordEncoder;
+  private final PasswordEncoder passwordEncoder;
 
-    private final UserRepository userRepository;
+  private final UserRepository userRepository;
 
-//    private final S3Uploader s3Uploader;
+  //    private final S3Uploader s3Uploader;
 
-    @Value("${default.image.address}")
-    private String defaultProfileImageUrl;
+  @Value("${default.image.address}")
+  private String defaultProfileImageUrl;
 
-    public SignUpResponseDTO signup(SignUpRequestDTO req) {
+  public void signup(SignUpRequestDTO signUpRequestDTO) {
 
-        validateSignup(req);
+    String account = signUpRequestDTO.account();
+    String password = passwordEncoder.encode(signUpRequestDTO.password());
+    String email = signUpRequestDTO.email();
+    String nickname = signUpRequestDTO.nickname();
+    String description = signUpRequestDTO.description();
 
-        String password = passwordEncoder.encode(req.password());
-
-        User user = User.builder().account(req.account()).password(password).email(req.email())
-                .nickname(req.nickname()).description(req.description()).fileUrl(defaultProfileImageUrl)
-                .build();
-
-        userRepository.save(user);
-
-        return new SignUpResponseDTO();
+    if (userRepository.findByAccount(account).isPresent()) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_ACCOUNT);
+    }
+    if (userRepository.findByEmail(email).isPresent()) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_EMAIL);
+    }
+    if (userRepository.findByNickname(nickname).isPresent()) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_NICKNAME);
     }
 
-    public void login(LoginRequestDTO req) {
-        String account = req.account();
-        String password = req.password();
+    User user =
+        User.builder()
+            .account(account)
+            .password(password)
+            .email(email)
+            .nickname(nickname)
+            .description(description)
+            .fileUrl(defaultProfileImageUrl)
+            .build();
 
-        User user = userRepository.findByAccount(account)
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.LOGIN_INVALID_ACCOUNT));
+    userRepository.save(user);
+  }
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.LOGIN_INVALID_PASSWORD);
-        }
+  public void login(LoginRequestDTO req) {
+    String account = req.account();
+    String password = req.password();
+
+    User user =
+        userRepository
+            .findByAccount(account)
+            .orElseThrow(
+                () -> new GlobalExceptionHandler.CustomException(ErrorCode.LOGIN_INVALID_ACCOUNT));
+
+    if (!passwordEncoder.matches(password, user.getPassword())) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.LOGIN_INVALID_PASSWORD);
     }
+  }
 
-    public User findUser(String account) {
-        return userRepository.findByAccount(account)
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
-    }
+  public User findUser(String account) {
+    return userRepository
+        .findByAccount(account)
+        .orElseThrow(
+            () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
+  }
 
-    public User findUserByUserId(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
-    }
+  public User findUserByUserId(Long userId) {
+    return userRepository
+        .findById(userId)
+        .orElseThrow(
+            () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
+  }
 
-    public void signOut(User user) {
-        Long userId = user.getId();
+  public void signOut(User user) {
+    Long userId = user.getId();
 
-        deleteUser(userId);
-    }
+    deleteUser(userId);
+  }
 
-    private void deleteUser(Long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.DELETE_USER_NOT_FOUND));
-        userRepository.deleteById(userId);
-    }
-
-    private void validateSignup(SignUpRequestDTO req) {
-        if (userRepository.findByAccount(req.account()).isPresent()) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_ACCOUNT);
-        }
-        if (userRepository.findByEmail(req.email()).isPresent()) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_EMAIL);
-        }
-        if (userRepository.findByNickname(req.nickname()).isPresent()) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_NICKNAME);
-        }
-    }
-
+  private void deleteUser(Long userId) {
+    userRepository
+        .findById(userId)
+        .orElseThrow(
+            () -> new GlobalExceptionHandler.CustomException(ErrorCode.DELETE_USER_NOT_FOUND));
+    userRepository.deleteById(userId);
+  }
 }

@@ -9,19 +9,16 @@ public record BugReportResponseDTO(
     Long productId,
     LocalDateTime createdAt,
     String content,
-    @Nullable
-    String fileUrl,
-    Long userId
-) {
+    @Nullable String fileUrl,
+    Long userId) {
 
-    public static BugReportResponseDTO of(BugReport bugReport) {
-        return new BugReportResponseDTO(
-            bugReport.getId(),
-            bugReport.getProduct().getId(),
-            bugReport.getCreatedAt(),
-            bugReport.getContent(),
-            bugReport.getFileUrl(),
-            bugReport.getUser().getId()
-        );
-    }
+  public static BugReportResponseDTO of(BugReport bugReport) {
+    return new BugReportResponseDTO(
+        bugReport.getId(),
+        bugReport.getProduct().getId(),
+        bugReport.getCreatedAt(),
+        bugReport.getContent(),
+        bugReport.getFileUrl(),
+        bugReport.getUser().getId());
+  }
 }
