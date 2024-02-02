@@ -70,7 +70,7 @@ spotless {
     java {
         target project.fileTree(project.rootDir) {
             include '**/*.java'
-            exclude 'src/main/generated/**/*.*'
+            exclude 'build/generated/**/*.*'
         }
         // 사용하지 않는 import 제거
         removeUnusedImports()
@@ -89,18 +89,4 @@ tasks.named("spotlessJava").configure { dependsOn("compileTestJava") }
 
 tasks.named('test') {
     useJUnitPlatform()
-}
-
-def querydslDir = "src/main/generated"
-
-sourceSets {
-    main.java.srcDirs += [querydslDir]
-}
-
-tasks.withType(JavaCompile) {
-    options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
-}
-
-clean.doLast {
-    file(querydslDir).deleteDir()
 }
