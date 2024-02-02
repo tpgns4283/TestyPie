@@ -59,10 +59,19 @@ dependencies {
     //MARVIN
     implementation 'com.github.downgoon:marvin:1.5.5'
     implementation 'com.github.downgoon:MarvinPlugins:1.5.5'
+    // QueryDSL
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 }
 
 spotless {
     java {
+        target project.fileTree(project.rootDir) {
+            include '**/*.java'
+            exclude 'src/main/generated/**/*.*'
+        }
         // 사용하지 않는 import 제거
         removeUnusedImports()
         // 구글 자바 포맷 적용
@@ -75,10 +84,23 @@ spotless {
         endWithNewline()
     }
 }
-
 // 의존성을 설정해줌 test 끝나고 spotlessjava 수행되도록
 tasks.named("spotlessJava").configure { dependsOn("compileTestJava") }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+def querydslDir = "src/main/generated"
+
+sourceSets {
+    main.java.srcDirs += [querydslDir]
+}
+
+tasks.withType(JavaCompile) {
+    options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
+}
+
+clean.doLast {
+    file(querydslDir).deleteDir()
 }
