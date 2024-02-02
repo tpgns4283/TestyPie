@@ -9,9 +9,6 @@ public record SignUpRequestDTO(
     @NotBlank @Pattern(regexp = "^[a-zA-Z0-9]{8,16}$", message = "8~16자 사이의 소문자, 대문자, 숫자")
         String password,
     @NotBlank
-        @Pattern(
-            regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$",
-            message = "이메일 형식에 맞지 않습니다.")
         @Email
         String email,
     @NotBlank @Pattern(regexp = "^[a-zA-Z0-9가-힣_]{1,20}$", message = "1~20자 사이의 소문자, 대문자, 숫자")
