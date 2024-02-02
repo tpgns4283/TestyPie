@@ -16,39 +16,44 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CommentLikeService {
 
-    private final CommentLikeRepository commentLikeRepository;
-    private final CommentService commentService;
+  private final CommentLikeRepository commentLikeRepository;
+  private final CommentService commentService;
 
-    @Transactional
-    public CommentLikeResponseDto clickCommentLike(Long commentId, User user) {
+  @Transactional
+  public CommentLikeResponseDto clickCommentLike(Long commentId, User user) {
 
-        Comment comment = commentService.getCommentEntity(commentId);
-        CommentLike commentLike = commentLikeRepository.findByCommentAndUser(comment, user)
-                .orElseGet(() -> saveCommentLike(comment, user));
+    Comment comment = commentService.getCommentEntity(commentId);
+    CommentLike commentLike =
+        commentLikeRepository
+            .findByCommentAndUser(comment, user)
+            .orElseGet(() -> saveCommentLike(comment, user));
 
-        boolean clickCommentLike = commentLike.clickCommentLike();
-        comment.updateCommentLikeCnt(clickCommentLike);
+    boolean clickCommentLike = commentLike.clickCommentLike();
+    comment.updateCommentLikeCnt(clickCommentLike);
 
-        return CommentLikeResponseDto.of(commentLike.getIsCommentLiked());
-    }
+    return CommentLikeResponseDto.of(commentLike.getIsCommentLiked());
+  }
 
-    public CommentLikeResponseDto getCommentLike(Long commentId, User user) {
+  public CommentLikeResponseDto getCommentLike(Long commentId, User user) {
 
-        Comment comment = commentService.getCommentEntity(commentId);
-        CommentLike commentLike = commentLikeRepository.findByCommentAndUser(comment, user)
-                .orElseGet(() -> saveCommentLike(comment, user));
+    Comment comment = commentService.getCommentEntity(commentId);
+    CommentLike commentLike =
+        commentLikeRepository
+            .findByCommentAndUser(comment, user)
+            .orElseGet(() -> saveCommentLike(comment, user));
 
-        return CommentLikeResponseDto.of(commentLike.getIsCommentLiked());
-    }
+    return CommentLikeResponseDto.of(commentLike.getIsCommentLiked());
+  }
 
-    private CommentLike saveCommentLike(Comment comment, User user) {
+  private CommentLike saveCommentLike(Comment comment, User user) {
 
-        CommentLike commentLike = CommentLike.builder()
-                .user(user)
-                .comment(comment)
-                .isCommentLiked(DEFAULT_COMMENT_LIKE)
-                .build();
+    CommentLike commentLike =
+        CommentLike.builder()
+            .user(user)
+            .comment(comment)
+            .isCommentLiked(DEFAULT_COMMENT_LIKE)
+            .build();
 
-        return commentLikeRepository.save(commentLike);
-    }
+    return commentLikeRepository.save(commentLike);
+  }
 }

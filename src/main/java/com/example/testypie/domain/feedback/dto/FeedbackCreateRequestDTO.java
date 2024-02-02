@@ -1,12 +1,7 @@
 package com.example.testypie.domain.feedback.dto;
 
+import java.util.List;
 import lombok.NonNull;
 
-import java.util.List;
-
-public record FeedbackCreateRequestDTO (
-        @NonNull
-        List<FeedbackDetailsCreateRequestDTO> feedbackDetailsList
-) {
-
-}
+public record FeedbackCreateRequestDTO(
+    @NonNull List<FeedbackDetailsCreateRequestDTO> feedbackDetailsList) {}

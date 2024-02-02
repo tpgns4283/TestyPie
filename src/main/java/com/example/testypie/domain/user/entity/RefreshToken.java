@@ -10,13 +10,12 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 public class RefreshToken {
-    @Id
-    String account;
-    String tokenValue;
+  @Id String account;
+  String tokenValue;
 
-    @Builder
-    public RefreshToken(String account,String tokenValue) {
-        this.account = account;
-        this.tokenValue = tokenValue;
-    }
+  @Builder
+  public RefreshToken(String account, String tokenValue) {
+    this.account = account;
+    this.tokenValue = tokenValue;
+  }
 }

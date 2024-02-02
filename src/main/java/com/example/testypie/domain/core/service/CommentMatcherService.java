@@ -19,44 +19,56 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CommentMatcherService {
 
-    private final CommentService commentService;
-    private final ProductService productService;
-    private final CategoryService categoryService;
+  private final CommentService commentService;
+  private final ProductService productService;
+  private final CategoryService categoryService;
 
-    public CommentResponseDTO productComment(Long product_id, CommentRequestDTO req, User user,
-            Long childCategory_id, String parentCategory_name) {
+  public CommentResponseDTO productComment(
+      Long product_id,
+      CommentRequestDTO req,
+      User user,
+      Long childCategory_id,
+      String parentCategory_name) {
 
-        Product product = productService.findProduct(product_id);
-        Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
+    Product product = productService.findProduct(product_id);
+    Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
 
-        return commentService.createComment(category, product, user, req);
-    }
+    return commentService.createComment(category, product, user, req);
+  }
 
-    public Page<CommentResponseDTO> getComments(Pageable pageable, Long product_id,
-            Long childCategory_id, String parentCategory_name) {
+  public Page<CommentResponseDTO> getComments(
+      Pageable pageable, Long product_id, Long childCategory_id, String parentCategory_name) {
 
-        Product product = productService.findProduct(product_id);
-        Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
+    Product product = productService.findProduct(product_id);
+    Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
 
-        return commentService.getComments(pageable, category, product);
+    return commentService.getComments(pageable, category, product);
+  }
 
-    }
+  @Transactional
+  public CommentResponseDTO updateComment(
+      Long product_id,
+      Long comment_id,
+      CommentRequestDTO req,
+      User user,
+      Long childCategory_id,
+      String parentCategory_name) {
 
-    @Transactional
-    public CommentResponseDTO updateComment(Long product_id, Long comment_id, CommentRequestDTO req,
-            User user, Long childCategory_id, String parentCategory_name) {
+    Product product = productService.findProduct(product_id);
+    Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
 
-        Product product = productService.findProduct(product_id);
-        Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
+    return commentService.updateComment(category, product, user, comment_id, req);
+  }
 
-        return commentService.updateComment(category, product, user, comment_id, req);
-    }
+  public void deleteComment(
+      Long product_id,
+      Long comment_id,
+      User user,
+      Long childCategory_id,
+      String parentCategory_name) {
 
-    public void deleteComment(Long product_id, Long comment_id, User user, Long childCategory_id,
-            String parentCategory_name) {
-
-        Product product = productService.findProduct(product_id);
-        Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
-        commentService.deleteComment(category, product, user, comment_id);
-    }
+    Product product = productService.findProduct(product_id);
+    Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
+    commentService.deleteComment(category, product, user, comment_id);
+  }
 }
