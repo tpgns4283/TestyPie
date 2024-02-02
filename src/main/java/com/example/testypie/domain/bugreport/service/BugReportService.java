@@ -68,7 +68,7 @@ public class BugReportService {
     // 해당 제품에 대한 BugReport 조회 및 응답 DTO 생성
     return BugReportResponseDTO.of(
         bugReportRepository
-            .findByProductIdAndAndId(productId, bugReportId)
+            .findByProductIdAndId(productId, bugReportId)
             .orElseThrow(
                 () ->
                     new GlobalExceptionHandler.CustomException(
