@@ -1,7 +1,6 @@
 package com.example.testypie.domain.bugreport.repository;
 
 import com.example.testypie.domain.bugreport.entity.BugReport;
-import com.example.testypie.domain.user.entity.User;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface BugReportRepository extends JpaRepository<BugReport, Long> {
 
     Page<BugReport> findAllByProductId(Long productId, Pageable pageable);
-    Optional<BugReport> findByProductIdAndBugReportId(Long productId, Long bugReportId);
+
+    Optional<BugReport> findByProductIdAndAndId(Long productId, Long bugReportId);
 
 }
