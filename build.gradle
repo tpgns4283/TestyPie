@@ -55,7 +55,9 @@ dependencies {
     testImplementation 'junit:junit:4.13.1'
     // h2
     runtimeOnly 'com.h2database:h2'
-
+    //MARVIN
+    implementation 'com.github.downgoon:marvin:1.5.5'
+    implementation 'com.github.downgoon:MarvinPlugins:1.5.5'
 }
 
 tasks.named('test') {
