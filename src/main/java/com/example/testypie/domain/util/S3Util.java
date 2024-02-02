@@ -37,7 +37,8 @@ public class S3Util {
     public enum FilePath { // 파일 경로를 나타내는 상수를 정의
         PROFILE("profile/"),
         BOARD("board/"),
-        COMMENT("comment/");
+        COMMENT("comment/"),
+        BUGREPORT("reports/");
         private final String path; // 경로를 저장하는 final 필드
     }
 
@@ -51,15 +52,17 @@ public class S3Util {
 
     public String uploadFile(MultipartFile multipartFile, FilePath filePath) {  // 업로드는 잘 됨
         // 업로드할 파일이 존재하지 않거나 비어있으면 null 반환
-        if (multipartFile == null || multipartFile.isEmpty()) {
-            return null;
-        } else {
+//        if (multipartFile == null || multipartFile.isEmpty()) {
+//            return null;
+//        }
+        // 업로드할 파일이 이미지인 경우에만 실행
+        if (Objects.requireNonNull(multipartFile.getContentType()).contains("image")) {
             // 업로드할 파일의 고유한 파일명 생성
             String fileName = createFileName(multipartFile.getOriginalFilename());
-            String fileFormatName = Objects.requireNonNull(multipartFile.getContentType())
+            String fileFormatName = multipartFile.getContentType()
                     .substring(multipartFile.getContentType().lastIndexOf("/") + 1);
 
-            MultipartFile resizedImage = resizer(fileName, fileFormatName, multipartFile, 768);
+            MultipartFile resizedImage = resizer(fileName, fileFormatName, multipartFile, 400);
 
             // 파일명을 UTF-8로 디코딩
             fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
@@ -80,6 +83,7 @@ public class S3Util {
             // 업로드한 파일의 URL 반환
             return getFileUrl(fileName, filePath);
         }
+        return null;
     }
 
     public void deleteFile(String fileUrl, FilePath filePath) {
