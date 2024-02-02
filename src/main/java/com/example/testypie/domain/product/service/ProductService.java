@@ -4,8 +4,14 @@ import static com.example.testypie.domain.product.constant.ProductConstant.DEFAU
 
 import com.example.testypie.domain.category.entity.Category;
 import com.example.testypie.domain.category.service.CategoryService;
-import com.example.testypie.domain.comment.service.CommentService;
-import com.example.testypie.domain.product.dto.*;
+import com.example.testypie.domain.product.dto.ProductCreateRequestDTO;
+import com.example.testypie.domain.product.dto.ProductCreateResponseDTO;
+import com.example.testypie.domain.product.dto.ProductDeleteResponseDTO;
+import com.example.testypie.domain.product.dto.ProductPageResponseDTO;
+import com.example.testypie.domain.product.dto.ProductReadResponseDTO;
+import com.example.testypie.domain.product.dto.ProductUpdateRequestDTO;
+import com.example.testypie.domain.product.dto.ProductUpdateResponseDTO;
+import com.example.testypie.domain.product.dto.SearchProductResponseDTO;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.repository.ProductRepository;
 import com.example.testypie.domain.reward.dto.RewardCreateRequestDTO;
@@ -22,7 +28,12 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +44,6 @@ public class ProductService {
 
   private final ProductRepository productRepository;
   private final CategoryService categoryService;
-  private final CommentService commentService;
 
   // CREATE
   @Transactional
@@ -147,6 +157,16 @@ public class ProductService {
     productRepository.save(product);
 
     return ProductUpdateResponseDTO.of(product);
+  }
+
+  // SEARCH
+  public Page<SearchProductResponseDTO> searchProductList(Pageable pageable, String keyword) {
+
+    int page = pageable.getPageNumber() - 1;
+    int pageLimit = 10;
+
+    return productRepository.searchAllByKeyword(
+        PageRequest.of(page, pageLimit, Sort.by(Direction.DESC, "id")), keyword);
   }
 
   // DELETE
