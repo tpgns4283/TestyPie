@@ -1,8 +1,8 @@
 package com.example.testypie.domain.bugreport.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public record BugReportRequestDTO (
-    Long reportProductId,
-    String content,
-    Long userId
+    String content
 ) {
 }
