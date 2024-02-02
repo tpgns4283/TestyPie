@@ -2,16 +2,24 @@ package com.example.testypie.domain.util;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import java.io.UnsupportedEncodingException;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import javax.imageio.ImageIO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import marvin.image.MarvinImage;
+import org.marvinproject.image.transform.scale.Scale;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @Service
@@ -47,15 +55,22 @@ public class S3Util {
         }
         // 업로드할 파일의 고유한 파일명 생성
         String fileName = createFileName(multipartFile.getOriginalFilename());
+        String fileFormatName = multipartFile.getContentType()
+                .substring(multipartFile.getContentType().lastIndexOf("/") + 1);
+
+        MultipartFile resizedImage = resizer(fileName, fileFormatName, multipartFile, 400);
+
         // 파일명을 UTF-8로 디코딩
         fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
         log.warn("업로드 파일 디코딩 완료 : " + filePath + fileName);
         // 업로드할 파일의 메타데이터 생성
-        ObjectMetadata metadata = setObjectMetadata(multipartFile);
+        ObjectMetadata metadata = setObjectMetadata(resizedImage);
         try {
             // S3에 파일 업로드
             amazonS3Client.putObject(bucketName, filePath.getPath() + fileName,
-                    multipartFile.getInputStream(), metadata);
+                    resizedImage.getInputStream(), metadata);
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다.");
         } catch (Exception e) {
             // 업로드 중에 예외 발생 시 전역 예외(GlobalException) 발생
             throw new IllegalArgumentException("파일 업로드 실패");
@@ -69,16 +84,11 @@ public class S3Util {
         String fileName = getFileNameFromFileUrl(fileUrl, filePath);
         log.info("fileName: {}", fileName);
         // 파일명을 UTF-8로 디코딩
-        try {
-            fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8.toString());
-            System.out.println(fileName);
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("ㅎㅇ1");
-        }
-        // 파일명이 비어있거나 해당 파일이 존재하지 않으면 예외 발생
-        log.warn("bucketName: {" + bucketName + "}");
-        log.warn("fileKey: {" + filePath.getPath() + fileName + "}");
+        fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
+        log.info("bucketName: {" + bucketName + "}");
+        log.info("fileKey: {" + filePath.getPath() + fileName + "}");
 
+        // 파일명이 비어있거나 해당 파일이 존재하지 않으면 예외 발생
         if (fileName.isBlank() || !amazonS3Client.doesObjectExist(bucketName,
                 filePath.getPath() + fileName)) {
             throw new IllegalArgumentException("삭제할 파일이 없거나 파일명이 없습니다.");
@@ -101,5 +111,42 @@ public class S3Util {
     private String createFileName(String fileName) {
         // UUID를 사용하여 고유한 문자열을 생성하고, 주어진 파일명과 연결하여 반환
         return UUID.randomUUID().toString().concat(fileName);
+    }
+
+    @Transactional
+    public MultipartFile resizer(String fileName, String fileFormat, MultipartFile originalImage,
+            int width) {
+
+        try {
+            // MultipartFile -> BufferedImage Convert
+            BufferedImage image = ImageIO.read(originalImage.getInputStream());
+
+            int originWidth = image.getWidth();
+            int originHeight = image.getHeight();
+
+            // origin 이미지가 400보다 작으면 패스
+            if (originWidth < width) {
+                return originalImage;
+            }
+
+            MarvinImage imageMarvin = new MarvinImage(image);
+
+            Scale scale = new Scale();
+            scale.load();
+            scale.setAttribute("newWidth", width);
+            scale.setAttribute("newHeight", width * originHeight / originWidth);//비율유지를 위해 높이 유지
+            scale.process(imageMarvin.clone(), imageMarvin, null, null, false);
+
+            BufferedImage imageNoAlpha = imageMarvin.getBufferedImageNoAlpha();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(imageNoAlpha, fileFormat, baos);
+            baos.flush();
+
+            return new CustomMultipartFile(fileName, fileFormat, originalImage.getContentType(),
+                    baos.toByteArray());
+
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일을 줄이는데 실패했습니다.");
+        }
     }
 }
