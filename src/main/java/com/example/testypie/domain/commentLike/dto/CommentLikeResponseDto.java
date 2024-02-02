@@ -1,12 +1,9 @@
 package com.example.testypie.domain.commentLike.dto;
 
-public record CommentLikeResponseDto(
+public record CommentLikeResponseDto(Boolean isCommentLiked) {
 
-        Boolean isCommentLiked
-) {
+  public static CommentLikeResponseDto of(Boolean isCommentLiked) {
 
-    public static CommentLikeResponseDto of(Boolean isCommentLiked) {
-
-        return new CommentLikeResponseDto(isCommentLiked);
-    }
+    return new CommentLikeResponseDto(isCommentLiked);
+  }
 }
