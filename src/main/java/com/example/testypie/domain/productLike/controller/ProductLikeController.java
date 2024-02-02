@@ -22,22 +22,24 @@ public class ProductLikeController {
     @PatchMapping("/{product_id}/product_like")
     public ResponseEntity<ProductLikeResponseDto> clickProductLike(
             @PathVariable String parentCategory_name,
-            @PathVariable Long childCategory_id, @PathVariable Long product_id,
+            @PathVariable Long childCategory_id,
+            @PathVariable Long product_id,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        ProductLikeResponseDto res = productLikeService.clickProductLike(product_id,
-                userDetails.getUser());
+        ProductLikeResponseDto res =
+                productLikeService.clickProductLike(product_id, userDetails.getUser());
         return ResponseEntity.ok().body(res);
     }
 
     @GetMapping("/{product_id}/product_like/status")
     public ResponseEntity<ProductLikeResponseDto> getProductLike(
             @PathVariable String parentCategory_name,
-            @PathVariable Long childCategory_id, @PathVariable Long product_id,
+            @PathVariable Long childCategory_id,
+            @PathVariable Long product_id,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        ProductLikeResponseDto res = productLikeService.getProductLike(product_id,
-                userDetails.getUser());
+        ProductLikeResponseDto res =
+                productLikeService.getProductLike(product_id, userDetails.getUser());
         return ResponseEntity.ok().body(res);
     }
 }

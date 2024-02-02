@@ -8,15 +8,9 @@ import lombok.Getter;
 @JsonFormat(shape = Shape.OBJECT)
 public enum ErrorCode {
     /**
-     * ***** Global Error CodeList *****
-     * HTTP Status Code
-     * 400 : Bad Request 잘못된 요청
-     * 401 : Unauthorized 인증되지 않은 사용자
-     * 403 : Forbidden 접근권한 없음
-     * 404 : Not Found Resource를 찾을수 없음
-     * 409 : Conflict 데이터 중복
-     * 422 : Unprocessable Entity 요청은 올바르나 파일을 읽을 수 없음
-     * 500 : INTERNAL SERVER 서버 에러
+     * ***** Global Error CodeList ***** HTTP Status Code 400 : Bad Request 잘못된 요청 401 : Unauthorized
+     * 인증되지 않은 사용자 403 : Forbidden 접근권한 없음 404 : Not Found Resource를 찾을수 없음 409 : Conflict 데이터 중복 422
+     * : Unprocessable Entity 요청은 올바르나 파일을 읽을 수 없음 500 : INTERNAL SERVER 서버 에러
      */
 
     /* 400 BAD_REQUEST : 잘못된 요청 */

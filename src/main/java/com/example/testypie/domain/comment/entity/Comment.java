@@ -5,13 +5,12 @@ import com.example.testypie.domain.commentLike.entity.CommentLike;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.user.entity.User;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -27,11 +26,9 @@ public class Comment {
 
     private Long commentLikeCnt;
 
-    @Column
-    private LocalDateTime createAt;
+    @Column private LocalDateTime createAt;
 
-    @Column
-    private LocalDateTime modifiedAt;
+    @Column private LocalDateTime modifiedAt;
 
     @JoinColumn(name = "user_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -41,12 +38,22 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
-    @OneToMany(mappedBy = "comment", targetEntity = CommentLike.class, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "comment",
+            targetEntity = CommentLike.class,
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true)
     List<CommentLike> commentLikeList = new ArrayList<>();
 
     @Builder
-    private Comment(Long id, String content, Long commentLikeCnt, LocalDateTime createAt, LocalDateTime modifiedAt,
-            User user, Product product) {
+    private Comment(
+            Long id,
+            String content,
+            Long commentLikeCnt,
+            LocalDateTime createAt,
+            LocalDateTime modifiedAt,
+            User user,
+            Product product) {
         this.id = id;
         this.content = content;
         this.commentLikeCnt = commentLikeCnt;

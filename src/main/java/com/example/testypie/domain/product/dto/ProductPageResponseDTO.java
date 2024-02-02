@@ -1,16 +1,13 @@
 package com.example.testypie.domain.product.dto;
 
 import com.example.testypie.domain.product.entity.Product;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-
-public record ProductPageResponseDTO (
+public record ProductPageResponseDTO(
         Long id,
         String account,
         String nickname,
@@ -22,9 +19,8 @@ public record ProductPageResponseDTO (
         LocalDateTime createAt,
         LocalDateTime startAt,
         LocalDateTime closedAt,
-        String message
+        String message) {
 
-) {
     public static ProductPageResponseDTO of(Product product) throws ParseException {
 
         String end = product.getClosedAt().toString();
@@ -40,11 +36,9 @@ public record ProductPageResponseDTO (
 
         if (LocalDateTime.now().isBefore(product.getStartedAt())) {
             message = "테스트 시작 전입니다.";
-        }
-        else if(LocalDateTime.now().isAfter(product.getClosedAt())){
+        } else if (LocalDateTime.now().isAfter(product.getClosedAt())) {
             message = "마감된 테스트 입니다.";
-        }
-        else {
+        } else {
             long diffSec = (endFormat.getTime() - nowFormat.getTime()) / 1000;
             diffDays = (diffSec / (24 * 60 * 60));
             message = "마감 " + diffDays + "일 전";
@@ -62,7 +56,6 @@ public record ProductPageResponseDTO (
                 product.getCreatedAt(),
                 product.getStartedAt(),
                 product.getClosedAt(),
-                message
-        );
+                message);
     }
 }

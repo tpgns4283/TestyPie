@@ -28,17 +28,18 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
 
-    public CommentResponseDTO createComment(Category category, Product product, User user,
-            CommentRequestDTO req) {
+    public CommentResponseDTO createComment(
+            Category category, Product product, User user, CommentRequestDTO req) {
 
         if (category.getId().equals(product.getCategory().getId())) {
-            Comment comment = Comment.builder()
-                    .user(user)
-                    .content(req.content())
-                    .commentLikeCnt(DEFAULT_COMMENT_LIKE_CNT)
-                    .createAt(LocalDateTime.now())
-                    .product(product)
-                    .build();
+            Comment comment =
+                    Comment.builder()
+                            .user(user)
+                            .content(req.content())
+                            .commentLikeCnt(DEFAULT_COMMENT_LIKE_CNT)
+                            .createAt(LocalDateTime.now())
+                            .product(product)
+                            .build();
             Comment saveComment = commentRepository.save(comment);
             return CommentResponseDTO.of(saveComment);
         } else {
@@ -46,14 +47,15 @@ public class CommentService {
         }
     }
 
-    public Page<CommentResponseDTO> getComments(Pageable pageable, Category category,
-            Product product) {
+    public Page<CommentResponseDTO> getComments(
+            Pageable pageable, Category category, Product product) {
         int page = pageable.getPageNumber() - 1;
         int pageLimit = 10;
 
         if (category.getId().equals(product.getCategory().getId())) {
-            Page<Comment> commentPage = commentRepository.findAllByProduct(product,
-                    PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
+            Page<Comment> commentPage =
+                    commentRepository.findAllByProduct(
+                            product, PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
 
             List<CommentResponseDTO> resList = new ArrayList<>();
 
@@ -68,8 +70,8 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponseDTO updateComment(Category category, Product product, User user,
-            Long comment_id, CommentRequestDTO req) {
+    public CommentResponseDTO updateComment(
+            Category category, Product product, User user, Long comment_id, CommentRequestDTO req) {
 
         if (category.getId().equals(product.getCategory().getId())) {
             Comment comment = getCommentEntity(comment_id);
@@ -97,9 +99,9 @@ public class CommentService {
     // comment id로 댓글 조회
     @Transactional(readOnly = true)
     public Comment getCommentEntity(Long comment_id) {
-        return commentRepository.findById(comment_id).orElseThrow(
-                () -> new IllegalArgumentException("comment id")
-        );
+        return commentRepository
+                .findById(comment_id)
+                .orElseThrow(() -> new IllegalArgumentException("comment id"));
     }
 
     // 게시글에 달린 댓글이 맞는지 확인

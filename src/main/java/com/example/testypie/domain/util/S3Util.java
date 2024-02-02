@@ -50,17 +50,19 @@ public class S3Util {
         return metadata;
     }
 
-    public String uploadFile(MultipartFile multipartFile, FilePath filePath) {  // 업로드는 잘 됨
+    public String uploadFile(MultipartFile multipartFile, FilePath filePath) { // 업로드는 잘 됨
         // 업로드할 파일이 존재하지 않거나 비어있으면 null 반환
-//        if (multipartFile == null || multipartFile.isEmpty()) {
-//            return null;
-//        }
+        //        if (multipartFile == null || multipartFile.isEmpty()) {
+        //            return null;
+        //        }
         // 업로드할 파일이 이미지인 경우에만 실행
         if (Objects.requireNonNull(multipartFile.getContentType()).contains("image")) {
             // 업로드할 파일의 고유한 파일명 생성
             String fileName = createFileName(multipartFile.getOriginalFilename());
-            String fileFormatName = multipartFile.getContentType()
-                    .substring(multipartFile.getContentType().lastIndexOf("/") + 1);
+            String fileFormatName =
+                    multipartFile
+                            .getContentType()
+                            .substring(multipartFile.getContentType().lastIndexOf("/") + 1);
 
             MultipartFile resizedImage = resizer(fileName, fileFormatName, multipartFile, 400);
 
@@ -71,11 +73,10 @@ public class S3Util {
             ObjectMetadata metadata = setObjectMetadata(resizedImage);
             try {
                 // S3에 파일 업로드
-                amazonS3Client.putObject(bucketName, filePath.getPath() + fileName,
-                        resizedImage.getInputStream(), metadata);
+                amazonS3Client.putObject(
+                        bucketName, filePath.getPath() + fileName, resizedImage.getInputStream(), metadata);
             } catch (IOException e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                        "이미지 업로드에 실패했습니다.");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다.");
             } catch (Exception e) {
                 // 업로드 중에 예외 발생 시 전역 예외(GlobalException) 발생
                 throw new IllegalArgumentException("파일 업로드 실패");
@@ -96,8 +97,8 @@ public class S3Util {
         log.info("fileKey: {" + filePath.getPath() + fileName + "}");
 
         // 파일명이 비어있거나 해당 파일이 존재하지 않으면 예외 발생
-        if (fileName.isBlank() || !amazonS3Client.doesObjectExist(bucketName,
-                filePath.getPath() + fileName)) {
+        if (fileName.isBlank()
+                || !amazonS3Client.doesObjectExist(bucketName, filePath.getPath() + fileName)) {
             throw new IllegalArgumentException("삭제할 파일이 없거나 파일명이 없습니다.");
         }
         // S3에서 파일 삭제
@@ -111,8 +112,7 @@ public class S3Util {
 
     private String getFileNameFromFileUrl(String fileUrl, FilePath filePath) {
         // 파일 URL에서 파일 경로 다음의 문자열부터 파일명의 끝까지 추출하여 반환
-        return fileUrl.substring(fileUrl.lastIndexOf(filePath.getPath()) +
-                filePath.getPath().length());
+        return fileUrl.substring(fileUrl.lastIndexOf(filePath.getPath()) + filePath.getPath().length());
     }
 
     private String createFileName(String fileName) {
@@ -121,8 +121,8 @@ public class S3Util {
     }
 
     @Transactional
-    public MultipartFile resizer(String fileName, String fileFormat, MultipartFile originalImage,
-            int width) {
+    public MultipartFile resizer(
+            String fileName, String fileFormat, MultipartFile originalImage, int width) {
 
         try {
             // MultipartFile -> BufferedImage Convert
@@ -141,7 +141,7 @@ public class S3Util {
             Scale scale = new Scale();
             scale.load();
             scale.setAttribute("newWidth", width);
-            scale.setAttribute("newHeight", width * originHeight / originWidth);//비율유지를 위해 높이 유지
+            scale.setAttribute("newHeight", width * originHeight / originWidth); // 비율유지를 위해 높이 유지
             scale.process(imageMarvin.clone(), imageMarvin, null, null, false);
 
             BufferedImage imageNoAlpha = imageMarvin.getBufferedImageNoAlpha();
@@ -149,8 +149,8 @@ public class S3Util {
             ImageIO.write(imageNoAlpha, fileFormat, baos);
             baos.flush();
 
-            return new CustomMultipartFile(fileName, fileFormat, originalImage.getContentType(),
-                    baos.toByteArray());
+            return new CustomMultipartFile(
+                    fileName, fileFormat, originalImage.getContentType(), baos.toByteArray());
 
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일을 줄이는데 실패했습니다.");

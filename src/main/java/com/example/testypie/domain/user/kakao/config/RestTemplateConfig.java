@@ -1,14 +1,13 @@
 package com.example.testypie.domain.user.kakao.config;
 
+import java.time.Duration;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.Duration;
-
 @Configuration
-public class RestTemplateConfig  {
+public class RestTemplateConfig {
 
     // resttemplate은 옵션을 추가할수있어서 bean으로 등록하는 경우가 많다!
     @Bean

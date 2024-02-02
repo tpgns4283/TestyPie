@@ -1,16 +1,12 @@
 package com.example.testypie.global.exception;
 
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-
-/**
- * Controller 내에서 발생하는 Exception에 대해 Catch해서 클라이언트에게 에러 응답을 보내주는 기능을 수행
- */
+/** Controller 내에서 발생하는 Exception에 대해 Catch해서 클라이언트에게 에러 응답을 보내주는 기능을 수행 */
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {

@@ -18,8 +18,7 @@ public class RefreshTokenService {
 
     // 1. 토큰이 저장되어있는지 확인
     public RefreshToken findToken(String token) {
-        return refreshTokenRepository.findByTokenValue(token)
-                .orElseThrow(null);
+        return refreshTokenRepository.findByTokenValue(token).orElseThrow(null);
     }
 
     public void deleteRefreshToken(RefreshToken refreshToken) {

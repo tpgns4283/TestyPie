@@ -30,10 +30,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-            FilterChain filterChain)
+    protected void doFilterInternal(
+            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        //request에서 tokenValue 추출
+        // request에서 tokenValue 추출
         String token = jwtUtil.resolveToken(request);
 
         // 토큰이 존재하면 검증
@@ -47,15 +47,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
 
                 UserDetailsImpl userDetails = userDetailsServiceImpl.getUserDetails(username);
-                Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails,
-                        null, userDetails.getAuthorities());
+                Authentication authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
                 context.setAuthentication(authentication);
                 SecurityContextHolder.setContext(context);
 
             } else {
                 // 인증정보가 존재하지 않을때
-                MessageDTO messageDTO = new MessageDTO("토큰이 유효하지 않습니다.",
-                        HttpStatus.BAD_REQUEST.value());
+                MessageDTO messageDTO = new MessageDTO("토큰이 유효하지 않습니다.", HttpStatus.BAD_REQUEST.value());
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.setContentType("application/json; charset=UTF-8");
                 response.getWriter().write(objectMapper.writeValueAsString(messageDTO));
@@ -63,6 +63,5 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
-
     }
 }

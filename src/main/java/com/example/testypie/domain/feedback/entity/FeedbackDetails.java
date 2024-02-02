@@ -19,11 +19,10 @@ public class FeedbackDetails {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Feedback feedback;
 
-    @Column
-    private String response;
+    @Column private String response;
 
     @Builder
-    public FeedbackDetails(Long id, Feedback feedback, String response){
+    public FeedbackDetails(Long id, Feedback feedback, String response) {
         this.id = id;
         this.feedback = feedback;
         this.response = response;

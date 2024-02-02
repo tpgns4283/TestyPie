@@ -36,8 +36,9 @@ public class CommentController {
             @PathVariable Long childCategory_id,
             @PathVariable String parentCategory_name) {
 
-        CommentResponseDTO res = commentMatcherService.productComment(product_id, req,
-                userDetails.getUser(), childCategory_id, parentCategory_name);
+        CommentResponseDTO res =
+                commentMatcherService.productComment(
+                        product_id, req, userDetails.getUser(), childCategory_id, parentCategory_name);
         return ResponseEntity.ok(res);
     }
 
@@ -48,13 +49,15 @@ public class CommentController {
             @PathVariable Long childCategory_id,
             @PathVariable String parentCategory_name) {
 
-        Page<CommentResponseDTO> resList = commentMatcherService.getComments(pageable, product_id,
-                childCategory_id, parentCategory_name);
+        Page<CommentResponseDTO> resList =
+                commentMatcherService.getComments(
+                        pageable, product_id, childCategory_id, parentCategory_name);
 
         return ResponseEntity.ok().body(resList);
     }
 
-    @PatchMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments/{comment_id}")
+    @PatchMapping(
+            "/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments/{comment_id}")
     public ResponseEntity<CommentResponseDTO> updateComment(
             @PathVariable Long product_id,
             @PathVariable Long comment_id,
@@ -63,12 +66,19 @@ public class CommentController {
             @PathVariable Long childCategory_id,
             @PathVariable String parentCategory_name) {
 
-        CommentResponseDTO res = commentMatcherService.updateComment(product_id, comment_id, req,
-                userDetails.getUser(), childCategory_id, parentCategory_name);
+        CommentResponseDTO res =
+                commentMatcherService.updateComment(
+                        product_id,
+                        comment_id,
+                        req,
+                        userDetails.getUser(),
+                        childCategory_id,
+                        parentCategory_name);
         return ResponseEntity.ok(res);
     }
 
-    @DeleteMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments/{comment_id}")
+    @DeleteMapping(
+            "/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments/{comment_id}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long product_id,
             @PathVariable Long comment_id,
@@ -76,8 +86,8 @@ public class CommentController {
             @PathVariable Long childCategory_id,
             @PathVariable String parentCategory_name) {
 
-        commentMatcherService.deleteComment(product_id, comment_id, userDetails.getUser(),
-                childCategory_id, parentCategory_name);
+        commentMatcherService.deleteComment(
+                product_id, comment_id, userDetails.getUser(), childCategory_id, parentCategory_name);
         return ResponseEntity.noContent().build();
     }
 }

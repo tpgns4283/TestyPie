@@ -36,19 +36,20 @@ public class BugReportService {
     private final UserInfoService userInfoService;
     private final S3Util s3Util;
 
-    public BugReportResponseDTO createBugReport(Long productId, BugReportRequestDTO req,
-            User user, MultipartFile multipartFile) {
+    public BugReportResponseDTO createBugReport(
+            Long productId, BugReportRequestDTO req, User user, MultipartFile multipartFile) {
         Product product = productService.findProduct(productId);
 
         String fileUrl = s3Util.uploadFile(multipartFile, FilePath.BUGREPORT);
 
-        BugReport bugReport = BugReport.builder()
-                .content(req.content())
-                .product(product)
-                .user(user)
-                .fileUrl(fileUrl)
-                .createdAt(LocalDateTime.now())
-                .build();
+        BugReport bugReport =
+                BugReport.builder()
+                        .content(req.content())
+                        .product(product)
+                        .user(user)
+                        .fileUrl(fileUrl)
+                        .createdAt(LocalDateTime.now())
+                        .build();
 
         BugReport saveBugReport = bugReportRepository.save(bugReport);
 
@@ -61,14 +62,17 @@ public class BugReportService {
         // 해당 제품의 소유자가 아닌 경우
         if (!product.getUser().getId().equals(user.getId())) {
             throw new GlobalExceptionHandler.CustomException(
-                    ErrorCode.SELECT_BUGREPORT_NOT_FOUND); //-> 권한이 없습니ㅏㄷ.
+                    ErrorCode.SELECT_BUGREPORT_NOT_FOUND); // -> 권한이 없습니ㅏㄷ.
         }
 
         // 해당 제품에 대한 BugReport 조회 및 응답 DTO 생성
         return BugReportResponseDTO.of(
-                bugReportRepository.findByProductIdAndAndId(productId, bugReportId)
-                        .orElseThrow(() -> new GlobalExceptionHandler.CustomException(
-                                ErrorCode.SELECT_BUGREPORT_NOT_FOUND)));
+                bugReportRepository
+                        .findByProductIdAndAndId(productId, bugReportId)
+                        .orElseThrow(
+                                () ->
+                                        new GlobalExceptionHandler.CustomException(
+                                                ErrorCode.SELECT_BUGREPORT_NOT_FOUND)));
     }
 
     public Page<BugReportResponseDTO> getBugReports(Pageable pageable, Long productId, User user) {
@@ -77,8 +81,9 @@ public class BugReportService {
         Product product = productService.findProduct(productId);
 
         if (product.getUser().getId().equals(user.getId())) {
-            Page<BugReport> bugReportPage = bugReportRepository.findAllByProductId(productId,
-                    PageRequest.of(page, pageLimit, Sort.by(Direction.DESC, "id")));
+            Page<BugReport> bugReportPage =
+                    bugReportRepository.findAllByProductId(
+                            productId, PageRequest.of(page, pageLimit, Sort.by(Direction.DESC, "id")));
 
             List<BugReportResponseDTO> resList = new ArrayList<>();
 

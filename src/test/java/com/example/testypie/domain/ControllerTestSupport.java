@@ -1,6 +1,5 @@
 package com.example.testypie.domain;
 
-
 import com.example.testypie.domain.category.controller.CategoryController;
 import com.example.testypie.domain.category.service.CategoryService;
 import com.example.testypie.domain.comment.controller.CommentController;
@@ -24,36 +23,31 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
-@WebMvcTest(controllers = {
-        CategoryController.class, CommentController.class, FeedbackController.class,
-        RewardController.class, ProductController.class, ProductLikeController.class},
+@WebMvcTest(
+        controllers = {
+            CategoryController.class, CommentController.class, FeedbackController.class,
+            RewardController.class, ProductController.class, ProductLikeController.class
+        },
         excludeFilters = {
-                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfig.class)})
+            @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfig.class)
+        })
 public abstract class ControllerTestSupport {
 
-    @MockBean
-    protected CategoryService categoryService;
+    @MockBean protected CategoryService categoryService;
 
-    @MockBean
-    protected CommentService commentService;
+    @MockBean protected CommentService commentService;
 
-    @MockBean
-    protected FeedbackService feedbackService;
+    @MockBean protected FeedbackService feedbackService;
 
-    @MockBean
-    protected RewardService rewardService;
+    @MockBean protected RewardService rewardService;
 
-    @MockBean
-    protected ProductService productService;
+    @MockBean protected ProductService productService;
 
-    @MockBean
-    protected ProductLikeService productLikeService;
+    @MockBean protected ProductLikeService productLikeService;
 
-    @Autowired
-    protected ObjectMapper objectMapper;
+    @Autowired protected ObjectMapper objectMapper;
 
-    @Autowired
-    protected WebApplicationContext webApplicationContext;
+    @Autowired protected WebApplicationContext webApplicationContext;
 
     protected MockMvc mockMvc;
 

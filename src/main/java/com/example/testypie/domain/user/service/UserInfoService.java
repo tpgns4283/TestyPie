@@ -12,16 +12,15 @@ import com.example.testypie.domain.util.S3Util;
 import com.example.testypie.domain.util.S3Util.FilePath;
 import com.example.testypie.global.exception.ErrorCode;
 import com.example.testypie.global.exception.GlobalExceptionHandler;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -39,11 +38,14 @@ public class UserInfoService {
     private String defaultProfileImageUrl;
 
     @Transactional
-    public ProfileResponseDTO updateProfile(String account, ProfileRequestDTO req,
-                                            MultipartFile multipartfile, User user) {
+    public ProfileResponseDTO updateProfile(
+            String account, ProfileRequestDTO req, MultipartFile multipartfile, User user) {
 
-        User profileUser = userRepository.findByAccount(account)
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
+        User profileUser =
+                userRepository
+                        .findByAccount(account)
+                        .orElseThrow(
+                                () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
 
         getUserValid(profileUser, user);
 
@@ -61,13 +63,18 @@ public class UserInfoService {
         }
 
         profileUser.update(req, fileUrl, password);
-        return new ProfileResponseDTO(profileUser.getAccount(), profileUser.getNickname(), profileUser.getEmail(), profileUser.getDescription(),
+        return new ProfileResponseDTO(
+                profileUser.getAccount(),
+                profileUser.getNickname(),
+                profileUser.getEmail(),
+                profileUser.getDescription(),
                 profileUser.getFileUrl());
     }
 
     public ProfileResponseDTO getProfile(String account) {
         User user = findProfile(account);
-        return new ProfileResponseDTO(user.getAccount(),
+        return new ProfileResponseDTO(
+                user.getAccount(),
                 user.getNickname(),
                 user.getEmail(),
                 user.getDescription(),
@@ -75,8 +82,12 @@ public class UserInfoService {
     }
 
     public User findProfile(String account) {
-        return userRepository.findByAccount(account)
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PROFILE_USER_NOT_FOUND));
+        return userRepository
+                .findByAccount(account)
+                .orElseThrow(
+                        () ->
+                                new GlobalExceptionHandler.CustomException(
+                                        ErrorCode.SELECT_PROFILE_USER_NOT_FOUND));
     }
 
     // 프로필 작성자와 사이트 이용자가 일치하는 메서드
@@ -84,19 +95,18 @@ public class UserInfoService {
         User profileUser = findProfile(profileAccount);
         User user = findProfile(userAccount);
         if (!profileUser.equals(user)) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_USER_INVALID_AUTHORIZATION);
+            throw new GlobalExceptionHandler.CustomException(
+                    ErrorCode.PROFILE_USER_INVALID_AUTHORIZATION);
         }
     }
 
     // product 등록 이력 가져오기
     public List<RegisteredProductResponseDTO> getUserProducts(String account) {
         List<Product> productList = userRepository.getUserProductsOrderByCreatedAtDesc(account);
-        return productList.stream()
-                .map(RegisteredProductResponseDTO::of)
-                .collect(Collectors.toList());
+        return productList.stream().map(RegisteredProductResponseDTO::of).collect(Collectors.toList());
     }
 
-    //product 참여 이력 가져오기
+    // product 참여 이력 가져오기
     public List<ParticipatedProductResponseDTO> getUserFeedbacks(String account) {
         return userRepository.getUserFeedbacksDtoIncludingProductInfo(account);
     }
@@ -126,7 +136,6 @@ public class UserInfoService {
 
         if (feedback == null) {
             throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_FEEDBACK_ID_NOT_FOUND);
-
         }
 
         return feedback;
@@ -134,7 +143,8 @@ public class UserInfoService {
 
     private void validateFeedbackProductAssociation(Feedback feedback, Long productId) {
         if (!feedback.getProduct().getId().equals(productId)) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_PRODUCT_FEEDBACK_ID_NOT_FOUND);
+            throw new GlobalExceptionHandler.CustomException(
+                    ErrorCode.PROFILE_PRODUCT_FEEDBACK_ID_NOT_FOUND);
         }
     }
 
@@ -156,7 +166,7 @@ public class UserInfoService {
 
         // 빈 목록이나 null일 경우 예외 처리
         if (rewardList == null || rewardList.isEmpty()) {
-            return List.of();  // 빈 리스트 반환
+            return List.of(); // 빈 리스트 반환
         }
 
         // 선택된 랜덤 인덱스에 해당하는 User 가져오기 (중복 방지)
@@ -165,9 +175,8 @@ public class UserInfoService {
 
     private List<User> getRandomUserList(Long productId, List<Reward> rewardList) {
         // 전체 reward_size 합산
-        int totalRewardSize = rewardList.stream()
-                .mapToInt(reward -> Math.toIntExact(reward.getItemSize()))
-                .sum();
+        int totalRewardSize =
+                rewardList.stream().mapToInt(reward -> Math.toIntExact(reward.getItemSize())).sum();
 
         // user 리스트 가져오기
         List<User> userList = userRepository.findAllFeedbackUsersByProductId(productId);
@@ -176,19 +185,15 @@ public class UserInfoService {
         List<Integer> randomIndexes = getRandomIndexes(totalRewardSize, userList.size());
 
         // 선택된 랜덤 인덱스에 해당하는 User 가져오기 (중복 방지)
-        return randomIndexes.stream()
-                .distinct()
-                .map(userList::get)
-                .collect(Collectors.toList());
+        return randomIndexes.stream().distinct().map(userList::get).collect(Collectors.toList());
     }
 
     private List<Integer> getRandomIndexes(int totalSize, int maxSize) {
-        return random.ints(totalSize, 0, maxSize)
-                .boxed()
-                .toList();
+        return random.ints(totalSize, 0, maxSize).boxed().toList();
     }
+
     private void getUserValid(User profileUser, User user) {
-        if(!profileUser.getId().equals(user.getId())) {
+        if (!profileUser.getId().equals(user.getId())) {
             throw new GlobalExceptionHandler.CustomException(ErrorCode.UPDATE_USER_INVALID_AUTHORIZATION);
         }
     }

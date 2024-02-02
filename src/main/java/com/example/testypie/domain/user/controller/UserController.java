@@ -1,5 +1,6 @@
 package com.example.testypie.domain.user.controller;
 
+import static com.example.testypie.global.jwt.JwtUtil.*;
 
 import com.example.testypie.domain.user.dto.LoginRequestDTO;
 import com.example.testypie.domain.user.dto.MessageDTO;
@@ -17,6 +18,8 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,11 +27,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.example.testypie.global.jwt.JwtUtil.*;
 
 @Slf4j
 @RestController
@@ -43,15 +41,16 @@ public class UserController {
     private final JwtUtil jwtUtil;
 
     @ExceptionHandler(GlobalExceptionHandler.CustomException.class)
-    public ResponseEntity<ErrorResponse> handleCustomException(GlobalExceptionHandler.CustomException e) {
+    public ResponseEntity<ErrorResponse> handleCustomException(
+            GlobalExceptionHandler.CustomException e) {
         return ResponseEntity.status(e.getErrorCode().getStatus())
                 .body(new ErrorResponse(e.getErrorCode().getStatus(), e.getErrorCode().getMessage()));
     }
 
-    //회원가입
+    // 회원가입
     @PostMapping("/api/users/signup")
-    public ResponseEntity<MessageDTO> signup(@RequestBody @Valid SignUpRequestDTO req,
-                                             BindingResult bindingResult) {
+    public ResponseEntity<MessageDTO> signup(
+            @RequestBody @Valid SignUpRequestDTO req, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_ACCOUNT);
         }
@@ -62,11 +61,12 @@ public class UserController {
                 .body(new MessageDTO("회원가입 성공", HttpStatus.CREATED.value()));
     }
 
-    //로그인
+    // 로그인
     @PostMapping("/api/users/login")
-    public ResponseEntity<MessageDTO> login(@RequestBody @Valid LoginRequestDTO req,
-                                            BindingResult bindingResult,
-                                            HttpServletResponse res) {
+    public ResponseEntity<MessageDTO> login(
+            @RequestBody @Valid LoginRequestDTO req,
+            BindingResult bindingResult,
+            HttpServletResponse res) {
         if (bindingResult.hasErrors()) {
             throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND);
         }
@@ -80,10 +80,8 @@ public class UserController {
         String refreshTokenValue = jwtUtil.createRefreshToken(req.account());
 
         // refresh token 객체생성
-        RefreshToken refreshToken = RefreshToken.builder()
-                .account(req.account())
-                .tokenValue(refreshTokenValue)
-                .build();
+        RefreshToken refreshToken =
+                RefreshToken.builder().account(req.account()).tokenValue(refreshTokenValue).build();
 
         // 쿠키생성
         Cookie cookie = new Cookie(REFRESH_AUTHORIZATION_HEADER, refreshTokenValue);
@@ -98,8 +96,8 @@ public class UserController {
     }
 
     /*localStorage에 있는 JWT토큰을 Header에 실어 서버에서 토큰을 통해 유저의 아이디값을 추출하고 HashMap을 통해
-     json형식의 데이터르 매핑 후 response를 다시 front에 던져주는 로직입니다.
-     */
+    json형식의 데이터르 매핑 후 response를 다시 front에 던져주는 로직입니다.
+    */
     @GetMapping("/api/user/profile")
     public Map<String, String> getUserProfile(
             @RequestHeader("Authorization") String authorizationHeader) {
@@ -118,8 +116,7 @@ public class UserController {
     }
 
     @DeleteMapping("/api/users/signout")
-    public ResponseEntity<MessageDTO> signOut(
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<MessageDTO> signOut(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         userService.signOut(user);
         return ResponseEntity.ok(new MessageDTO("유저가 탈퇴했습니다.", 200));
@@ -130,8 +127,8 @@ public class UserController {
     // 3. 액세스토큰과 리프레시 토큰을 다시 만들어 준다.
 
     @PostMapping("/api/users/refresh")
-    public ResponseEntity<?> refresh(@CookieValue(REFRESH_AUTHORIZATION_HEADER) String token,
-                                     HttpServletResponse res) {
+    public ResponseEntity<?> refresh(
+            @CookieValue(REFRESH_AUTHORIZATION_HEADER) String token, HttpServletResponse res) {
 
         RefreshToken refreshToken = refreshTokenService.findToken(token);
 
@@ -157,7 +154,9 @@ public class UserController {
     }
 
     @DeleteMapping("/api/users/logout")
-    public ResponseEntity<?> logout(@CookieValue(value = "Refresh-Authorization", required = false) String token, HttpServletResponse res) {
+    public ResponseEntity<?> logout(
+            @CookieValue(value = "Refresh-Authorization", required = false) String token,
+            HttpServletResponse res) {
         logger.info("리프레시 토큰: " + token);
 
         if (token == null || token.isEmpty()) {

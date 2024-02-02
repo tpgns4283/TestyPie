@@ -1,13 +1,7 @@
 package com.example.testypie.domain.survey.dto;
 
+import java.util.List;
 import lombok.NonNull;
 
-import java.util.List;
-
 public record SurveyCreateRequestDTO(
-        @NonNull
-        String title,
-        @NonNull
-        List<QuestionCreateRequestDTO> questionList
-) {
-}
+        @NonNull String title, @NonNull List<QuestionCreateRequestDTO> questionList) {}

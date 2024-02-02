@@ -13,8 +13,10 @@ public class UserDetailsServiceImpl {
     private final UserRepository userRepository;
 
     public UserDetailsImpl getUserDetails(String account) {
-        User user = userRepository.findByAccount(account)
-                .orElseThrow(() -> new UsernameNotFoundException("Not Found" + account));
+        User user =
+                userRepository
+                        .findByAccount(account)
+                        .orElseThrow(() -> new UsernameNotFoundException("Not Found" + account));
         return new UserDetailsImpl(user);
     }
 }

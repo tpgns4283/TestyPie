@@ -1,15 +1,9 @@
 package com.example.testypie.domain.product.dto;
 
 import com.example.testypie.domain.product.entity.Product;
-import com.example.testypie.domain.reward.dto.RewardCreateRequestDTO;
-import com.example.testypie.domain.reward.dto.RewardReadResponseDTO;
-import com.example.testypie.domain.reward.entity.Reward;
-
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
 
-public record ProductCreateResponseDTO (
+public record ProductCreateResponseDTO(
         Long id,
         String title,
         String content,
@@ -17,8 +11,7 @@ public record ProductCreateResponseDTO (
         String category,
         LocalDateTime createAt,
         LocalDateTime startAt,
-        LocalDateTime closedAt
-) {
+        LocalDateTime closedAt) {
 
     public static ProductCreateResponseDTO of(Product product) {
 
@@ -30,7 +23,6 @@ public record ProductCreateResponseDTO (
                 product.getCategory().getName(),
                 product.getCreatedAt(),
                 product.getStartedAt(),
-                product.getClosedAt()
-        );
+                product.getClosedAt());
     }
 }

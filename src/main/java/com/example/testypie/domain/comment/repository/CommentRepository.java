@@ -3,7 +3,6 @@ package com.example.testypie.domain.comment.repository;
 import com.example.testypie.domain.comment.entity.Comment;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.user.entity.User;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

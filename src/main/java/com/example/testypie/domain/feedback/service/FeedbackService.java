@@ -16,14 +16,12 @@ import com.example.testypie.domain.user.dto.RatingStarRequestDTO;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.global.exception.ErrorCode;
 import com.example.testypie.global.exception.GlobalExceptionHandler;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,12 +32,15 @@ public class FeedbackService {
     private final CategoryService categoryService;
     private final SurveyService surveyService;
 
-
-    public FeedbackCreateResponseDTO addFeedback(FeedbackCreateRequestDTO req, Long productId, User user,
-                                                 Long childCategoryId, String parentCategoryName) {
+    public FeedbackCreateResponseDTO addFeedback(
+            FeedbackCreateRequestDTO req,
+            Long productId,
+            User user,
+            Long childCategoryId,
+            String parentCategoryName) {
         // 해당 product 존재 여부 검증
         Product product = productService.findProduct(productId);
-        if(product.getUser().getId().equals(user.getId())){
+        if (product.getUser().getId().equals(user.getId())) {
             throw new IllegalStateException("Product작성자는 피드백을 제출할 수 없습니다.");
         }
         Category category = categoryService.getCategory(childCategoryId, parentCategoryName);
@@ -49,8 +50,8 @@ public class FeedbackService {
         if (hasSubmitted) {
             throw new IllegalStateException("이미 피드백을 제출하셨습니다.");
         }
-        
-        if(LocalDateTime.now().isAfter(product.getClosedAt())){
+
+        if (LocalDateTime.now().isAfter(product.getClosedAt())) {
             throw new IllegalStateException("해당 Product의 기간이 만료되었습니다.");
         }
 
@@ -58,19 +59,21 @@ public class FeedbackService {
             throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
         }
 
-        Feedback feedback = Feedback.builder()
-                .createdAt(LocalDateTime.now())
-                .user(user)
-                .product(product)
-                .survey(survey)
-                .build();
+        Feedback feedback =
+                Feedback.builder()
+                        .createdAt(LocalDateTime.now())
+                        .user(user)
+                        .product(product)
+                        .survey(survey)
+                        .build();
 
         List<FeedbackDetails> detailslist = new ArrayList<>();
         for (FeedbackDetailsCreateRequestDTO feedbackDetailsDTO : req.feedbackDetailsList()) {
-            FeedbackDetails feedbackDetails = FeedbackDetails.builder()
-                    .feedback(feedback)
-                    .response(feedbackDetailsDTO.response())
-                    .build();
+            FeedbackDetails feedbackDetails =
+                    FeedbackDetails.builder()
+                            .feedback(feedback)
+                            .response(feedbackDetailsDTO.response())
+                            .build();
 
             detailslist.add(feedbackDetails);
         }
@@ -80,19 +83,20 @@ public class FeedbackService {
         return new FeedbackCreateResponseDTO(savedFeedback);
     }
 
-
-    //=======================================================================//
+    // =======================================================================//
     //    에러클래스 수정함
-    //=======================================================================//
+    // =======================================================================//
 
-    //feedback_id로 feedback 조회
+    // feedback_id로 feedback 조회
     @Transactional(readOnly = true)
     public Feedback getFeedbackById(Long id) {
-        return feedbackRepository.findById(id)
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_FEEDBACK_NOT_FOUND));
+        return feedbackRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_FEEDBACK_NOT_FOUND));
     }
 
-    //product의 feedback인지 확인
+    // product의 feedback인지 확인
     public void checkFeedback(Feedback feedback, Long product_id) {
         if (!feedback.getProduct().getId().equals(product_id)) {
             throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_FEEDBACK_NOT_FOUND);
@@ -104,10 +108,12 @@ public class FeedbackService {
     }
     // productId와 feedbackId로 유효한 feedback 검색
     public Feedback getValidFeedback(Long productId, Long feedbackId) {
-        //findByProductIdAndId를 사용하여 특정 prodcutId와 feedbackId에 해당하는 feedback검색
-        return feedbackRepository.findByProductIdAndId(productId, feedbackId)
-                //검색된 feedback 없으면 예외발생
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_FEEDBACK_NOT_FOUND));
+        // findByProductIdAndId를 사용하여 특정 prodcutId와 feedbackId에 해당하는 feedback검색
+        return feedbackRepository
+                .findByProductIdAndId(productId, feedbackId)
+                // 검색된 feedback 없으면 예외발생
+                .orElseThrow(
+                        () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_FEEDBACK_NOT_FOUND));
     }
 
     public void setFeedbackRatingStar(Feedback feedback, RatingStarRequestDTO req) {
@@ -119,5 +125,4 @@ public class FeedbackService {
     public List<Feedback> findFiveStarFeedbacksByProduct(Long productId) {
         return feedbackRepository.findFeedbacksByProductIdAndRating(productId, 5.0);
     }
-
 }

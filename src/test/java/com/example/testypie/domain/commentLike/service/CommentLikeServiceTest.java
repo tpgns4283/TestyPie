@@ -2,7 +2,6 @@ package com.example.testypie.domain.commentLike.service;
 
 import static com.example.testypie.domain.comment.constant.CommentConstant.DEFAULT_COMMENT_LIKE_CNT;
 import static com.example.testypie.domain.commentLike.constant.CommentLikeConstant.DEFAULT_COMMENT_LIKE;
-
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.*;
@@ -15,12 +14,9 @@ import com.example.testypie.domain.commentLike.entity.CommentLike;
 import com.example.testypie.domain.commentLike.repository.CommentLikeRepository;
 import com.example.testypie.domain.user.entity.User;
 import java.util.Optional;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,17 +24,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class CommentLikeServiceTest {
 
-    @Mock
-    private CommentLikeRepository commentLikeRepository;
+    @Mock private CommentLikeRepository commentLikeRepository;
 
-    @Mock
-    private CommentRepository commentRepository;
+    @Mock private CommentRepository commentRepository;
 
-    @Mock
-    private CommentService commentService;
+    @Mock private CommentService commentService;
 
-    @InjectMocks
-    private CommentLikeService commentLikeService;
+    @InjectMocks private CommentLikeService commentLikeService;
 
     @DisplayName("CommentLike 1번째 클릭")
     @Test
@@ -48,19 +40,20 @@ class CommentLikeServiceTest {
 
         Comment comment = Comment.builder().id(1L).commentLikeCnt(DEFAULT_COMMENT_LIKE_CNT).build();
 
-        CommentLike commentLike = CommentLike.builder()
-                .id(1L)
-                .isCommentLiked(DEFAULT_COMMENT_LIKE)
-                .comment(comment)
-                .user(user)
-                .build();
+        CommentLike commentLike =
+                CommentLike.builder()
+                        .id(1L)
+                        .isCommentLiked(DEFAULT_COMMENT_LIKE)
+                        .comment(comment)
+                        .user(user)
+                        .build();
 
         Optional<CommentLike> optionalCommentLike = Optional.empty();
 
         given(commentService.getCommentEntity(anyLong())).willReturn(comment);
 
-        given(commentLikeRepository.findByCommentAndUser(any(Comment.class),
-                any(User.class))).willReturn(optionalCommentLike);
+        given(commentLikeRepository.findByCommentAndUser(any(Comment.class), any(User.class)))
+                .willReturn(optionalCommentLike);
 
         given(commentLikeRepository.save(any(CommentLike.class))).willReturn(commentLike);
         // when
@@ -79,17 +72,13 @@ class CommentLikeServiceTest {
 
         Comment comment = Comment.builder().id(1L).commentLikeCnt(DEFAULT_COMMENT_LIKE_CNT).build();
 
-        CommentLike commentLike = CommentLike.builder()
-                .id(1L)
-                .isCommentLiked(true)
-                .comment(comment)
-                .user(user)
-                .build();
+        CommentLike commentLike =
+                CommentLike.builder().id(1L).isCommentLiked(true).comment(comment).user(user).build();
 
         given(commentService.getCommentEntity(anyLong())).willReturn(comment);
 
-        given(commentLikeRepository.findByCommentAndUser(any(Comment.class),
-                any(User.class))).willReturn(Optional.ofNullable(commentLike));
+        given(commentLikeRepository.findByCommentAndUser(any(Comment.class), any(User.class)))
+                .willReturn(Optional.ofNullable(commentLike));
 
         // when
         CommentLikeResponseDto result = commentLikeService.clickCommentLike(comment.getId(), user);

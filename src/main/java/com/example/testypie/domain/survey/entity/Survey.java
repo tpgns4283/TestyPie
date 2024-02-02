@@ -3,13 +3,12 @@ package com.example.testypie.domain.survey.entity;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
@@ -19,11 +18,9 @@ public class Survey {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String title;
+    @Column private String title;
 
-    @Column
-    private LocalDateTime createdAt;
+    @Column private LocalDateTime createdAt;
 
     @JoinColumn(name = "survey_id")
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -38,12 +35,18 @@ public class Survey {
     private Product product;
 
     @Builder
-    private Survey(Long id, String title, LocalDateTime createdAt, List<Question> questionList,
-                     User user, Product product) {
+    private Survey(
+            Long id,
+            String title,
+            LocalDateTime createdAt,
+            List<Question> questionList,
+            User user,
+            Product product) {
         this.id = id;
         this.title = title;
         this.createdAt = createdAt;
-        this.questionList = new ArrayList<>();;
+        this.questionList = new ArrayList<>();
+        ;
         this.user = user;
         this.product = product;
     }
@@ -52,7 +55,7 @@ public class Survey {
         if (questionList != null) {
             this.questionList = questionList;
             questionList.forEach(question -> question.setSurvey(this));
-        } else{
+        } else {
             throw new IllegalArgumentException("Feedback에 Question은 반드시 들어가야 합니다.");
         }
     }

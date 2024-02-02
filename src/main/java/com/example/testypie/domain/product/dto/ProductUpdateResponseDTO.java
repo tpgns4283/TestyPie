@@ -1,7 +1,6 @@
 package com.example.testypie.domain.product.dto;
 
 import com.example.testypie.domain.product.entity.Product;
-
 import java.time.LocalDateTime;
 
 public record ProductUpdateResponseDTO(
@@ -12,8 +11,7 @@ public record ProductUpdateResponseDTO(
         String category,
         LocalDateTime modifiedAt,
         LocalDateTime startAt,
-        LocalDateTime closedAt
-) {
+        LocalDateTime closedAt) {
     public static ProductUpdateResponseDTO of(Product product) {
         return new ProductUpdateResponseDTO(
                 product.getId(),
@@ -23,7 +21,6 @@ public record ProductUpdateResponseDTO(
                 product.getCategory().getName(),
                 product.getModifiedAt(),
                 product.getStartedAt(),
-                product.getClosedAt()
-        );
+                product.getClosedAt());
     }
 }

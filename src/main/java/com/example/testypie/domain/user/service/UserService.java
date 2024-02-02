@@ -21,7 +21,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-//    private final S3Uploader s3Uploader;
+    //    private final S3Uploader s3Uploader;
 
     @Value("${default.image.address}")
     private String defaultProfileImageUrl;
@@ -44,9 +44,15 @@ public class UserService {
             throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_NICKNAME);
         }
 
-        User user = User.builder().account(account).password(password).email(email)
-                .nickname(nickname).description(description).fileUrl(defaultProfileImageUrl)
-                .build();
+        User user =
+                User.builder()
+                        .account(account)
+                        .password(password)
+                        .email(email)
+                        .nickname(nickname)
+                        .description(description)
+                        .fileUrl(defaultProfileImageUrl)
+                        .build();
 
         userRepository.save(user);
     }
@@ -55,8 +61,11 @@ public class UserService {
         String account = req.account();
         String password = req.password();
 
-        User user = userRepository.findByAccount(account)
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.LOGIN_INVALID_ACCOUNT));
+        User user =
+                userRepository
+                        .findByAccount(account)
+                        .orElseThrow(
+                                () -> new GlobalExceptionHandler.CustomException(ErrorCode.LOGIN_INVALID_ACCOUNT));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new GlobalExceptionHandler.CustomException(ErrorCode.LOGIN_INVALID_PASSWORD);
@@ -64,13 +73,17 @@ public class UserService {
     }
 
     public User findUser(String account) {
-        return userRepository.findByAccount(account)
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
+        return userRepository
+                .findByAccount(account)
+                .orElseThrow(
+                        () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
     }
 
     public User findUserByUserId(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
+        return userRepository
+                .findById(userId)
+                .orElseThrow(
+                        () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
     }
 
     public void signOut(User user) {
@@ -80,8 +93,10 @@ public class UserService {
     }
 
     private void deleteUser(Long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new GlobalExceptionHandler.CustomException(ErrorCode.DELETE_USER_NOT_FOUND));
+        userRepository
+                .findById(userId)
+                .orElseThrow(
+                        () -> new GlobalExceptionHandler.CustomException(ErrorCode.DELETE_USER_NOT_FOUND));
         userRepository.deleteById(userId);
     }
 }

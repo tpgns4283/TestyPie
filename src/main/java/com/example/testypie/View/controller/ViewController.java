@@ -1,5 +1,7 @@
 package com.example.testypie.View.controller;
 
+import static com.example.testypie.global.jwt.JwtUtil.REFRESH_AUTHORIZATION_HEADER;
+
 import com.example.testypie.domain.user.dto.ProfileResponseDTO;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.kakao.service.KakaoService;
@@ -9,6 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +21,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
-
-import static com.example.testypie.global.jwt.JwtUtil.REFRESH_AUTHORIZATION_HEADER;
-
 
 @Slf4j
 @Controller
@@ -53,11 +51,12 @@ public class ViewController {
         return "signup";
     }
 
-    //카카오 로그인시 accessToken을 헤더에 refreshToken을 쿠키에 넣습니다.
+    // 카카오 로그인시 accessToken을 헤더에 refreshToken을 쿠키에 넣습니다.
     @GetMapping("/kakao-login/callback")
-    public String kakaoCallback(@RequestParam String code, HttpServletResponse res, Model model) throws JsonProcessingException {
-        //Data를 리턴해주는 컨트롤러 함수
-        List<String> tokens = kakaoService.kakaoLogin(code); //리프레시 저장
+    public String kakaoCallback(@RequestParam String code, HttpServletResponse res, Model model)
+            throws JsonProcessingException {
+        // Data를 리턴해주는 컨트롤러 함수
+        List<String> tokens = kakaoService.kakaoLogin(code); // 리프레시 저장
 
         String accessToken = tokens.get(0);
         String refreshToken = tokens.get(1);
@@ -68,7 +67,7 @@ public class ViewController {
 
         // jwt토큰 access토큰 만들기
         model.addAttribute("token", accessToken);
-//        res.setHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken.substring(7));
+        //        res.setHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken.substring(7));
 
         // token으로 리프레시 토큰만들어주기
         Cookie cookie = new Cookie(REFRESH_AUTHORIZATION_HEADER, refreshToken);
@@ -80,14 +79,19 @@ public class ViewController {
     }
 
     @GetMapping("/api/category/{parentName}/{childId}/products")
-    public String addProduct(@PathVariable String parentName, @PathVariable Long childId, Model model) {
+    public String addProduct(
+            @PathVariable String parentName, @PathVariable Long childId, Model model) {
         model.addAttribute("parentName", parentName);
         model.addAttribute("childId", childId);
         return "addProductForm"; // 이동할 뷰의 이름을 반환
     }
 
     @GetMapping("/api/category/{parentName}/{childId}/products/{productId}/update")
-    public String updateProduct(@PathVariable String parentName, @PathVariable Long childId, Model model, @PathVariable Long productId) {
+    public String updateProduct(
+            @PathVariable String parentName,
+            @PathVariable Long childId,
+            Model model,
+            @PathVariable Long productId) {
         model.addAttribute("parentName", parentName);
         model.addAttribute("childId", childId);
         model.addAttribute("productId", productId);
@@ -95,29 +99,32 @@ public class ViewController {
     }
 
     @GetMapping("/api/users/{account}/update")
-    public String updateProfile(@PathVariable String account,
-                                Model model) {
+    public String updateProfile(@PathVariable String account, Model model) {
 
         model.addAttribute("account", account);
         return "updateProfileForm";
     }
 
-    @GetMapping("/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/surveys")
-    public String addSurvey(@PathVariable Long product_id,
-                            @PathVariable Long childCategory_id,
-                            @PathVariable String parentCategory_name,
-                            Model model) {
+    @GetMapping(
+            "/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/surveys")
+    public String addSurvey(
+            @PathVariable Long product_id,
+            @PathVariable Long childCategory_id,
+            @PathVariable String parentCategory_name,
+            Model model) {
         model.addAttribute("parentName", parentCategory_name);
         model.addAttribute("childId", childCategory_id);
         model.addAttribute("productId", product_id);
         return "addSurvey"; // 이동할 뷰의 이름을 반환
     }
 
-    @GetMapping("/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/feedback")
-    public String addFeedback(@PathVariable Long product_id,
-                              @PathVariable Long childCategory_id,
-                              @PathVariable String parentCategory_name,
-                              Model model) {
+    @GetMapping(
+            "/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/feedback")
+    public String addFeedback(
+            @PathVariable Long product_id,
+            @PathVariable Long childCategory_id,
+            @PathVariable String parentCategory_name,
+            Model model) {
         model.addAttribute("parentName", parentCategory_name);
         model.addAttribute("childId", childCategory_id);
         model.addAttribute("productId", product_id);
@@ -131,4 +138,3 @@ public class ViewController {
         return ResponseEntity.ok(res);
     }
 }
-

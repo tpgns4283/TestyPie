@@ -27,17 +27,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class ProductLikeServiceTest {
 
-    @Mock
-    private ProductLikeRepository productLikeRepository;
+    @Mock private ProductLikeRepository productLikeRepository;
 
-    @Mock
-    private ProductRepository productRepository;
+    @Mock private ProductRepository productRepository;
 
-    @Mock
-    private ProductService productService;
+    @Mock private ProductService productService;
 
-    @InjectMocks
-    private ProductLikeService productLikeService;
+    @InjectMocks private ProductLikeService productLikeService;
 
     @DisplayName("ProductLike 1번째 클릭")
     @Test
@@ -47,19 +43,20 @@ class ProductLikeServiceTest {
 
         Product product = Product.builder().id(1L).productLikeCnt(DEFAULT_PRODUCT_LIKE_CNT).build();
 
-        ProductLike productLike = ProductLike.builder()
-                .id(1L)
-                .isProductLiked(DEFAULT_PRODUCT_LIKE)
-                .product(product)
-                .user(user)
-                .build();
+        ProductLike productLike =
+                ProductLike.builder()
+                        .id(1L)
+                        .isProductLiked(DEFAULT_PRODUCT_LIKE)
+                        .product(product)
+                        .user(user)
+                        .build();
 
         Optional<ProductLike> optionalProductLike = Optional.empty();
 
         given(productService.findProduct(anyLong())).willReturn(product);
 
-        given(productLikeRepository.findByProductAndUser(any(Product.class),
-                any(User.class))).willReturn(optionalProductLike);
+        given(productLikeRepository.findByProductAndUser(any(Product.class), any(User.class)))
+                .willReturn(optionalProductLike);
 
         given(productLikeRepository.save(any(ProductLike.class))).willReturn(productLike);
 
@@ -79,17 +76,13 @@ class ProductLikeServiceTest {
 
         Product product = Product.builder().id(1L).productLikeCnt(DEFAULT_PRODUCT_LIKE_CNT).build();
 
-        ProductLike productLike = ProductLike.builder()
-                .id(1L)
-                .isProductLiked(true)
-                .product(product)
-                .user(user)
-                .build();
+        ProductLike productLike =
+                ProductLike.builder().id(1L).isProductLiked(true).product(product).user(user).build();
 
         given(productService.findProduct(anyLong())).willReturn(product);
 
-        given(productLikeRepository.findByProductAndUser(any(Product.class),
-                any(User.class))).willReturn(Optional.ofNullable(productLike));
+        given(productLikeRepository.findByProductAndUser(any(Product.class), any(User.class)))
+                .willReturn(Optional.ofNullable(productLike));
 
         // when
         ProductLikeResponseDto result = productLikeService.clickProductLike(product.getId(), user);

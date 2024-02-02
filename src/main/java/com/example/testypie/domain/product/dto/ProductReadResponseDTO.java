@@ -1,6 +1,5 @@
 package com.example.testypie.domain.product.dto;
 
-import com.example.testypie.domain.comment.dto.CommentResponseDTO;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.reward.dto.RewardReadResponseDTO;
 import java.text.DateFormat;
@@ -10,7 +9,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
-import org.springframework.data.domain.Page;
 
 public record ProductReadResponseDTO(
         Long id,
@@ -24,13 +22,10 @@ public record ProductReadResponseDTO(
         String startAt,
         String closedAt,
         List<RewardReadResponseDTO> rewardList,
-        String message
+        String message) {
 
-) {
-
-    public static ProductReadResponseDTO of(Product product,
-            List<RewardReadResponseDTO> rewardDTOList)
-            throws ParseException {
+    public static ProductReadResponseDTO of(
+            Product product, List<RewardReadResponseDTO> rewardDTOList) throws ParseException {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -51,11 +46,9 @@ public record ProductReadResponseDTO(
 
         if (LocalDateTime.now().isBefore(product.getStartedAt())) {
             message = "테스트 시작 전입니다.";
-        }
-        else if(LocalDateTime.now().isAfter(product.getClosedAt())){
+        } else if (LocalDateTime.now().isAfter(product.getClosedAt())) {
             message = "마감된 테스트 입니다.";
-        }
-        else {
+        } else {
             long diffSec = (endFormat.getTime() - nowFormat.getTime()) / 1000;
             diffDays = (diffSec / (24 * 60 * 60));
             message = "마감 " + diffDays + "일 전";
@@ -73,7 +66,6 @@ public record ProductReadResponseDTO(
                 startDate,
                 endDate,
                 rewardDTOList,
-                message
-        );
+                message);
     }
 }

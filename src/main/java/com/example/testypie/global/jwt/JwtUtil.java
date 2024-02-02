@@ -4,15 +4,14 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import java.security.Key;
+import java.util.Base64;
+import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import java.security.Key;
-import java.util.Base64;
-import java.util.Date;
 
 @Component
 public class JwtUtil {
@@ -32,6 +31,7 @@ public class JwtUtil {
 
     @Value("${jwt.secret.key}")
     private String secretKey;
+
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
     public static final Logger logger = LoggerFactory.getLogger("JWT 관련 로그");
@@ -75,8 +75,8 @@ public class JwtUtil {
 
     public String createAccessToken(String username) {
         Date date = new Date();
-        return BEARER_PREFIX +
-                Jwts.builder()
+        return BEARER_PREFIX
+                + Jwts.builder()
                         .setSubject(username)
                         .setExpiration(new Date(date.getTime() + ACTIVE_TOKEN_TIME))
                         .setIssuedAt(date)
@@ -87,10 +87,10 @@ public class JwtUtil {
     public String createRefreshToken(String username) {
         Date date = new Date();
         return Jwts.builder()
-                        .setSubject(username)
-                        .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
-                        .setIssuedAt(date)
-                        .signWith(key, signatureAlgorithm)
-                        .compact();
+                .setSubject(username)
+                .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
+                .setIssuedAt(date)
+                .signWith(key, signatureAlgorithm)
+                .compact();
     }
 }

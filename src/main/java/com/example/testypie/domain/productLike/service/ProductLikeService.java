@@ -23,8 +23,10 @@ public class ProductLikeService {
     public ProductLikeResponseDto clickProductLike(Long productId, User user) {
 
         Product product = productService.findProduct(productId);
-        ProductLike productLike = productLikeRepository.findByProductAndUser(product, user)
-                .orElseGet(() -> saveProductLike(product, user));
+        ProductLike productLike =
+                productLikeRepository
+                        .findByProductAndUser(product, user)
+                        .orElseGet(() -> saveProductLike(product, user));
 
         boolean clickProductLike = productLike.clickProductLike();
         product.updateProductLikeCnt(clickProductLike);
@@ -35,19 +37,22 @@ public class ProductLikeService {
     public ProductLikeResponseDto getProductLike(Long productId, User user) {
 
         Product product = productService.findProduct(productId);
-        ProductLike productLike = productLikeRepository.findByProductAndUser(product, user)
-                .orElseGet(() -> saveProductLike(product, user));
+        ProductLike productLike =
+                productLikeRepository
+                        .findByProductAndUser(product, user)
+                        .orElseGet(() -> saveProductLike(product, user));
 
         return ProductLikeResponseDto.of(productLike.getIsProductLiked());
     }
 
     private ProductLike saveProductLike(Product product, User user) {
 
-        ProductLike productLike = ProductLike.builder()
-                .user(user)
-                .product(product)
-                .isProductLiked(DEFAULT_PRODUCT_LIKE)
-                .build();
+        ProductLike productLike =
+                ProductLike.builder()
+                        .user(user)
+                        .product(product)
+                        .isProductLiked(DEFAULT_PRODUCT_LIKE)
+                        .build();
 
         return productLikeRepository.save(productLike);
     }

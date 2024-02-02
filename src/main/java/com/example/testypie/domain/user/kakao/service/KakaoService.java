@@ -9,6 +9,10 @@ import com.example.testypie.global.jwt.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -20,11 +24,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Slf4j(topic = "KAKAO LOGIN")
 @Service
@@ -49,17 +48,15 @@ public class KakaoService {
         // 4. access 토큰, refresh 토큰 발급
         String accessToken = jwtUtil.createAccessToken(kakaoUser.getAccount());
         String refreshToken = jwtUtil.createRefreshToken(kakaoUser.getAccount());
-        
+
         List<String> tokens = new ArrayList<>();
         tokens.add(accessToken);
         tokens.add(refreshToken);
 
-        //카카오 유저 Refresh토큰 저장하기
-        RefreshToken saveRefreshToken = RefreshToken.builder()
-                .account(kakaoUser.getAccount())
-                .tokenValue(refreshToken)
-                .build();
-        
+        // 카카오 유저 Refresh토큰 저장하기
+        RefreshToken saveRefreshToken =
+                RefreshToken.builder().account(kakaoUser.getAccount()).tokenValue(refreshToken).build();
+
         refreshTokenRepository.save(saveRefreshToken);
 
         return tokens;
@@ -68,13 +65,13 @@ public class KakaoService {
     private String getToken(String code) throws JsonProcessingException {
         log.info("인가코드: " + code);
 
-        //요청 URI 만들기
-        URI uri = UriComponentsBuilder
-                .fromUriString("https://kauth.kakao.com")
-                .path("/oauth/token")
-                .encode()
-                .build()
-                .toUri();
+        // 요청 URI 만들기
+        URI uri =
+                UriComponentsBuilder.fromUriString("https://kauth.kakao.com")
+                        .path("/oauth/token")
+                        .encode()
+                        .build()
+                        .toUri();
 
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
@@ -87,16 +84,11 @@ public class KakaoService {
         body.add("redirect_uri", "https://testypie.link/kakao-login/callback");
         body.add("code", code);
 
-        RequestEntity<MultiValueMap<String, String>> requestEntity = RequestEntity
-                .post(uri)
-                .headers(headers)
-                .body(body);
+        RequestEntity<MultiValueMap<String, String>> requestEntity =
+                RequestEntity.post(uri).headers(headers).body(body);
 
         // HTTP 요청 보내기
-        ResponseEntity<String> response = restTemplate.exchange(
-                requestEntity,
-                String.class
-        );
+        ResponseEntity<String> response = restTemplate.exchange(requestEntity, String.class);
 
         // HTTP 응답 (JSON) -> 액세스 토큰 파싱
         JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
@@ -112,35 +104,28 @@ public class KakaoService {
 
     private KakaoUserInfoDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
         // 요청 URL 만들기
-        URI uri = UriComponentsBuilder
-                .fromUriString("https://kapi.kakao.com")
-                .path("/v2/user/me")
-                .encode()
-                .build()
-                .toUri();
+        URI uri =
+                UriComponentsBuilder.fromUriString("https://kapi.kakao.com")
+                        .path("/v2/user/me")
+                        .encode()
+                        .build()
+                        .toUri();
 
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
-        RequestEntity<MultiValueMap<String, String>> requestEntity = RequestEntity
-                .post(uri)
-                .headers(headers)
-                .body(new LinkedMultiValueMap<>());
+        RequestEntity<MultiValueMap<String, String>> requestEntity =
+                RequestEntity.post(uri).headers(headers).body(new LinkedMultiValueMap<>());
 
         // HTTP 요청 보내기
-        ResponseEntity<String> response = restTemplate.exchange(
-                requestEntity,
-                String.class
-        );
+        ResponseEntity<String> response = restTemplate.exchange(requestEntity, String.class);
 
         JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
         Long id = jsonNode.get("id").asLong();
-        String nickname = jsonNode.get("properties")
-                .get("nickname").asText();
-        String email = jsonNode.get("kakao_account")
-                .get("email").asText();
+        String nickname = jsonNode.get("properties").get("nickname").asText();
+        String email = jsonNode.get("kakao_account").get("email").asText();
 
         log.info("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
         return new KakaoUserInfoDto(id, nickname, email);
@@ -170,13 +155,14 @@ public class KakaoService {
                 String email = kakaoUserInfo.getEmail();
                 String nickname = kakaoUserInfo.getNickname();
 
-                kakaoUser = User.builder()
-                        .account(account)
-                        .password(encodedPassword)
-                        .email(email)
-                        .nickname(nickname)
-                        .kakaoId(kakaoId)
-                        .build();
+                kakaoUser =
+                        User.builder()
+                                .account(account)
+                                .password(encodedPassword)
+                                .email(email)
+                                .nickname(nickname)
+                                .kakaoId(kakaoId)
+                                .build();
             }
 
             userRepository.save(kakaoUser);

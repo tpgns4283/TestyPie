@@ -23,8 +23,12 @@ public class CommentMatcherService {
     private final ProductService productService;
     private final CategoryService categoryService;
 
-    public CommentResponseDTO productComment(Long product_id, CommentRequestDTO req, User user,
-            Long childCategory_id, String parentCategory_name) {
+    public CommentResponseDTO productComment(
+            Long product_id,
+            CommentRequestDTO req,
+            User user,
+            Long childCategory_id,
+            String parentCategory_name) {
 
         Product product = productService.findProduct(product_id);
         Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
@@ -32,19 +36,23 @@ public class CommentMatcherService {
         return commentService.createComment(category, product, user, req);
     }
 
-    public Page<CommentResponseDTO> getComments(Pageable pageable, Long product_id,
-            Long childCategory_id, String parentCategory_name) {
+    public Page<CommentResponseDTO> getComments(
+            Pageable pageable, Long product_id, Long childCategory_id, String parentCategory_name) {
 
         Product product = productService.findProduct(product_id);
         Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
 
         return commentService.getComments(pageable, category, product);
-
     }
 
     @Transactional
-    public CommentResponseDTO updateComment(Long product_id, Long comment_id, CommentRequestDTO req,
-            User user, Long childCategory_id, String parentCategory_name) {
+    public CommentResponseDTO updateComment(
+            Long product_id,
+            Long comment_id,
+            CommentRequestDTO req,
+            User user,
+            Long childCategory_id,
+            String parentCategory_name) {
 
         Product product = productService.findProduct(product_id);
         Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
@@ -52,7 +60,11 @@ public class CommentMatcherService {
         return commentService.updateComment(category, product, user, comment_id, req);
     }
 
-    public void deleteComment(Long product_id, Long comment_id, User user, Long childCategory_id,
+    public void deleteComment(
+            Long product_id,
+            Long comment_id,
+            User user,
+            Long childCategory_id,
             String parentCategory_name) {
 
         Product product = productService.findProduct(product_id);

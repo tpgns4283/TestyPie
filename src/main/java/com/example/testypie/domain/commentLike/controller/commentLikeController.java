@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments")
+@RequestMapping(
+        "/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments")
 public class commentLikeController {
 
     private final CommentLikeService commentLikeService;
@@ -27,8 +28,8 @@ public class commentLikeController {
             @PathVariable Long comment_id,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        CommentLikeResponseDto res = commentLikeService.clickCommentLike(comment_id,
-                userDetails.getUser());
+        CommentLikeResponseDto res =
+                commentLikeService.clickCommentLike(comment_id, userDetails.getUser());
 
         return ResponseEntity.ok().body(res);
     }
@@ -41,8 +42,8 @@ public class commentLikeController {
             @PathVariable Long comment_id,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        CommentLikeResponseDto res = commentLikeService.getCommentLike(comment_id,
-                userDetails.getUser());
+        CommentLikeResponseDto res =
+                commentLikeService.getCommentLike(comment_id, userDetails.getUser());
 
         return ResponseEntity.ok().body(res);
     }

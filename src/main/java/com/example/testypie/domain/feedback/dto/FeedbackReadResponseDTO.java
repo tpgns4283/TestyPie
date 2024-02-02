@@ -1,24 +1,23 @@
 package com.example.testypie.domain.feedback.dto;
 
 import com.example.testypie.domain.feedback.entity.Feedback;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record FeedbackReadResponseDTO (
+public record FeedbackReadResponseDTO(
         Long id,
         LocalDateTime createdAt,
         List<FeedbackDetailsReadResponseDTO> feedbackDetailsList,
         Long userId,
         Long productId,
-        Double rating
-) {
+        Double rating) {
     public static FeedbackReadResponseDTO of(Feedback feedback) {
 
-        List<FeedbackDetailsReadResponseDTO> detailsDTO = feedback.getFeedbackDetailsList().stream()
-                .map(FeedbackDetailsReadResponseDTO::of)
-                .collect(Collectors.toList());
+        List<FeedbackDetailsReadResponseDTO> detailsDTO =
+                feedback.getFeedbackDetailsList().stream()
+                        .map(FeedbackDetailsReadResponseDTO::of)
+                        .collect(Collectors.toList());
 
         return new FeedbackReadResponseDTO(
                 feedback.getId(),
@@ -26,7 +25,6 @@ public record FeedbackReadResponseDTO (
                 detailsDTO,
                 feedback.getUser().getId(),
                 feedback.getProduct().getId(),
-                feedback.getRating()
-        );
+                feedback.getRating());
     }
 }

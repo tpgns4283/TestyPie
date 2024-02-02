@@ -41,11 +41,9 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @Column
-    private String title;
+    @Column private String title;
 
-    @Column
-    private String content;
+    @Column private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
@@ -54,31 +52,43 @@ public class Product {
     @Column(nullable = false)
     private Long productLikeCnt;
 
-    @Column
-    private LocalDateTime createdAt;
+    @Column private LocalDateTime createdAt;
 
-    @Column
-    private LocalDateTime modifiedAt;
+    @Column private LocalDateTime modifiedAt;
 
-    @Column
-    private LocalDateTime startedAt;
+    @Column private LocalDateTime startedAt;
 
-    @Column
-    private LocalDateTime closedAt;
+    @Column private LocalDateTime closedAt;
 
-    @OneToMany(mappedBy = "product", targetEntity = Comment.class, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "product",
+            targetEntity = Comment.class,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     @JsonIgnore
     private List<Comment> commentList = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "product", targetEntity = Reward.class, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "product",
+            targetEntity = Reward.class,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<Reward> rewardList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(
+            mappedBy = "product",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Feedback> feedback = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product", targetEntity = ProductLike.class, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "product",
+            targetEntity = ProductLike.class,
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true)
     private List<ProductLike> productLikeList = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -86,10 +96,20 @@ public class Product {
     private Survey survey;
 
     @Builder
-    private Product(Long id, User user, String title, String content, Category category,
-            List<Reward> rewardList, LocalDateTime createAt, LocalDateTime modifiedAt,
-            LocalDateTime startedAt, LocalDateTime closedAt,
-            List<Comment> commentList, Long productLikeCnt, Survey survey) {
+    private Product(
+            Long id,
+            User user,
+            String title,
+            String content,
+            Category category,
+            List<Reward> rewardList,
+            LocalDateTime createAt,
+            LocalDateTime modifiedAt,
+            LocalDateTime startedAt,
+            LocalDateTime closedAt,
+            List<Comment> commentList,
+            Long productLikeCnt,
+            Survey survey) {
 
         this.id = id;
         this.user = user;
@@ -160,7 +180,7 @@ public class Product {
     public void setSurvey(Survey survey) {
         if (survey != null) {
             this.survey = survey;
-        } else{
+        } else {
             throw new IllegalArgumentException("Product에 설문지는 반드시 들어가야 합니다.");
         }
     }

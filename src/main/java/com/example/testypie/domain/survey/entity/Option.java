@@ -1,6 +1,5 @@
 package com.example.testypie.domain.survey.entity;
 
-import com.example.testypie.domain.survey.entity.Question;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +20,7 @@ public class Option {
     private Question question; // 해당 선택지가 속한 질문
 
     @Builder
-    public Option(Long id, String text, Question question){
+    public Option(Long id, String text, Question question) {
         this.id = id;
         this.text = text;
         this.question = question;

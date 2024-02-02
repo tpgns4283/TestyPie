@@ -5,13 +5,12 @@ import com.example.testypie.domain.user.dto.ProfileRequestDTO;
 import com.example.testypie.domain.userrole.constant.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Entity
@@ -36,8 +35,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String nickname;
 
-    @Column
-    private String description;
+    @Column private String description;
 
     @Column(name = "user_role")
     @Enumerated(EnumType.STRING)
@@ -45,16 +43,21 @@ public class User {
 
     private Long kakaoId;
 
-    @OneToMany
-    @JoinColumn
-    private List<Reward> rewardList = new ArrayList<>();
+    @OneToMany @JoinColumn private List<Reward> rewardList = new ArrayList<>();
 
-    @Column
-    private String fileUrl;
+    @Column private String fileUrl;
 
     @Builder
-    private User(Long id, String account, String password, String email, String nickname,
-                 String description, UserRole userRole, String fileUrl, Long kakaoId) {
+    private User(
+            Long id,
+            String account,
+            String password,
+            String email,
+            String nickname,
+            String description,
+            UserRole userRole,
+            String fileUrl,
+            Long kakaoId) {
 
         this.id = id;
         this.account = account;
@@ -68,18 +71,15 @@ public class User {
     }
 
     public void update(ProfileRequestDTO req, String fileUrl, String password) {
-        if (this.password != null && !this.password.isEmpty())
-            this.password = password;
-        if (req.nickname() != null && !req.nickname().isEmpty())
-            this.nickname = req.nickname();
+        if (this.password != null && !this.password.isEmpty()) this.password = password;
+        if (req.nickname() != null && !req.nickname().isEmpty()) this.nickname = req.nickname();
         if (req.description() != null && !req.description().isEmpty())
             this.description = req.description();
         this.fileUrl = fileUrl;
     }
 
     public User kakaoIdUpdate(Long kakaoId) {
-        if(kakaoId != null)
-            this.kakaoId = kakaoId;
+        if (kakaoId != null) this.kakaoId = kakaoId;
         return this;
     }
 }

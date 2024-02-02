@@ -23,8 +23,10 @@ public class CommentLikeService {
     public CommentLikeResponseDto clickCommentLike(Long commentId, User user) {
 
         Comment comment = commentService.getCommentEntity(commentId);
-        CommentLike commentLike = commentLikeRepository.findByCommentAndUser(comment, user)
-                .orElseGet(() -> saveCommentLike(comment, user));
+        CommentLike commentLike =
+                commentLikeRepository
+                        .findByCommentAndUser(comment, user)
+                        .orElseGet(() -> saveCommentLike(comment, user));
 
         boolean clickCommentLike = commentLike.clickCommentLike();
         comment.updateCommentLikeCnt(clickCommentLike);
@@ -35,19 +37,22 @@ public class CommentLikeService {
     public CommentLikeResponseDto getCommentLike(Long commentId, User user) {
 
         Comment comment = commentService.getCommentEntity(commentId);
-        CommentLike commentLike = commentLikeRepository.findByCommentAndUser(comment, user)
-                .orElseGet(() -> saveCommentLike(comment, user));
+        CommentLike commentLike =
+                commentLikeRepository
+                        .findByCommentAndUser(comment, user)
+                        .orElseGet(() -> saveCommentLike(comment, user));
 
         return CommentLikeResponseDto.of(commentLike.getIsCommentLiked());
     }
 
     private CommentLike saveCommentLike(Comment comment, User user) {
 
-        CommentLike commentLike = CommentLike.builder()
-                .user(user)
-                .comment(comment)
-                .isCommentLiked(DEFAULT_COMMENT_LIKE)
-                .build();
+        CommentLike commentLike =
+                CommentLike.builder()
+                        .user(user)
+                        .comment(comment)
+                        .isCommentLiked(DEFAULT_COMMENT_LIKE)
+                        .build();
 
         return commentLikeRepository.save(commentLike);
     }

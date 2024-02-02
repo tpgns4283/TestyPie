@@ -27,17 +27,21 @@ public class SurveyController {
             @PathVariable Long productId,
             @PathVariable Long childCategoryId,
             @PathVariable String parentCategoryName) {
-        SurveyReadResponseDTO res = surveyService.getSurvey(productId, childCategoryId, parentCategoryName);
+        SurveyReadResponseDTO res =
+                surveyService.getSurvey(productId, childCategoryId, parentCategoryName);
         return ResponseEntity.ok(res);
     }
 
     @PostMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/surveys")
-    public ResponseEntity<SurveyCreateResponseDTO> addSurvey(@RequestBody SurveyCreateRequestDTO req,
-                                                             @AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                             @PathVariable Long product_id,
-                                                             @PathVariable Long childCategory_id,
-                                                             @PathVariable String parentCategory_name) {
-        SurveyCreateResponseDTO res = surveyService.addSurvey(req, product_id, userDetails.getUser(), childCategory_id, parentCategory_name);
+    public ResponseEntity<SurveyCreateResponseDTO> addSurvey(
+            @RequestBody SurveyCreateRequestDTO req,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long product_id,
+            @PathVariable Long childCategory_id,
+            @PathVariable String parentCategory_name) {
+        SurveyCreateResponseDTO res =
+                surveyService.addSurvey(
+                        req, product_id, userDetails.getUser(), childCategory_id, parentCategory_name);
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 }

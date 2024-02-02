@@ -19,9 +19,8 @@ public class CustomMultipartFile implements MultipartFile {
     private final byte[] content;
     boolean isEmpty;
 
-
-    public CustomMultipartFile(String name, String originalFilename, String contentType,
-            byte[] content) {
+    public CustomMultipartFile(
+            String name, String originalFilename, String contentType, byte[] content) {
 
         Assert.hasLength(name, "Name must not be null");
         this.name = name;
@@ -70,5 +69,4 @@ public class CustomMultipartFile implements MultipartFile {
     public void transferTo(File dest) throws IOException, IllegalStateException {
         FileCopyUtils.copy(this.content, dest);
     }
-
 }
