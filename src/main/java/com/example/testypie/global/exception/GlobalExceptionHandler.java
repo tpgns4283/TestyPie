@@ -4,6 +4,7 @@ package com.example.testypie.global.exception;
 import com.amazonaws.Response;
 import io.jsonwebtoken.io.IOException;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -171,18 +173,12 @@ public class GlobalExceptionHandler {
     }
 
     // ErrorCode를 보유한 예외 클래스 정의
+    @Getter
     public static class CustomException extends RuntimeException {
         private final ErrorCode errorCode;
 
         @Builder
-        public CustomException(String message, ErrorCode errorCode) {
-            super(message);
-            this.errorCode = errorCode;
-        }
-
-        @Builder
         public CustomException(ErrorCode errorCode) {
-            super(errorCode.getMessage());
             this.errorCode = errorCode;
         }
     }

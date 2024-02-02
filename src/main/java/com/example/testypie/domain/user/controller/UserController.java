@@ -4,13 +4,12 @@ package com.example.testypie.domain.user.controller;
 import com.example.testypie.domain.user.dto.LoginRequestDTO;
 import com.example.testypie.domain.user.dto.MessageDTO;
 import com.example.testypie.domain.user.dto.SignUpRequestDTO;
+import com.example.testypie.domain.user.dto.SignUpResponseDTO;
 import com.example.testypie.domain.user.entity.RefreshToken;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.service.RefreshTokenService;
 import com.example.testypie.domain.user.service.UserService;
-import com.example.testypie.global.exception.ErrorCode;
-import com.example.testypie.global.exception.ErrorResponse;
-import com.example.testypie.global.exception.GlobalExceptionHandler;
+import com.example.testypie.global.exception.*;
 import com.example.testypie.global.jwt.JwtUtil;
 import com.example.testypie.global.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
@@ -22,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -42,34 +40,25 @@ public class UserController {
 
     private final JwtUtil jwtUtil;
 
-    @ExceptionHandler(GlobalExceptionHandler.CustomException.class)
-    public ResponseEntity<ErrorResponse> handleCustomException(GlobalExceptionHandler.CustomException e) {
-        return ResponseEntity.status(e.getErrorCode().getStatus())
-                .body(new ErrorResponse(e.getErrorCode().getStatus(), e.getErrorCode().getMessage()));
-    }
-
     //회원가입
     @PostMapping("/api/users/signup")
-    public ResponseEntity<MessageDTO> signup(@RequestBody @Valid SignUpRequestDTO req,
-                                             BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_ACCOUNT);
-        }
+    public ResponseEntity<ApiResponse> signup(@RequestBody @Valid SignUpRequestDTO req) {
 
-        userService.signup(req);
+        SignUpResponseDTO signUpResponseDTO = userService.signup(req);
 
-        return ResponseEntity.status(HttpStatus.CREATED.value())
-                .body(new MessageDTO("회원가입 성공", HttpStatus.CREATED.value()));
+        ApiResponse ar = ApiResponse.builder()
+                .result(signUpResponseDTO)
+                .resultCode(SuccessCode.SUCCESS.getStatus())
+                .resultMsg(SuccessCode.SUCCESS.getMessage())
+                .build();
+
+        return new ResponseEntity<>(ar, HttpStatus.OK);
     }
 
     //로그인
     @PostMapping("/api/users/login")
     public ResponseEntity<MessageDTO> login(@RequestBody @Valid LoginRequestDTO req,
-                                            BindingResult bindingResult,
                                             HttpServletResponse res) {
-        if (bindingResult.hasErrors()) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND);
-        }
 
         userService.login(req);
 
@@ -195,4 +184,5 @@ public class UserController {
 
         return ResponseEntity.ok().body(new MessageDTO("토큰이 성공적으로 삭제됐습니다.", HttpStatus.OK.value()));
     }
+
 }

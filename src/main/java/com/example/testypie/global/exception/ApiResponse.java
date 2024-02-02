@@ -3,8 +3,10 @@ package com.example.testypie.global.exception;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.io.Serializable;
+
 @Getter
-public class RestApiResponse<T> {
+public class ApiResponse<T> {
 
     // API 응답 결과 Response
     private T result;
@@ -16,8 +18,14 @@ public class RestApiResponse<T> {
     private String resultMsg;
 
     @Builder
-    public RestApiResponse(final T result, final int resultCode, final String resultMsg) {
+    public ApiResponse(final T result, final int resultCode, final String resultMsg) {
         this.result = result;
+        this.resultCode = resultCode;
+        this.resultMsg = resultMsg;
+    }
+
+    @Builder
+    public ApiResponse(final int resultCode, final String resultMsg) {
         this.resultCode = resultCode;
         this.resultMsg = resultMsg;
     }
