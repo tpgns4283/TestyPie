@@ -10,7 +10,6 @@ import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.service.RefreshTokenService;
 import com.example.testypie.domain.user.service.UserService;
 import com.example.testypie.global.exception.ErrorCode;
-import com.example.testypie.global.exception.ErrorResponse;
 import com.example.testypie.global.exception.GlobalExceptionHandler;
 import com.example.testypie.global.jwt.JwtUtil;
 import com.example.testypie.global.security.UserDetailsImpl;
@@ -39,13 +38,6 @@ public class UserController {
   private final UserService userService;
 
   private final JwtUtil jwtUtil;
-
-  @ExceptionHandler(GlobalExceptionHandler.CustomException.class)
-  public ResponseEntity<ErrorResponse> handleCustomException(
-      GlobalExceptionHandler.CustomException e) {
-    return ResponseEntity.status(e.getErrorCode().getStatus())
-        .body(new ErrorResponse(e.getErrorCode().getStatus(), e.getErrorCode().getMessage()));
-  }
 
   // 회원가입
   @PostMapping("/api/users/signup")

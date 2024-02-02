@@ -93,6 +93,6 @@ public class BugReportService {
       }
       return new PageImpl<>(resList, pageable, bugReportPage.getTotalElements());
     }
-    throw new IllegalArgumentException("클라이언트가 아닙니다.");
+    throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_BUGREPORT_INVALID);
   }
 }

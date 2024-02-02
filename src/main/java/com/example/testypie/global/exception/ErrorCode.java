@@ -22,6 +22,7 @@ public enum ErrorCode {
 
   /* Bugreport */
   SELECT_BUGREPORT_NOT_FOUND(404, "해당 버그 리포트는 존재하지 않습니다."),
+  SELECT_BUGREPORT_INVALID(403, "해당 작성자만 접근할 수 있습니다."),
 
   /* Category */
   SELECT_CATEGORY_NOT_FOUND(404, "해당 카테고리는 존재하지 않습니다."),
@@ -46,6 +47,8 @@ public enum ErrorCode {
   REFRESH_TOKEN_NOT_FOUND(401, "유효한 토큰이 아닙니다."),
   REFRESH_TOKEN_INVALID(401, "유효한 토큰이 아닙니다."),
 
+  /* Product */
+
   /* PROFILE */
   UPDATE_PROFILE_BAD_REQUEST(400, "프로필 업데이트가 실패했습니다."),
   SELECT_PROFILE_USER_NOT_FOUND(401, "해당 회원이 없습니다."),
@@ -58,6 +61,10 @@ public enum ErrorCode {
 
   /* Feedback(끝) */
   SELECT_FEEDBACK_NOT_FOUND(404, "찾으시는 피드백이 존재하지 않습니다."),
+  CREATE_FEEDBACK_NOT_ALLOWED(403, "Product작성자는 피드백을 제출할 수 없습니다."),
+  CREATE_FEEDBACK_ALREADY_SUBMITTED(403, "이미 피드백을 제출했습니다."),
+  CREATE_FEEDBACK_PASSED_DUE_DATE(403, "이미 만료된 product입니다."),
+
   /* Product(끝) */
   SELECT_PRODUCT_NOT_FOUND(404, "찾으시는 product는 존재하지 않습니다."),
   SELECT_PRODUCT_INVALID_AUTHORIZATION(403, "해당 product의 접근 권한이 없습니다."),
@@ -76,7 +83,8 @@ public enum ErrorCode {
   /* Util(S3Uploader) */
   SELECT_IMAGE_NOT_FOUND(404, "해당 이미지를 찾을 수 없습니다."),
   CREATE_IMAGE_FAIL(404, "해당 이미지 업로드에 실패했습니다."),
-  SELECT_IMAGE_NOT_READABLE(422, "해당 이미지를 불러올 수 없습니다.");
+  SELECT_IMAGE_NOT_READABLE(422, "해당 이미지를 불러올 수 없습니다."),
+  SELECT_IMAGE_NOT_RESIZABLE(500, "파일을 줄이는데 실패했습니다.");
 
   private final int status;
 
