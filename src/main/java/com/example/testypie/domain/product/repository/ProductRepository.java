@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    Page<Product> findAllByCategory_id(Long childCategory_id, PageRequest id);
+  Page<Product> findAllByCategory_id(Long childCategory_id, PageRequest id);
 
-    List<Product> findBySurveyIdIsNull();
+  List<Product> findBySurveyIdIsNull();
 }

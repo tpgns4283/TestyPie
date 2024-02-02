@@ -16,49 +16,49 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 public class Feedback {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column private LocalDateTime createdAt;
+  @Column private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FeedbackDetails> feedbackDetailsList = new ArrayList<>();
+  @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<FeedbackDetails> feedbackDetailsList = new ArrayList<>();
 
-    @JoinColumn
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+  @JoinColumn
+  @ManyToOne(fetch = FetchType.LAZY)
+  private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "product_id")
-    private Product product;
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinColumn(name = "product_id")
+  private Product product;
 
-    @ManyToOne @JoinColumn private Survey survey;
+  @ManyToOne @JoinColumn private Survey survey;
 
-    @Column private Double rating;
+  @Column private Double rating;
 
-    @Builder
-    private Feedback(
-            Long id, LocalDateTime createdAt, Double rating, User user, Product product, Survey survey) {
-        this.id = id;
-        this.feedbackDetailsList = new ArrayList<>();
-        this.createdAt = createdAt;
-        this.user = user;
-        this.product = product;
-        this.rating = rating;
-        this.survey = survey;
+  @Builder
+  private Feedback(
+      Long id, LocalDateTime createdAt, Double rating, User user, Product product, Survey survey) {
+    this.id = id;
+    this.feedbackDetailsList = new ArrayList<>();
+    this.createdAt = createdAt;
+    this.user = user;
+    this.product = product;
+    this.rating = rating;
+    this.survey = survey;
+  }
+
+  public void assignRating(RatingStarRequestDTO req) {
+    this.rating = req.rating();
+  }
+
+  public void setFeedbackDetailsList(List<FeedbackDetails> detailslist) {
+    if (detailslist != null) {
+      this.feedbackDetailsList = detailslist;
+      detailslist.forEach(feedbackDetails -> feedbackDetails.setFeedback(this));
+    } else {
+      throw new IllegalArgumentException("Feedback에 Question은 반드시 들어가야 합니다.");
     }
-
-    public void assignRating(RatingStarRequestDTO req) {
-        this.rating = req.rating();
-    }
-
-    public void setFeedbackDetailsList(List<FeedbackDetails> detailslist) {
-        if (detailslist != null) {
-            this.feedbackDetailsList = detailslist;
-            detailslist.forEach(feedbackDetails -> feedbackDetails.setFeedback(this));
-        } else {
-            throw new IllegalArgumentException("Feedback에 Question은 반드시 들어가야 합니다.");
-        }
-    }
+  }
 }

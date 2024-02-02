@@ -15,28 +15,28 @@ import org.hibernate.annotations.OnDeleteAction;
 @NoArgsConstructor
 public class Category {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column private String name;
+  @Column private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Category parent;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "parent_id")
+  @OnDelete(action = OnDeleteAction.CASCADE)
+  private Category parent;
 
-    @Column private Long depth;
+  @Column private Long depth;
 
-    @Builder
-    private Category(Long id, String name, Long depth, Category parent) {
-        this.id = id;
-        this.name = name;
-        this.parent = parent;
-        if (Objects.isNull(parent)) {
-            this.depth = depth;
-        } else {
-            this.depth = depth + 1;
-        }
+  @Builder
+  private Category(Long id, String name, Long depth, Category parent) {
+    this.id = id;
+    this.name = name;
+    this.parent = parent;
+    if (Objects.isNull(parent)) {
+      this.depth = depth;
+    } else {
+      this.depth = depth + 1;
     }
+  }
 }

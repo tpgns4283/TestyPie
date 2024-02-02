@@ -27,174 +27,174 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class UserInfoService {
 
-    private final UserRepository userRepository;
-    private final FeedbackService feedbackService;
-    private final ProductService productService;
-    private final PasswordEncoder passwordEncoder;
-    private final S3Util s3Util;
-    private final Random random = new Random();
+  private final UserRepository userRepository;
+  private final FeedbackService feedbackService;
+  private final ProductService productService;
+  private final PasswordEncoder passwordEncoder;
+  private final S3Util s3Util;
+  private final Random random = new Random();
 
-    @Value("${default.image.address}")
-    private String defaultProfileImageUrl;
+  @Value("${default.image.address}")
+  private String defaultProfileImageUrl;
 
-    @Transactional
-    public ProfileResponseDTO updateProfile(
-            String account, ProfileRequestDTO req, MultipartFile multipartfile, User user) {
+  @Transactional
+  public ProfileResponseDTO updateProfile(
+      String account, ProfileRequestDTO req, MultipartFile multipartfile, User user) {
 
-        User profileUser =
-                userRepository
-                        .findByAccount(account)
-                        .orElseThrow(
-                                () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
+    User profileUser =
+        userRepository
+            .findByAccount(account)
+            .orElseThrow(
+                () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
 
-        getUserValid(profileUser, user);
+    getUserValid(profileUser, user);
 
-        String password = passwordEncoder.encode(req.password());
+    String password = passwordEncoder.encode(req.password());
 
-        String fileUrl = profileUser.getFileUrl(); // 사용자가 가진 기존 파일
+    String fileUrl = profileUser.getFileUrl(); // 사용자가 가진 기존 파일
 
-        if (multipartfile != null && !multipartfile.isEmpty()) {
-            if (!fileUrl.equals(defaultProfileImageUrl)) {
-                s3Util.deleteFile(fileUrl, FilePath.PROFILE);
-            }
-            fileUrl = s3Util.uploadFile(multipartfile, FilePath.PROFILE);
-        } else {
-            fileUrl = defaultProfileImageUrl;
-        }
-
-        profileUser.update(req, fileUrl, password);
-        return new ProfileResponseDTO(
-                profileUser.getAccount(),
-                profileUser.getNickname(),
-                profileUser.getEmail(),
-                profileUser.getDescription(),
-                profileUser.getFileUrl());
+    if (multipartfile != null && !multipartfile.isEmpty()) {
+      if (!fileUrl.equals(defaultProfileImageUrl)) {
+        s3Util.deleteFile(fileUrl, FilePath.PROFILE);
+      }
+      fileUrl = s3Util.uploadFile(multipartfile, FilePath.PROFILE);
+    } else {
+      fileUrl = defaultProfileImageUrl;
     }
 
-    public ProfileResponseDTO getProfile(String account) {
-        User user = findProfile(account);
-        return new ProfileResponseDTO(
-                user.getAccount(),
-                user.getNickname(),
-                user.getEmail(),
-                user.getDescription(),
-                user.getFileUrl());
+    profileUser.update(req, fileUrl, password);
+    return new ProfileResponseDTO(
+        profileUser.getAccount(),
+        profileUser.getNickname(),
+        profileUser.getEmail(),
+        profileUser.getDescription(),
+        profileUser.getFileUrl());
+  }
+
+  public ProfileResponseDTO getProfile(String account) {
+    User user = findProfile(account);
+    return new ProfileResponseDTO(
+        user.getAccount(),
+        user.getNickname(),
+        user.getEmail(),
+        user.getDescription(),
+        user.getFileUrl());
+  }
+
+  public User findProfile(String account) {
+    return userRepository
+        .findByAccount(account)
+        .orElseThrow(
+            () ->
+                new GlobalExceptionHandler.CustomException(
+                    ErrorCode.SELECT_PROFILE_USER_NOT_FOUND));
+  }
+
+  // 프로필 작성자와 사이트 이용자가 일치하는 메서드
+  public void checkSameUser(String profileAccount, String userAccount) {
+    User profileUser = findProfile(profileAccount);
+    User user = findProfile(userAccount);
+    if (!profileUser.equals(user)) {
+      throw new GlobalExceptionHandler.CustomException(
+          ErrorCode.PROFILE_USER_INVALID_AUTHORIZATION);
+    }
+  }
+
+  // product 등록 이력 가져오기
+  public List<RegisteredProductResponseDTO> getUserProducts(String account) {
+    List<Product> productList = userRepository.getUserProductsOrderByCreatedAtDesc(account);
+    return productList.stream().map(RegisteredProductResponseDTO::of).collect(Collectors.toList());
+  }
+
+  // product 참여 이력 가져오기
+  public List<ParticipatedProductResponseDTO> getUserFeedbacks(String account) {
+    return userRepository.getUserFeedbacksDtoIncludingProductInfo(account);
+  }
+
+  public Feedback getValidFeedback(Long productId, Long feedbackId) {
+    // 제품 유효성 확인
+    validateProduct(productId);
+
+    // 피드백 검색 및 유효성 확인
+    Feedback feedback = validateAndGetFeedback(productId, feedbackId);
+
+    // feedback과 product의 연관성 확인
+    validateFeedbackProductAssociation(feedback, productId);
+
+    return feedback;
+  }
+
+  private void validateProduct(Long productId) {
+    boolean isProductValid = userRepository.existsProductById(productId);
+    if (!isProductValid) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_PRODUCT_ID_NOT_FOUND);
+    }
+  }
+
+  private Feedback validateAndGetFeedback(Long productId, Long feedbackId) {
+    Feedback feedback = feedbackService.getValidFeedback(productId, feedbackId);
+
+    if (feedback == null) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_FEEDBACK_ID_NOT_FOUND);
     }
 
-    public User findProfile(String account) {
-        return userRepository
-                .findByAccount(account)
-                .orElseThrow(
-                        () ->
-                                new GlobalExceptionHandler.CustomException(
-                                        ErrorCode.SELECT_PROFILE_USER_NOT_FOUND));
+    return feedback;
+  }
+
+  private void validateFeedbackProductAssociation(Feedback feedback, Long productId) {
+    if (!feedback.getProduct().getId().equals(productId)) {
+      throw new GlobalExceptionHandler.CustomException(
+          ErrorCode.PROFILE_PRODUCT_FEEDBACK_ID_NOT_FOUND);
+    }
+  }
+
+  public void assignRatingStarAtFeedback(Feedback feedback, RatingStarRequestDTO req) {
+    feedbackService.setFeedbackRatingStar(feedback, req);
+  }
+
+  public double getAverageRating(String account) {
+    User user = findProfile(account);
+    return feedbackService.getAverageRating(user);
+  }
+
+  public List<User> drawUsers(Long productId) {
+    // product 찾기
+    Product product = productService.findProduct(productId);
+
+    // rewardlist 찾기
+    List<Reward> rewardList = product != null ? product.getRewardList() : null;
+
+    // 빈 목록이나 null일 경우 예외 처리
+    if (rewardList == null || rewardList.isEmpty()) {
+      return List.of(); // 빈 리스트 반환
     }
 
-    // 프로필 작성자와 사이트 이용자가 일치하는 메서드
-    public void checkSameUser(String profileAccount, String userAccount) {
-        User profileUser = findProfile(profileAccount);
-        User user = findProfile(userAccount);
-        if (!profileUser.equals(user)) {
-            throw new GlobalExceptionHandler.CustomException(
-                    ErrorCode.PROFILE_USER_INVALID_AUTHORIZATION);
-        }
+    // 선택된 랜덤 인덱스에 해당하는 User 가져오기 (중복 방지)
+    return getRandomUserList(productId, rewardList);
+  }
+
+  private List<User> getRandomUserList(Long productId, List<Reward> rewardList) {
+    // 전체 reward_size 합산
+    int totalRewardSize =
+        rewardList.stream().mapToInt(reward -> Math.toIntExact(reward.getItemSize())).sum();
+
+    // user 리스트 가져오기
+    List<User> userList = userRepository.findAllFeedbackUsersByProductId(productId);
+
+    // 전체 reward_size 만큼의 랜덤 인덱스 선택
+    List<Integer> randomIndexes = getRandomIndexes(totalRewardSize, userList.size());
+
+    // 선택된 랜덤 인덱스에 해당하는 User 가져오기 (중복 방지)
+    return randomIndexes.stream().distinct().map(userList::get).collect(Collectors.toList());
+  }
+
+  private List<Integer> getRandomIndexes(int totalSize, int maxSize) {
+    return random.ints(totalSize, 0, maxSize).boxed().toList();
+  }
+
+  private void getUserValid(User profileUser, User user) {
+    if (!profileUser.getId().equals(user.getId())) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.UPDATE_USER_INVALID_AUTHORIZATION);
     }
-
-    // product 등록 이력 가져오기
-    public List<RegisteredProductResponseDTO> getUserProducts(String account) {
-        List<Product> productList = userRepository.getUserProductsOrderByCreatedAtDesc(account);
-        return productList.stream().map(RegisteredProductResponseDTO::of).collect(Collectors.toList());
-    }
-
-    // product 참여 이력 가져오기
-    public List<ParticipatedProductResponseDTO> getUserFeedbacks(String account) {
-        return userRepository.getUserFeedbacksDtoIncludingProductInfo(account);
-    }
-
-    public Feedback getValidFeedback(Long productId, Long feedbackId) {
-        // 제품 유효성 확인
-        validateProduct(productId);
-
-        // 피드백 검색 및 유효성 확인
-        Feedback feedback = validateAndGetFeedback(productId, feedbackId);
-
-        // feedback과 product의 연관성 확인
-        validateFeedbackProductAssociation(feedback, productId);
-
-        return feedback;
-    }
-
-    private void validateProduct(Long productId) {
-        boolean isProductValid = userRepository.existsProductById(productId);
-        if (!isProductValid) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_PRODUCT_ID_NOT_FOUND);
-        }
-    }
-
-    private Feedback validateAndGetFeedback(Long productId, Long feedbackId) {
-        Feedback feedback = feedbackService.getValidFeedback(productId, feedbackId);
-
-        if (feedback == null) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_FEEDBACK_ID_NOT_FOUND);
-        }
-
-        return feedback;
-    }
-
-    private void validateFeedbackProductAssociation(Feedback feedback, Long productId) {
-        if (!feedback.getProduct().getId().equals(productId)) {
-            throw new GlobalExceptionHandler.CustomException(
-                    ErrorCode.PROFILE_PRODUCT_FEEDBACK_ID_NOT_FOUND);
-        }
-    }
-
-    public void assignRatingStarAtFeedback(Feedback feedback, RatingStarRequestDTO req) {
-        feedbackService.setFeedbackRatingStar(feedback, req);
-    }
-
-    public double getAverageRating(String account) {
-        User user = findProfile(account);
-        return feedbackService.getAverageRating(user);
-    }
-
-    public List<User> drawUsers(Long productId) {
-        // product 찾기
-        Product product = productService.findProduct(productId);
-
-        // rewardlist 찾기
-        List<Reward> rewardList = product != null ? product.getRewardList() : null;
-
-        // 빈 목록이나 null일 경우 예외 처리
-        if (rewardList == null || rewardList.isEmpty()) {
-            return List.of(); // 빈 리스트 반환
-        }
-
-        // 선택된 랜덤 인덱스에 해당하는 User 가져오기 (중복 방지)
-        return getRandomUserList(productId, rewardList);
-    }
-
-    private List<User> getRandomUserList(Long productId, List<Reward> rewardList) {
-        // 전체 reward_size 합산
-        int totalRewardSize =
-                rewardList.stream().mapToInt(reward -> Math.toIntExact(reward.getItemSize())).sum();
-
-        // user 리스트 가져오기
-        List<User> userList = userRepository.findAllFeedbackUsersByProductId(productId);
-
-        // 전체 reward_size 만큼의 랜덤 인덱스 선택
-        List<Integer> randomIndexes = getRandomIndexes(totalRewardSize, userList.size());
-
-        // 선택된 랜덤 인덱스에 해당하는 User 가져오기 (중복 방지)
-        return randomIndexes.stream().distinct().map(userList::get).collect(Collectors.toList());
-    }
-
-    private List<Integer> getRandomIndexes(int totalSize, int maxSize) {
-        return random.ints(totalSize, 0, maxSize).boxed().toList();
-    }
-
-    private void getUserValid(User profileUser, User user) {
-        if (!profileUser.getId().equals(user.getId())) {
-            throw new GlobalExceptionHandler.CustomException(ErrorCode.UPDATE_USER_INVALID_AUTHORIZATION);
-        }
-    }
+  }
 }

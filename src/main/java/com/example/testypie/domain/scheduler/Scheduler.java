@@ -20,53 +20,53 @@ import org.springframework.stereotype.Component;
 @Transactional
 public class Scheduler {
 
-    private final ProductRepository productRepository;
-    private final ProductLikeRepository productLikeRepository;
-    private final CommentLikeRepository commentLikeRepository;
+  private final ProductRepository productRepository;
+  private final ProductLikeRepository productLikeRepository;
+  private final CommentLikeRepository commentLikeRepository;
 
-    @Transactional
-    @Scheduled(cron = "0 0 0 * * *")
-    public void autoDelete() {
-        LocalDateTime now = LocalDateTime.now();
+  @Transactional
+  @Scheduled(cron = "0 0 0 * * *")
+  public void autoDelete() {
+    LocalDateTime now = LocalDateTime.now();
 
-        List<Product> productList = productRepository.findAll();
+    List<Product> productList = productRepository.findAll();
 
-        for (Product p : productList) {
-            if (now.isAfter(p.getClosedAt()) || now.isEqual(p.getClosedAt())) {
-                productRepository.delete(p);
-            }
-        }
+    for (Product p : productList) {
+      if (now.isAfter(p.getClosedAt()) || now.isEqual(p.getClosedAt())) {
+        productRepository.delete(p);
+      }
     }
+  }
 
-    @Transactional
-    @Scheduled(cron = "0 0 0 * * *")
-    public void productLikeAutoDelete() {
+  @Transactional
+  @Scheduled(cron = "0 0 0 * * *")
+  public void productLikeAutoDelete() {
 
-        List<ProductLike> productLikes = productLikeRepository.findAll();
+    List<ProductLike> productLikes = productLikeRepository.findAll();
 
-        for (ProductLike isLiked : productLikes) {
-            if (!isLiked.getIsProductLiked()) {
-                productLikeRepository.delete(isLiked);
-            }
-        }
+    for (ProductLike isLiked : productLikes) {
+      if (!isLiked.getIsProductLiked()) {
+        productLikeRepository.delete(isLiked);
+      }
     }
+  }
 
-    @Transactional
-    @Scheduled(cron = "0 0 0 * * *")
-    public void commentLikeAutoDelete() {
+  @Transactional
+  @Scheduled(cron = "0 0 0 * * *")
+  public void commentLikeAutoDelete() {
 
-        List<CommentLike> commentLikes = commentLikeRepository.findAll();
+    List<CommentLike> commentLikes = commentLikeRepository.findAll();
 
-        for (CommentLike isLiked : commentLikes) {
-            if (!isLiked.getIsCommentLiked()) {
-                commentLikeRepository.delete(isLiked);
-            }
-        }
+    for (CommentLike isLiked : commentLikes) {
+      if (!isLiked.getIsCommentLiked()) {
+        commentLikeRepository.delete(isLiked);
+      }
     }
+  }
 
-    @Scheduled(cron = "0 0 0 * * *")
-    public void deleteProductsWithoutSurveyId() {
-        List<Product> products = productRepository.findBySurveyIdIsNull();
-        productRepository.deleteAll(products);
-    }
+  @Scheduled(cron = "0 0 0 * * *")
+  public void deleteProductsWithoutSurveyId() {
+    List<Product> products = productRepository.findBySurveyIdIsNull();
+    productRepository.deleteAll(products);
+  }
 }

@@ -11,18 +11,18 @@ import org.springframework.data.repository.query.Param;
 
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
 
-    boolean existsByUserAndSurvey(User user, Survey survey);
+  boolean existsByUserAndSurvey(User user, Survey survey);
 
-    Optional<Feedback> findByProductIdAndId(Long productId, Long feedbackId);
+  Optional<Feedback> findByProductIdAndId(Long productId, Long feedbackId);
 
-    // account ID를 기준으로 해당 Tester가 작성한 모든 Feedback의 평균 점수를 구하는 메서드
-    @Query("SELECT AVG(f.rating) FROM Feedback f WHERE f.user.id = :userId")
-    Double findAverageScoreByUserId(@Param("userId") Long userId);
+  // account ID를 기준으로 해당 Tester가 작성한 모든 Feedback의 평균 점수를 구하는 메서드
+  @Query("SELECT AVG(f.rating) FROM Feedback f WHERE f.user.id = :userId")
+  Double findAverageScoreByUserId(@Param("userId") Long userId);
 
-    @Query(
-            "SELECT f FROM Feedback f "
-                    + "JOIN f.product p "
-                    + "WHERE p.id = :productId AND f.rating = :rating")
-    List<Feedback> findFeedbacksByProductIdAndRating(
-            @Param("productId") Long productId, @Param("rating") Double rating);
+  @Query(
+      "SELECT f FROM Feedback f "
+          + "JOIN f.product p "
+          + "WHERE p.id = :productId AND f.rating = :rating")
+  List<Feedback> findFeedbacksByProductIdAndRating(
+      @Param("productId") Long productId, @Param("rating") Double rating);
 }

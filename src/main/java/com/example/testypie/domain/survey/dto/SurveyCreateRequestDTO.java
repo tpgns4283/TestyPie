@@ -4,4 +4,4 @@ import java.util.List;
 import lombok.NonNull;
 
 public record SurveyCreateRequestDTO(
-        @NonNull String title, @NonNull List<QuestionCreateRequestDTO> questionList) {}
+    @NonNull String title, @NonNull List<QuestionCreateRequestDTO> questionList) {}

@@ -17,29 +17,29 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/category/{parentCategory_name}/{childCategory_id}/products")
 public class ProductLikeController {
 
-    private final ProductLikeService productLikeService;
+  private final ProductLikeService productLikeService;
 
-    @PatchMapping("/{product_id}/product_like")
-    public ResponseEntity<ProductLikeResponseDto> clickProductLike(
-            @PathVariable String parentCategory_name,
-            @PathVariable Long childCategory_id,
-            @PathVariable Long product_id,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+  @PatchMapping("/{product_id}/product_like")
+  public ResponseEntity<ProductLikeResponseDto> clickProductLike(
+      @PathVariable String parentCategory_name,
+      @PathVariable Long childCategory_id,
+      @PathVariable Long product_id,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        ProductLikeResponseDto res =
-                productLikeService.clickProductLike(product_id, userDetails.getUser());
-        return ResponseEntity.ok().body(res);
-    }
+    ProductLikeResponseDto res =
+        productLikeService.clickProductLike(product_id, userDetails.getUser());
+    return ResponseEntity.ok().body(res);
+  }
 
-    @GetMapping("/{product_id}/product_like/status")
-    public ResponseEntity<ProductLikeResponseDto> getProductLike(
-            @PathVariable String parentCategory_name,
-            @PathVariable Long childCategory_id,
-            @PathVariable Long product_id,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+  @GetMapping("/{product_id}/product_like/status")
+  public ResponseEntity<ProductLikeResponseDto> getProductLike(
+      @PathVariable String parentCategory_name,
+      @PathVariable Long childCategory_id,
+      @PathVariable Long product_id,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        ProductLikeResponseDto res =
-                productLikeService.getProductLike(product_id, userDetails.getUser());
-        return ResponseEntity.ok().body(res);
-    }
+    ProductLikeResponseDto res =
+        productLikeService.getProductLike(product_id, userDetails.getUser());
+    return ResponseEntity.ok().body(res);
+  }
 }

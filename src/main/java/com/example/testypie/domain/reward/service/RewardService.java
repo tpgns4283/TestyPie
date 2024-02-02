@@ -18,46 +18,46 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RewardService {
 
-    private final RewardRepository rewardRepository;
-    private final UserInfoService userInfoService;
-    private final UserRepository userRepository;
+  private final RewardRepository rewardRepository;
+  private final UserInfoService userInfoService;
+  private final UserRepository userRepository;
 
-    public List<RewardReadResponseDTO> getReward(String account) {
-        User profileUser =
-                userRepository.findByAccount(account).orElseThrow(NoSuchElementException::new);
+  public List<RewardReadResponseDTO> getReward(String account) {
+    User profileUser =
+        userRepository.findByAccount(account).orElseThrow(NoSuchElementException::new);
 
-        return rewardRepository.findAllByUser(profileUser).stream()
-                .map(RewardReadResponseDTO::new)
-                .toList();
+    return rewardRepository.findAllByUser(profileUser).stream()
+        .map(RewardReadResponseDTO::new)
+        .toList();
+  }
+
+  public List<RewardReadResponseDTO> getRewardList(User user) {
+    userInfoService.findProfile(user.getAccount());
+
+    return rewardRepository.findAll().stream().map(RewardReadResponseDTO::new).toList();
+  }
+
+  public RewardDeleteResponseDTO deleteReward(User user, Long reward_Id) {
+
+    Reward reward = getUserReward(user, reward_Id);
+    rewardRepository.delete(reward);
+
+    return RewardDeleteResponseDTO.of(reward);
+  }
+
+  private Reward getUserReward(User user, Long rewardId) {
+    Reward reward = findReward(rewardId);
+    if (!user.getId().equals(reward.getUser().getId())) {
+      throw new GlobalExceptionHandler.CustomException(
+          ErrorCode.SELECT_USER_REWARD_INVALID_AUTHORIZATION);
     }
+    return reward;
+  }
 
-    public List<RewardReadResponseDTO> getRewardList(User user) {
-        userInfoService.findProfile(user.getAccount());
-
-        return rewardRepository.findAll().stream().map(RewardReadResponseDTO::new).toList();
-    }
-
-    public RewardDeleteResponseDTO deleteReward(User user, Long reward_Id) {
-
-        Reward reward = getUserReward(user, reward_Id);
-        rewardRepository.delete(reward);
-
-        return RewardDeleteResponseDTO.of(reward);
-    }
-
-    private Reward getUserReward(User user, Long rewardId) {
-        Reward reward = findReward(rewardId);
-        if (!user.getId().equals(reward.getUser().getId())) {
-            throw new GlobalExceptionHandler.CustomException(
-                    ErrorCode.SELECT_USER_REWARD_INVALID_AUTHORIZATION);
-        }
-        return reward;
-    }
-
-    public Reward findReward(Long reward_Id) {
-        return rewardRepository
-                .findById(reward_Id)
-                .orElseThrow(
-                        () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_REWARD_NOT_FOUND));
-    }
+  public Reward findReward(Long reward_Id) {
+    return rewardRepository
+        .findById(reward_Id)
+        .orElseThrow(
+            () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_REWARD_NOT_FOUND));
+  }
 }

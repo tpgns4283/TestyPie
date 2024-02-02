@@ -5,8 +5,8 @@ import java.util.List;
 import lombok.NonNull;
 
 public record ProductCreateRequestDTO(
-        @NonNull String title,
-        @NonNull String content,
-        @NonNull List<RewardCreateRequestDTO> rewardList,
-        @NonNull String startAt,
-        @NonNull String closedAt) {}
+    @NonNull String title,
+    @NonNull String content,
+    @NonNull List<RewardCreateRequestDTO> rewardList,
+    @NonNull String startAt,
+    @NonNull String closedAt) {}

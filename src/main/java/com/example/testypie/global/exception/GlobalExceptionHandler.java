@@ -11,30 +11,30 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({Exception.class})
-    public ResponseEntity<?> handleException(Exception e) {
-        System.out.println(e.getClass().getName());
-        System.out.println(e.getLocalizedMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body("Server error!");
+  @ExceptionHandler({Exception.class})
+  public ResponseEntity<?> handleException(Exception e) {
+    System.out.println(e.getClass().getName());
+    System.out.println(e.getLocalizedMessage());
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body("Server error!");
+  }
+
+  @ExceptionHandler({CustomException.class})
+  public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
+    HttpStatus status = HttpStatus.valueOf(e.getErrorCode().getStatus());
+    ErrorResponse errorResponse = new ErrorResponse(e.getErrorCode());
+    return new ResponseEntity<>(errorResponse, status);
+  }
+
+  // ErrorCode를 보유한 예외 클래스 정의
+  public static class CustomException extends RuntimeException {
+    private final ErrorCode errorCode;
+
+    public CustomException(ErrorCode errorCode) {
+      this.errorCode = errorCode;
     }
 
-    @ExceptionHandler({CustomException.class})
-    public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
-        HttpStatus status = HttpStatus.valueOf(e.getErrorCode().getStatus());
-        ErrorResponse errorResponse = new ErrorResponse(e.getErrorCode());
-        return new ResponseEntity<>(errorResponse, status);
+    public ErrorCode getErrorCode() {
+      return errorCode;
     }
-
-    // ErrorCode를 보유한 예외 클래스 정의
-    public static class CustomException extends RuntimeException {
-        private final ErrorCode errorCode;
-
-        public CustomException(ErrorCode errorCode) {
-            this.errorCode = errorCode;
-        }
-
-        public ErrorCode getErrorCode() {
-            return errorCode;
-        }
-    }
+  }
 }

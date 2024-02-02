@@ -20,37 +20,37 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BugReport {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column private String content;
+  @Column private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "productId", nullable = false)
-    private Product product;
+  @ManyToOne
+  @JoinColumn(name = "productId", nullable = false)
+  private Product product;
 
-    @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
-    private User user;
+  @ManyToOne
+  @JoinColumn(name = "userId", nullable = false)
+  private User user;
 
-    @Column private String fileUrl;
+  @Column private String fileUrl;
 
-    @Column private LocalDateTime createdAt;
+  @Column private LocalDateTime createdAt;
 
-    @Builder
-    private BugReport(
-            Long id,
-            String content,
-            Product product,
-            User user,
-            String fileUrl,
-            LocalDateTime createdAt) {
-        this.id = id;
-        this.content = content;
-        this.product = product;
-        this.user = user;
-        this.fileUrl = fileUrl;
-        this.createdAt = createdAt;
-    }
+  @Builder
+  private BugReport(
+      Long id,
+      String content,
+      Product product,
+      User user,
+      String fileUrl,
+      LocalDateTime createdAt) {
+    this.id = id;
+    this.content = content;
+    this.product = product;
+    this.user = user;
+    this.fileUrl = fileUrl;
+    this.createdAt = createdAt;
+  }
 }

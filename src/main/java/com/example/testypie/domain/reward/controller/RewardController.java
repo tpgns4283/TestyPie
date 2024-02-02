@@ -21,34 +21,34 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RewardController {
 
-    private final RewardService rewardService;
-    private final UserInfoService userInfoService;
+  private final RewardService rewardService;
+  private final UserInfoService userInfoService;
 
-    @GetMapping("/reward")
-    public ResponseEntity<List<RewardReadResponseDTO>> getRewardList(
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+  @GetMapping("/reward")
+  public ResponseEntity<List<RewardReadResponseDTO>> getRewardList(
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        List<RewardReadResponseDTO> resList = rewardService.getRewardList(userDetails.getUser());
-        return ResponseEntity.ok(resList);
-    }
+    List<RewardReadResponseDTO> resList = rewardService.getRewardList(userDetails.getUser());
+    return ResponseEntity.ok(resList);
+  }
 
-    @GetMapping("/reward/{account}")
-    public ResponseEntity<List<RewardReadResponseDTO>> getReward(
-            @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable String account) {
+  @GetMapping("/reward/{account}")
+  public ResponseEntity<List<RewardReadResponseDTO>> getReward(
+      @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable String account) {
 
-        userInfoService.checkSameUser(account, userDetails.getUsername());
-        List<RewardReadResponseDTO> resList = rewardService.getReward(account);
-        return ResponseEntity.ok(resList);
-    }
+    userInfoService.checkSameUser(account, userDetails.getUsername());
+    List<RewardReadResponseDTO> resList = rewardService.getReward(account);
+    return ResponseEntity.ok(resList);
+  }
 
-    @DeleteMapping("/reward/{account}/{reward_id}")
-    public ResponseEntity<RewardDeleteResponseDTO> deleteReward(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long reward_id,
-            @PathVariable String account) {
-        userInfoService.checkSameUser(account, userDetails.getUsername());
-        User user = userDetails.getUser();
-        RewardDeleteResponseDTO res = rewardService.deleteReward(user, reward_id);
-        return ResponseEntity.ok().body(res);
-    }
+  @DeleteMapping("/reward/{account}/{reward_id}")
+  public ResponseEntity<RewardDeleteResponseDTO> deleteReward(
+      @AuthenticationPrincipal UserDetailsImpl userDetails,
+      @PathVariable Long reward_id,
+      @PathVariable String account) {
+    userInfoService.checkSameUser(account, userDetails.getUsername());
+    User user = userDetails.getUser();
+    RewardDeleteResponseDTO res = rewardService.deleteReward(user, reward_id);
+    return ResponseEntity.ok().body(res);
+  }
 }
