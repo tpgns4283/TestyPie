@@ -145,9 +145,10 @@
                         // 상품 목록 페이지로 이동
                         window.location.href = "/api/category/" + parentName + "/" + childId + "/products/" + response.id + "/surveys";
                     },
-                    error: function (error) {
+                    error: function (jqXHR) {
                         // 오류 시 처리
-                        console.error("상품 등록 오류:", error);
+                        const errorMessage = jqXHR.responseJSON.errorMessage;
+                        alert(errorMessage);
                     }
                 });
             }
