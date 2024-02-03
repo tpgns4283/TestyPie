@@ -9,6 +9,8 @@ import com.example.testypie.domain.comment.entity.Comment;
 import com.example.testypie.domain.comment.repository.CommentRepository;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.user.entity.User;
+import com.example.testypie.global.exception.ErrorCode;
+import com.example.testypie.global.exception.GlobalExceptionHandler;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +45,7 @@ public class CommentService {
       Comment saveComment = commentRepository.save(comment);
       return CommentResponseDTO.of(saveComment);
     } else {
-      throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_COMMENT_NOT_MATCH_ORIGIN);
     }
   }
 
@@ -66,7 +68,7 @@ public class CommentService {
       return new PageImpl<>(resList, pageable, commentPage.getTotalElements());
     }
 
-    throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
+    throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_COMMENT_NOT_MATCH_ORIGIN);
   }
 
   @Transactional
@@ -80,7 +82,7 @@ public class CommentService {
       comment.update(req, product);
       return CommentResponseDTO.of(comment);
     } else {
-      throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_COMMENT_NOT_MATCH_ORIGIN);
     }
   }
 
@@ -92,7 +94,7 @@ public class CommentService {
       checkUser(comment, user.getId());
       commentRepository.delete(comment);
     } else {
-      throw new IllegalArgumentException("카테고리와 상품카테고리가 일치하지 않습니다.");
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_COMMENT_NOT_MATCH_ORIGIN);
     }
   }
 
@@ -101,20 +103,21 @@ public class CommentService {
   public Comment getCommentEntity(Long comment_id) {
     return commentRepository
         .findById(comment_id)
-        .orElseThrow(() -> new IllegalArgumentException("comment id"));
+        .orElseThrow(
+            () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_COMMENT_NOT_EXIST));
   }
 
   // 게시글에 달린 댓글이 맞는지 확인
   public void checkProduct(Comment comment, Long product_id) {
     if (!comment.getProduct().getId().equals(product_id)) {
-      throw new IllegalArgumentException("comment's product_id");
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_COMMENT_NOT_MATCH_ORIGIN);
     }
   }
 
   // 수정 삭제 user 일치 확인
   public void checkUser(Comment comment, Long user_id) {
     if (!comment.getUser().getId().equals(user_id)) {
-      throw new IllegalArgumentException("comment's modifier");
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_COMMENT_INVALID_USER);
     }
   }
 }

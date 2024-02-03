@@ -10,7 +10,6 @@ import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.service.RefreshTokenService;
 import com.example.testypie.domain.user.service.UserService;
 import com.example.testypie.global.exception.ErrorCode;
-import com.example.testypie.global.exception.ErrorResponse;
 import com.example.testypie.global.exception.GlobalExceptionHandler;
 import com.example.testypie.global.jwt.JwtUtil;
 import com.example.testypie.global.security.UserDetailsImpl;
@@ -25,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -40,20 +38,9 @@ public class UserController {
 
   private final JwtUtil jwtUtil;
 
-  @ExceptionHandler(GlobalExceptionHandler.CustomException.class)
-  public ResponseEntity<ErrorResponse> handleCustomException(
-      GlobalExceptionHandler.CustomException e) {
-    return ResponseEntity.status(e.getErrorCode().getStatus())
-        .body(new ErrorResponse(e.getErrorCode().getStatus(), e.getErrorCode().getMessage()));
-  }
-
   // 회원가입
   @PostMapping("/api/users/signup")
-  public ResponseEntity<MessageDTO> signup(
-      @RequestBody @Valid SignUpRequestDTO req, BindingResult bindingResult) {
-    if (bindingResult.hasErrors()) {
-      throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_ACCOUNT);
-    }
+  public ResponseEntity<MessageDTO> signup(@RequestBody @Valid SignUpRequestDTO req) {
 
     userService.signup(req);
 
@@ -64,12 +51,7 @@ public class UserController {
   // 로그인
   @PostMapping("/api/users/login")
   public ResponseEntity<MessageDTO> login(
-      @RequestBody @Valid LoginRequestDTO req,
-      BindingResult bindingResult,
-      HttpServletResponse res) {
-    if (bindingResult.hasErrors()) {
-      throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND);
-    }
+      @RequestBody @Valid LoginRequestDTO req, HttpServletResponse res) {
 
     userService.login(req);
 
