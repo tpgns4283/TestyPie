@@ -7,6 +7,7 @@ import com.example.testypie.domain.product.dto.ProductPageResponseDTO;
 import com.example.testypie.domain.product.dto.ProductReadResponseDTO;
 import com.example.testypie.domain.product.dto.ProductUpdateRequestDTO;
 import com.example.testypie.domain.product.dto.ProductUpdateResponseDTO;
+import com.example.testypie.domain.product.dto.SearchProductResponseDTO;
 import com.example.testypie.domain.product.service.ProductService;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.global.security.UserDetailsImpl;
@@ -16,6 +17,7 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -96,6 +99,16 @@ public class ProductController {
     modelAndView.setViewName("productList");
     model.addAttribute("productList", res);
     return modelAndView;
+  }
+
+  @GetMapping("/search")
+  public ResponseEntity<Page<SearchProductResponseDTO>> searchProduct(
+      @PageableDefault(page = 1, sort = "productId", direction = Direction.DESC) Pageable pageable,
+      @RequestParam String keyword) {
+
+    Page<SearchProductResponseDTO> resList = productService.searchProductList(pageable, keyword);
+
+    return ResponseEntity.ok().body(resList);
   }
 
   // Product 수정
