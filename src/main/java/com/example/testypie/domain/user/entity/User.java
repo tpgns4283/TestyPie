@@ -71,7 +71,7 @@ public class User {
   }
 
   public void update(ProfileRequestDTO req, String fileUrl, String password) {
-    if (this.password != null && !this.password.isEmpty()) this.password = password;
+    if (password != null && !password.isEmpty()) this.password = password;
     if (req.nickname() != null && !req.nickname().isEmpty()) this.nickname = req.nickname();
     if (req.description() != null && !req.description().isEmpty())
       this.description = req.description();

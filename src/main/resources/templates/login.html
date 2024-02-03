@@ -65,8 +65,9 @@
           console.log("로그인 성공:", response);
           window.location.href = "/"; // 메인 페이지로 리디렉션
         },
-        error: function(xhr, status, error) {
-          console.log("로그인 실패:", error);
+        error: function(jqXHR) {
+          const errorMessage = jqXHR.responseJSON.errorMessage;
+          alert(errorMessage);
         }
       });
     });

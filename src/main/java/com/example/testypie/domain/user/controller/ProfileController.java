@@ -49,7 +49,7 @@ public class ProfileController {
       consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<?> updateProfile(
       @PathVariable String account,
-      @RequestPart(value = "req", required = false) ProfileRequestDTO req,
+      @Valid @RequestPart(value = "req", required = false) ProfileRequestDTO req,
       @RequestPart(value = "file", required = false) MultipartFile multipartFile,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 

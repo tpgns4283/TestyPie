@@ -160,7 +160,9 @@
                     loadCommentLikeStatus(comment.id);
                 });
             },
-            error: function(xhr, status, error) {
+            error: function (jqXHR) {
+                const errorMessage = jqXHR.responseJSON.errorMessage;
+                alert(errorMessage);
             }
         });
     }
@@ -194,7 +196,11 @@
                     loadComments(); // 댓글 입력 후 목록 다시 로드
                     commentInput.value = '';
                 },
-                error: function(xhr, status, error) {
+                error: function(jqXHR) {
+                    if(localStorage.getItem("jwtToken")){
+                        const errorMessage = jqXHR.responseJSON.errorMessage;
+                        alert(errorMessage);
+                    }
                     checkUserhasAccessToken();
                 }
             });

@@ -112,8 +112,9 @@
                         // 상품 목록 페이지로 이동
                         window.location.href = "/api/category/" + parentName + "/" + childId + "/products/" + productId;
                     },
-                    error: function (error) {
-                        alert("본인만 수정이 가능합니다.");
+                    error: function (jqXHR) {
+                        const errorMessage = jqXHR.responseJSON.errorMessage;
+                        alert(errorMessage);
                     }
                 });
             }

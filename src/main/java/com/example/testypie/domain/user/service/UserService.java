@@ -37,9 +37,11 @@ public class UserService {
     if (userRepository.findByAccount(account).isPresent()) {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_ACCOUNT);
     }
+
     if (userRepository.findByEmail(email).isPresent()) {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_EMAIL);
     }
+
     if (userRepository.findByNickname(nickname).isPresent()) {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_NICKNAME);
     }

@@ -158,8 +158,9 @@
                 alert('답변이 성공적으로 제출되었습니다!');
                 window.location.href = "/api/category/" + parentName + "/" + childId + "/products/" + productId;
             },
-            error: function(xhr, status, error) {
-                alert('답변 제출 중 오류가 발생했습니다.');
+            error: function(jqXHR) {
+                const errorMessage = jqXHR.responseJSON.errorMessage;
+                alert(errorMessage);
             }
         });
     });

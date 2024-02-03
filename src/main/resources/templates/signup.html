@@ -62,15 +62,12 @@
           alert("가입되었습니다.");
           window.location.href = "/"; // 성공 후 페이지 리디렉션
         },
-        error: function (error) {
-          // 요청이 실패하면 실행될 함수
-          console.error("회원 가입 오류:", error);
-          alert("가입에 실패했습니다.");
+        error: function (jqXHR) {
+          var errorMessage = jqXHR.responseJSON.errorMessage;
+          alert(errorMessage);
         }
       });
     });
   });
 </script>
-
-
 </html>
