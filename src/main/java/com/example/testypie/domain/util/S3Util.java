@@ -2,6 +2,8 @@ package com.example.testypie.domain.util;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.example.testypie.global.exception.ErrorCode;
+import com.example.testypie.global.exception.GlobalExceptionHandler;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -16,11 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import marvin.image.MarvinImage;
 import org.marvinproject.image.transform.scale.Scale;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @Service
@@ -76,10 +76,10 @@ public class S3Util {
         amazonS3Client.putObject(
             bucketName, filePath.getPath() + fileName, resizedImage.getInputStream(), metadata);
       } catch (IOException e) {
-        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다.");
+        throw new GlobalExceptionHandler.CustomException(ErrorCode.CREATE_IMAGE_FAIL);
       } catch (Exception e) {
         // 업로드 중에 예외 발생 시 전역 예외(GlobalException) 발생
-        throw new IllegalArgumentException("파일 업로드 실패");
+        throw new GlobalExceptionHandler.CustomException(ErrorCode.SERVER_ERROR);
       }
       // 업로드한 파일의 URL 반환
       return getFileUrl(fileName, filePath);
@@ -99,7 +99,7 @@ public class S3Util {
     // 파일명이 비어있거나 해당 파일이 존재하지 않으면 예외 발생
     if (fileName.isBlank()
         || !amazonS3Client.doesObjectExist(bucketName, filePath.getPath() + fileName)) {
-      throw new IllegalArgumentException("삭제할 파일이 없거나 파일명이 없습니다.");
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_IMAGE_NOT_FOUND);
     }
     // S3에서 파일 삭제
     amazonS3Client.deleteObject(bucketName, filePath.getPath() + fileName);
@@ -153,7 +153,7 @@ public class S3Util {
           fileName, fileFormat, originalImage.getContentType(), baos.toByteArray());
 
     } catch (IOException e) {
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일을 줄이는데 실패했습니다.");
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_IMAGE_NOT_RESIZABLE);
     }
   }
 }

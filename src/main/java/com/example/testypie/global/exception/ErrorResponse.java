@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ErrorResponse {
-  private int statusCode;
-  private String errorMessage;
+  private int statusCode; // 에러 상태 코드
+  private String errorMessage; // 에러 구분 코드
 
   /**
    * ErrorResponse 생성자 1
@@ -21,9 +21,13 @@ public class ErrorResponse {
     this.errorMessage = code.getMessage();
   }
 
-  @Builder
-  public ErrorResponse(final int statusCode, final String errorMessage) {
-    this.statusCode = statusCode;
-    this.errorMessage = errorMessage;
+  /**
+   * Global Exception 전송 타입 -2
+   *
+   * @param code ErrorCode
+   * @return ErrorResponse
+   */
+  public static ErrorResponse of(final ErrorCode code) {
+    return new ErrorResponse(code);
   }
 }

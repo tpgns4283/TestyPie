@@ -13,16 +13,19 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler({Exception.class})
   public ResponseEntity<?> handleException(Exception e) {
-    System.out.println(e.getClass().getName());
-    System.out.println(e.getLocalizedMessage());
+    log.error(e.getMessage(), e.getCause());
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body("Server error!");
   }
 
   @ExceptionHandler({CustomException.class})
   public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
+    log.error("*************************Custom Error 발생***********************************");
+    log.error(String.valueOf(e.errorCode));
+    log.error("****************************************************************************");
+
     HttpStatus status = HttpStatus.valueOf(e.getErrorCode().getStatus());
     ErrorResponse errorResponse = new ErrorResponse(e.getErrorCode());
-    return new ResponseEntity<>(errorResponse, status);
+    return ResponseEntity.status(status).body(errorResponse);
   }
 
   // ErrorCode를 보유한 예외 클래스 정의
