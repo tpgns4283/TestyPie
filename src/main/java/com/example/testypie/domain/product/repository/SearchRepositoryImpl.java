@@ -1,8 +1,7 @@
 package com.example.testypie.domain.product.repository;
 
-import com.example.testypie.domain.product.dto.SearchProductResponseDTO;
+import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.entity.QProduct;
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,32 +17,26 @@ public class SearchRepositoryImpl implements SearchRepository {
   private final JPQLQueryFactory queryFactory;
 
   @Override
-  public Page<SearchProductResponseDTO> searchAllByKeyword(Pageable pageable, String keyword) {
+  public Page<Product> searchAllByKeyword(
+      Pageable pageable, String parentCategory_name, Long childCategory_id, String keyword) {
 
     QProduct product = QProduct.product;
 
-    List<SearchProductResponseDTO> contents =
+    List<Product> contents =
         queryFactory
-            .select(
-                Projections.constructor(
-                    SearchProductResponseDTO.class,
-                    product.id,
-                    product.user.account,
-                    product.user.nickname,
-                    product.title,
-                    product.content,
-                    product.category.parent.name,
-                    product.category.id,
-                    product.productLikeCnt,
-                    product.createdAt,
-                    product.startedAt,
-                    product.closedAt))
-            .from(product)
+            .selectFrom(product)
             .where(
                 product
-                    .title
-                    .containsIgnoreCase(keyword)
-                    .or(product.user.nickname.containsIgnoreCase(keyword)))
+                    .category
+                    .parent
+                    .name
+                    .eq(parentCategory_name)
+                    .and(product.category.id.eq(childCategory_id))
+                    .and(
+                        product
+                            .title
+                            .containsIgnoreCase(keyword)
+                            .or(product.user.nickname.containsIgnoreCase(keyword))))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize() + 1)
             .orderBy(product.createdAt.desc())
@@ -54,9 +47,16 @@ public class SearchRepositoryImpl implements SearchRepository {
             .selectFrom(product)
             .where(
                 product
-                    .title
-                    .containsIgnoreCase(keyword)
-                    .or(product.user.nickname.containsIgnoreCase(keyword)))
+                    .category
+                    .parent
+                    .name
+                    .eq(parentCategory_name)
+                    .and(product.category.id.eq(childCategory_id))
+                    .and(
+                        product
+                            .title
+                            .containsIgnoreCase(keyword)
+                            .or(product.user.nickname.containsIgnoreCase(keyword))))
             .fetchCount();
 
     return new PageImpl<>(contents, pageable, contentCnt);
