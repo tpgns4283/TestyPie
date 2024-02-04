@@ -160,13 +160,27 @@ public class ProductService {
   }
 
   // SEARCH
-  public Page<SearchProductResponseDTO> searchProductList(Pageable pageable, String keyword) {
+  public Page<SearchProductResponseDTO> searchProductList(
+      Pageable pageable, String parentCategory_name, Long childCategory_id, String keyword)
+      throws ParseException {
 
     int page = pageable.getPageNumber() - 1;
     int pageLimit = 10;
 
-    return productRepository.searchAllByKeyword(
-        PageRequest.of(page, pageLimit, Sort.by(Direction.DESC, "id")), keyword);
+    List<SearchProductResponseDTO> resList = new ArrayList<>();
+
+    Page<Product> pagePage =
+        productRepository.searchAllByKeyword(
+            PageRequest.of(page, pageLimit, Sort.by(Direction.DESC, "id")),
+            parentCategory_name,
+            childCategory_id,
+            keyword);
+
+    for (Product product : pagePage) {
+      SearchProductResponseDTO res = SearchProductResponseDTO.of(product);
+      resList.add(res);
+    }
+    return new PageImpl<>(resList, pageable, pagePage.getTotalElements());
   }
 
   // DELETE
