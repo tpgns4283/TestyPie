@@ -137,4 +137,17 @@ public class ViewController {
     ProfileResponseDTO res = ProfileResponseDTO.of(user);
     return ResponseEntity.ok(res);
   }
+
+  @GetMapping(
+          "/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/bugreports")
+  public String addBugReports(
+          @PathVariable Long product_id,
+          @PathVariable Long childCategory_id,
+          @PathVariable String parentCategory_name,
+          Model model) {
+    model.addAttribute("parentName", parentCategory_name);
+    model.addAttribute("childId", childCategory_id);
+    model.addAttribute("productId", product_id);
+    return "bugreport"; // 이동할 뷰의 이름을 반환
+  }
 }

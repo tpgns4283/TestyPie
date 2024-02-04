@@ -109,7 +109,7 @@
                 th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/feedback(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
                 type="button" id="productFeedback">피드백 등록</button>
         <button class="btn btn-secondary"
-                th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/feedback(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
+                th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/bugreports(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
                 type="button" id="productBugReports">버그리포트 등록</button>
         <button id="product-like-button" type="button" onclick="likeProduct()">좋아요</button>
     </div>
