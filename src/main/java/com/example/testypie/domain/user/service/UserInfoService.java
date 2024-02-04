@@ -49,7 +49,7 @@ public class UserInfoService {
 
     getUserValid(profileUser, user);
 
-    if (req.password() != null) {
+    if (req.password() != null && !req.password().isBlank()) {
       String password = passwordEncoder.encode(req.password());
       profileUser.updatePassword(password);
     }
