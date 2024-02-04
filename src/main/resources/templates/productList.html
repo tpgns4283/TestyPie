@@ -20,7 +20,11 @@
 </head>
 <div th:replace="fragments/header :: headerFragment"></div>
 <body>	<!-- body 없어도 무방 -->
-    <div class="container">
+<div class="container" th:attr="data-parentname=${parentCategory_name}, data-childid=${childCategory_id}">
+        <div id="search-container">
+            <input type="text" id="search-input" placeholder="검색어 입력" />
+            <button id="search-button">검색</button>
+        </div>
         <div>
             <table class="table">
                 <thead>
@@ -65,4 +69,45 @@
 <th:block th:replace="fragments/modal.html"></th:block>
 <script src="/js/modal.js"></script>
 </body>
+<script>
+    $(document).ready(function() {
+        $('#search-button').click(function() {
+            var searchTerm = $('#search-input').val();
+            var parentName = $(".container").data("parentname");
+            var childId = $(".container").data("childid");
+            var url = "/api/category" + "/" + parentName + "/" + childId +"/search"
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: {
+                    keyword : searchTerm
+                },
+                success: function(data) {
+                    // 검색 결과 처리
+                    // 예: 검색 결과로 테이블 업데이트
+                    updateTable(data);
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
+        });
+    });
+    function updateTable(data) {
+        var tableBody = $('.table tbody');
+        tableBody.empty(); // 테이블 내용을 비웁니다.
+        console.log(data)
+        data.content.forEach(function(product) {
+            tableBody.append(
+                '<tr>' +
+                '<td>' + product.id + '</td>' +
+                '<td>' + product.title + '</td>' +
+                '<td>' + product.productLikeCnt + '</td>' +
+                '<td onclick="fetchUserProfile(\'' + product.account + '\')">' + product.nickname + '</td>' +
+                '<td>' + product.message + '</td>' +
+                '</tr>'
+            );
+        });
+    }
+</script>
 </html>
