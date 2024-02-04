@@ -96,13 +96,16 @@ public class ProductService {
   }
 
   public Page<ProductPageResponseDTO> getProductPage(Pageable pageable, String parentCategory_name)
-      throws ParseException {
+          throws ParseException {
     int page = pageable.getPageNumber() - 1;
     int pageLimit = 10;
 
+    Category parentCategory = categoryService.getParentCategory(parentCategory_name);
+    Long parentId = parentCategory.getId();
+
     Page<Product> productPage =
-        productRepository.findAll(
-            PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
+            productRepository.findByParentCategoryId(
+                    parentId, PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
 
     return getProductReadResponseDTOS(pageable, productPage);
   }
@@ -117,6 +120,18 @@ public class ProductService {
     Page<Product> productPage =
         productRepository.findAllByCategory_id(
             category.getId(), PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
+
+    return getProductReadResponseDTOS(pageable, productPage);
+  }
+
+  public Page<ProductPageResponseDTO> getProductPageOrderByLikeDesc(Pageable pageable)
+          throws ParseException {
+    int page = pageable.getPageNumber() - 1;
+    int pageLimit = 10;
+
+    Page<Product> productPage =
+            productRepository.findAllSortedByProductLikeCnt(
+                    PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
 
     return getProductReadResponseDTOS(pageable, productPage);
   }

@@ -56,10 +56,10 @@
 <body onload="loadComments(), loadProductLikeStatus()">
 <div th:replace="fragments/header :: headerFragment"></div>
 <!-- section Start -->
+
 <div class="container" th:attr="data-parentname=${parentCategory_name}, data-childid=${childCategory_id}, data-productid=${productId}">
     <h2 th:text="${product.title}"> </h2>
 </div>
-
 <div>
     <label for="productId">글 번호</label>
     <input type="text" id="productId" name="productId" class="form-control form-control-sm" value="1" th:value="${product.id}" disabled>
@@ -108,6 +108,9 @@
         <button class="btn btn-secondary"
                 th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/feedback(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
                 type="button" id="productFeedback">피드백 등록</button>
+        <button class="btn btn-secondary"
+                th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/feedback(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
+                type="button" id="productBugReports">버그리포트 등록</button>
         <button id="product-like-button" type="button" onclick="likeProduct()">좋아요</button>
     </div>
 </div>

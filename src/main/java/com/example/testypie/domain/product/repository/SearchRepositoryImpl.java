@@ -2,6 +2,8 @@ package com.example.testypie.domain.product.repository;
 
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.entity.QProduct;
+import com.querydsl.core.QueryResults;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.JPQLQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,46 +20,32 @@ public class SearchRepositoryImpl implements SearchRepository {
 
   @Override
   public Page<Product> searchAllByKeyword(
-      Pageable pageable, String parentCategory_name, Long childCategory_id, String keyword) {
+          Pageable pageable, String parentCategoryName, Long childCategoryId, String keyword) {
 
     QProduct product = QProduct.product;
 
-    List<Product> contents =
-        queryFactory
-            .selectFrom(product)
-            .where(
-                product
-                    .category
-                    .parent
-                    .name
-                    .eq(parentCategory_name)
-                    .and(product.category.id.eq(childCategory_id))
-                    .and(
-                        product
-                            .title
-                            .containsIgnoreCase(keyword)
-                            .or(product.user.nickname.containsIgnoreCase(keyword))))
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize() + 1)
-            .orderBy(product.createdAt.desc())
-            .fetch();
+    JPQLQuery<Product> query =
+            queryFactory
+                    .selectFrom(product)
+                    .where(
+                            product
+                                    .category
+                                    .parent
+                                    .name
+                                    .eq(parentCategoryName)
+                                    .and(product.category.id.eq(childCategoryId))
+                                    .and(
+                                            product
+                                                    .title
+                                                    .containsIgnoreCase(keyword)
+                                                    .or(product.user.nickname.containsIgnoreCase(keyword))))
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize() + 1)
+                    .orderBy(product.createdAt.desc());
 
-    long contentCnt =
-        queryFactory
-            .selectFrom(product)
-            .where(
-                product
-                    .category
-                    .parent
-                    .name
-                    .eq(parentCategory_name)
-                    .and(product.category.id.eq(childCategory_id))
-                    .and(
-                        product
-                            .title
-                            .containsIgnoreCase(keyword)
-                            .or(product.user.nickname.containsIgnoreCase(keyword))))
-            .fetchCount();
+    QueryResults<Product> results = query.fetchResults();
+    List<Product> contents = results.getResults();
+    long contentCnt = results.getTotal();
 
     return new PageImpl<>(contents, pageable, contentCnt);
   }

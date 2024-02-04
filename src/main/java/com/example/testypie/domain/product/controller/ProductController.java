@@ -75,25 +75,28 @@ public class ProductController {
   }
 
   // Product 전체 조회 및 카테고리 조회(페이징)
-  @GetMapping(
-      value = {
-        "/category/{parentCategory_name}",
-        "/category/{parentCategory_name}/{childCategory_id}"
-      })
-  public ModelAndView getProductPage(
+  @GetMapping("/category/{parentCategory_name}")
+  public ResponseEntity<Page<ProductPageResponseDTO>> getProductPage(
       // (page = 1) => 1페이지부터 시작
       @PageableDefault(page = 1) Pageable pageable,
-      @PathVariable(required = false) Long childCategory_id,
-      @PathVariable String parentCategory_name,
-      Model model)
+      @PathVariable String parentCategory_name)
       throws ParseException {
 
-    Page<ProductPageResponseDTO> res;
-    if (Objects.isNull(childCategory_id)) {
-      res = productService.getProductPage(pageable, parentCategory_name);
-    } else {
-      res = productService.getProductCategoryPage(pageable, childCategory_id, parentCategory_name);
-    }
+    Page<ProductPageResponseDTO> res = productService.getProductPage(pageable, parentCategory_name);
+
+    return ResponseEntity.ok().body(res);
+  }
+
+  @GetMapping("/category/{parentCategory_name}/{childCategory_id}")
+  public ModelAndView getProductCategoryPage(
+          // (page = 1) => 1페이지부터 시작
+          @PageableDefault(page = 1) Pageable pageable,
+          @PathVariable(required = false) Long childCategory_id,
+          @PathVariable String parentCategory_name,
+          Model model)
+          throws ParseException {
+
+    Page<ProductPageResponseDTO> res = productService.getProductCategoryPage(pageable, childCategory_id, parentCategory_name);
 
     ModelAndView modelAndView = new ModelAndView();
     modelAndView.setViewName("productList");
@@ -113,6 +116,18 @@ public class ProductController {
         productService.searchProductList(pageable, parentCategory_name, childCategory_id, keyword);
 
     return ResponseEntity.ok().body(resList);
+  }
+
+  // Product 좋아요 순 조회
+  @GetMapping("/products/like")
+  public ResponseEntity<Page<ProductPageResponseDTO>> getProductPageOrderByLikeDesc(
+          // (page = 1) => 1페이지부터 시작
+          @PageableDefault(page = 1) Pageable pageable)
+          throws ParseException {
+
+    Page<ProductPageResponseDTO> res = productService.getProductPageOrderByLikeDesc(pageable);
+
+    return ResponseEntity.ok().body(res);
   }
 
   // Product 수정
@@ -143,4 +158,6 @@ public class ProductController {
             productId, userDetails.getUser(), childCategory_id, parentCategory_name);
     return ResponseEntity.ok().body(res);
   }
+
+
 }
