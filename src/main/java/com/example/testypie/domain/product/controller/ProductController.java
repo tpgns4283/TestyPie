@@ -101,12 +101,16 @@ public class ProductController {
     return modelAndView;
   }
 
-  @GetMapping("/search")
+  @GetMapping("/category/{parentCategory_name}/{childCategory_id}/search")
   public ResponseEntity<Page<SearchProductResponseDTO>> searchProduct(
       @PageableDefault(page = 1, sort = "productId", direction = Direction.DESC) Pageable pageable,
-      @RequestParam String keyword) {
+      @PathVariable String parentCategory_name,
+      @PathVariable Long childCategory_id,
+      @RequestParam String keyword)
+      throws ParseException {
 
-    Page<SearchProductResponseDTO> resList = productService.searchProductList(pageable, keyword);
+    Page<SearchProductResponseDTO> resList =
+        productService.searchProductList(pageable, parentCategory_name, childCategory_id, keyword);
 
     return ResponseEntity.ok().body(resList);
   }
