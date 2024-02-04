@@ -98,10 +98,11 @@
         tableBody.empty(); // 테이블 내용을 비웁니다.
         console.log(data)
         data.content.forEach(function(product) {
+            var detailUrl = '/api/category/' + product.parentCategoryName + '/' + product.childCategoryId + '/products/' + product.id; // 상세 페이지 URL 생성
             tableBody.append(
                 '<tr>' +
-                '<td>' + product.id + '</td>' +
-                '<td>' + product.title + '</td>' +
+                '<td><a href="' + detailUrl + '">' + product.id + '</a></td>' +
+                '<td><a href="' + detailUrl + '">' + product.title + '</a></td>' +
                 '<td>' + product.productLikeCnt + '</td>' +
                 '<td onclick="fetchUserProfile(\'' + product.account + '\')">' + product.nickname + '</td>' +
                 '<td>' + product.message + '</td>' +
@@ -109,5 +110,6 @@
             );
         });
     }
+
 </script>
 </html>

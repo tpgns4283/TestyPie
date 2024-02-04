@@ -23,6 +23,10 @@ public class CategoryService {
     return CategoryCreateResponseDTO.of(saveCategory);
   }
 
+  public Category getParentCategory( String parentCategory_name) {
+      return categoryRepository.findByName(parentCategory_name);
+  }
+
   public Category getCategory(Long categoryId, String parentCategory_name) {
     Category childCategory =
         categoryRepository

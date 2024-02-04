@@ -30,7 +30,7 @@ public class BugReportController {
   private BugReportService bugReportService;
 
   @PostMapping(
-      value = "/reports/{reportId}",
+      value = "/reports",
       consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<BugReportResponseDTO> createBugReport(
       @PathVariable Long product_id,
@@ -50,7 +50,7 @@ public class BugReportController {
   }
 
   @GetMapping("/reports/{bugReport_id}") // 경로 중괄호가 잘못 닫혔습니다.
-  public ModelAndView getProduct(
+  public ModelAndView getProductBugReports(
       @PathVariable Long bugReport_id,
       @PathVariable Long product_id,
       @AuthenticationPrincipal @NotNull UserDetailsImpl userDetails) {

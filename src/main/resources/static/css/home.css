@@ -1,0 +1,54 @@
+.content-container {
+    text-align: center; /* 컨텐츠 중앙 정렬 */
+    margin: 20px; /* 여백 설정 */
+}
+
+.content-title {
+    margin-bottom: 20px; /* 제목 아래 여백 설정 */
+    color: #333; /* 제목 색상 설정 */
+    font-size: 24px; /* 제목 글꼴 크기 설정 */
+}
+
+.card-likecontainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+    margin-top: 40px; /* 제목과 카드 컨테이너 사이의 여백을 조정 */
+}
+
+.card-testcontainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+    margin-top: 40px; /* 제목과 카드 컨테이너 사이의 여백을 조정 */
+}
+
+.card-boardcontainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+    margin-top: 40px; /* 제목과 카드 컨테이너 사이의 여백을 조정 */
+}
+
+.card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    width: 300px; /* 카드의 너비 설정 */
+    border-radius: 5px; /* 카드 모서리 둥글게 설정 */
+    padding: 15px; /* 카드 내부 여백 설정 */
+    background-color: #fff; /* 카드 배경 색상 설정 */
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.card h2, .card p {
+    margin: 10px 0;
+}

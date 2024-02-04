@@ -10,6 +10,7 @@ import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.service.RefreshTokenService;
 import com.example.testypie.domain.user.service.UserService;
 import com.example.testypie.global.exception.ErrorCode;
+import com.example.testypie.global.exception.ErrorResponse;
 import com.example.testypie.global.exception.GlobalExceptionHandler;
 import com.example.testypie.global.jwt.JwtUtil;
 import com.example.testypie.global.security.UserDetailsImpl;
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -38,9 +40,14 @@ public class UserController {
 
   private final JwtUtil jwtUtil;
 
+
   // 회원가입
   @PostMapping("/api/users/signup")
-  public ResponseEntity<MessageDTO> signup(@RequestBody @Valid SignUpRequestDTO req) {
+  public ResponseEntity<MessageDTO> signup(
+      @RequestBody @Valid SignUpRequestDTO req, BindingResult bindingResult) {
+    if (bindingResult.hasErrors()) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_ACCOUNT);
+    }
 
     userService.signup(req);
 
@@ -51,7 +58,12 @@ public class UserController {
   // 로그인
   @PostMapping("/api/users/login")
   public ResponseEntity<MessageDTO> login(
-      @RequestBody @Valid LoginRequestDTO req, HttpServletResponse res) {
+      @RequestBody @Valid LoginRequestDTO req,
+      BindingResult bindingResult,
+      HttpServletResponse res) {
+    if (bindingResult.hasErrors()) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND);
+    }
 
     userService.login(req);
 
@@ -175,5 +187,11 @@ public class UserController {
     res.addCookie(cookie);
 
     return ResponseEntity.ok().body(new MessageDTO("토큰이 성공적으로 삭제됐습니다.", 200));
+  }
+
+  @GetMapping("/api/user/token")
+  public ResponseEntity<?> getUserAuth(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    userService.findUser(userDetails.getUser().getAccount());
+    return ResponseEntity.ok().body(new MessageDTO("존재하는 유저입니다.", 200));
   }
 }
