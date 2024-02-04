@@ -49,7 +49,10 @@ public class UserInfoService {
 
     getUserValid(profileUser, user);
 
-    String password = passwordEncoder.encode(req.password());
+    if (req.password() != null) {
+      String password = passwordEncoder.encode(req.password());
+      profileUser.updatePassword(password);
+    }
 
     String fileUrl = profileUser.getFileUrl(); // 사용자가 가진 기존 파일
 
@@ -62,7 +65,7 @@ public class UserInfoService {
       fileUrl = defaultProfileImageUrl;
     }
 
-    profileUser.update(req, fileUrl, password);
+    profileUser.update(req, fileUrl);
     return new ProfileResponseDTO(
         profileUser.getAccount(),
         profileUser.getNickname(),

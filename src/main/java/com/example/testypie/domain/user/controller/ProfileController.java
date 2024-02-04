@@ -53,6 +53,9 @@ public class ProfileController {
       @RequestPart(value = "file", required = false) MultipartFile multipartFile,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
+    System.out.println(req);
+    System.out.println(multipartFile);
+
     try { // log.info(multipartreq.getFiles("multipartFile").toString());
       User user = userDetails.getUser();
       ProfileResponseDTO res = userInfoService.updateProfile(account, req, multipartFile, user);

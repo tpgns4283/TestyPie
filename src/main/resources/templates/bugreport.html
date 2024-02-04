@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> <!-- jQuery 라이브러리 추가 -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f7f7f7;
+        }
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            max-width: 600px;
+            margin: auto;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        .form-group button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="form-container" th:attr="data-parentname=${parentName}, data-childid=${childId}, data-productid=${productId}">
+    <h2>버그를 제보받습니다.</h2>
+    <form id="bug-report-form">
+        <div class="form-group">
+            <label for="content">버그 내용을 입력해주세요:</label>
+            <textarea id="content" name="content" required placeholder="버그 내용을 입력해주세요"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="fileUrl">파일 첨부:</label>
+            <input type="file" name="image" accept="image/*" id="multipartFile"> <!-- fileUrl에서 multipartFile로 id 변경 -->
+        </div>
+        <div class="form-group">
+            <button type="submit">제출 하기</button>
+        </div>
+    </form>
+</div>
+<script>
+    document.getElementById('bug-report-form').onsubmit = function(event) {
+        event.preventDefault();
+
+        var parentName = $(".form-container").data("parentname");
+        var childId = $(".form-container").data("childid");
+        var productId = $(".form-container").data("productid");
+
+        let content = {
+            content: document.getElementById('content').value
+        };
+        var file = document.getElementById('multipartFile').files[0]; // 파일 객체 직접 가져오기
+
+        console.log(content)
+
+        var formData = new FormData();
+// JSON 데이터를 Blob으로 변환하여 추가
+        var jsonBlob = new Blob([JSON.stringify(content)], { type: "application/json" });
+        formData.append("req", jsonBlob);
+
+// 파일이 있을 경우에만 추가
+        if (file) {
+            formData.append("file", file);
+        }
+        console.log(jsonBlob)
+
+        var url = "/api/category/" + parentName + "/" + childId + "/products/" + productId + "/reports";
+
+        console.log(url)
+        // AJAX 호출을 통해 FormData 전송
+        $.ajax({
+            url: url,
+            type: 'POST',
+            processData: false, // FormData를 사용할 때 필요
+            contentType: false, // FormData를 사용할 때 필요
+            data: formData,
+            beforeSend: function (xhr) {
+                var token = localStorage.getItem("jwtToken");
+                if (token) {
+                    xhr.setRequestHeader("Authorization", token);
+                }
+            },
+            success: function(response) {
+                alert('버그리포트가 성공적으로 제출되었습니다.');
+                window.location.href = "/api/category/" + parentName + "/" + childId + "/products/" + productId;
+            },
+            error: function(xhr, status, error) {
+                alert('An error occurred while submitting the report.');
+            }
+        });
+    };
+</script>
+</body>
+</html>
