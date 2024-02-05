@@ -1,25 +1,27 @@
-package com.example.testypie.domain.product.dto;
+package com.example.testypie.domain.product.dto.response;
 
 import com.example.testypie.domain.product.entity.Product;
 import java.time.LocalDateTime;
 
-public record ProductUpdateResponseDTO(
+public record CreateProductResponseDTO(
     Long id,
     String title,
     String content,
     Long productLikeCnt,
     String category,
-    LocalDateTime modifiedAt,
+    LocalDateTime createAt,
     LocalDateTime startAt,
     LocalDateTime closedAt) {
-  public static ProductUpdateResponseDTO of(Product product) {
-    return new ProductUpdateResponseDTO(
+
+  public static CreateProductResponseDTO of(Product product) {
+
+    return new CreateProductResponseDTO(
         product.getId(),
         product.getTitle(),
         product.getContent(),
         product.getProductLikeCnt(),
         product.getCategory().getName(),
-        product.getModifiedAt(),
+        product.getCreatedAt(),
         product.getStartedAt(),
         product.getClosedAt());
   }

@@ -1,4 +1,4 @@
-package com.example.testypie.domain.product.dto;
+package com.example.testypie.domain.product.dto.response;
 
 import com.example.testypie.domain.product.entity.Product;
 import java.text.DateFormat;

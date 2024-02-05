@@ -4,19 +4,19 @@ import static com.example.testypie.domain.product.constant.ProductConstant.DEFAU
 
 import com.example.testypie.domain.category.entity.Category;
 import com.example.testypie.domain.category.service.CategoryService;
-import com.example.testypie.domain.product.dto.ProductCreateRequestDTO;
-import com.example.testypie.domain.product.dto.ProductCreateResponseDTO;
-import com.example.testypie.domain.product.dto.ProductDeleteResponseDTO;
-import com.example.testypie.domain.product.dto.ProductPageResponseDTO;
-import com.example.testypie.domain.product.dto.ProductReadResponseDTO;
-import com.example.testypie.domain.product.dto.ProductUpdateRequestDTO;
-import com.example.testypie.domain.product.dto.ProductUpdateResponseDTO;
-import com.example.testypie.domain.product.dto.SearchProductResponseDTO;
+import com.example.testypie.domain.product.dto.request.CreateProductRequestDTO;
+import com.example.testypie.domain.product.dto.request.UpdateProductRequestDTO;
+import com.example.testypie.domain.product.dto.response.CreateProductResponseDTO;
+import com.example.testypie.domain.product.dto.response.DeleteProductResponseDTO;
+import com.example.testypie.domain.product.dto.response.ProductPageResponseDTO;
+import com.example.testypie.domain.product.dto.response.ReadProductResponseDTO;
+import com.example.testypie.domain.product.dto.response.SearchProductResponseDTO;
+import com.example.testypie.domain.product.dto.response.UpdateProductResponseDTO;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.repository.ProductRepository;
-import com.example.testypie.domain.reward.dto.RewardCreateRequestDTO;
 import com.example.testypie.domain.reward.dto.RewardMapper;
-import com.example.testypie.domain.reward.dto.RewardReadResponseDTO;
+import com.example.testypie.domain.reward.dto.request.CreateRewardRequestDTO;
+import com.example.testypie.domain.reward.dto.response.ReadRewardResponseDTO;
 import com.example.testypie.domain.reward.entity.Reward;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.global.exception.ErrorCode;
@@ -47,13 +47,13 @@ public class ProductService {
 
   // CREATE
   @Transactional
-  public ProductCreateResponseDTO createProduct(
-      User user, ProductCreateRequestDTO req, String parentCategory_name, Long category_id) {
+  public CreateProductResponseDTO createProduct(
+      User user, CreateProductRequestDTO req, String parentCategory_name, Long category_id) {
 
     Category category = categoryService.getCategory(category_id, parentCategory_name);
     validProductCreateRequestDTO(req);
 
-    List<RewardCreateRequestDTO> rewardList = req.rewardList();
+    List<CreateRewardRequestDTO> rewardList = req.rewardList();
 
     LocalDate startDate = LocalDate.parse(req.startAt());
     LocalDate closedDate = LocalDate.parse(req.closedAt());
@@ -82,10 +82,10 @@ public class ProductService {
 
     product.setRewardList(RewardMapper.mapToEntityList(rewardList, product));
     Product saveProduct = productRepository.save(product);
-    return ProductCreateResponseDTO.of(saveProduct);
+    return CreateProductResponseDTO.of(saveProduct);
   }
 
-  private void validProductCreateRequestDTO(ProductCreateRequestDTO req) {
+  private void validProductCreateRequestDTO(CreateProductRequestDTO req) {
     if (req.title().isEmpty()) {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.TITLE_NULL_EXCEPTION);
     }
@@ -101,17 +101,17 @@ public class ProductService {
   }
 
   // READ
-  public ProductReadResponseDTO getProduct(
+  public ReadProductResponseDTO getProduct(
       Long productId, Long category_id, String parentCategory_name) throws ParseException {
 
     Category category = categoryService.getCategory(category_id, parentCategory_name);
     Product product = findProduct(productId);
 
     List<Reward> rewardList = product.getRewardList();
-    List<RewardReadResponseDTO> rewardDTOList = RewardMapper.mapToDTOList(rewardList);
+    List<ReadRewardResponseDTO> rewardDTOList = RewardMapper.mapToDTOList(rewardList);
 
     if (category.getId().equals(product.getCategory().getId())) {
-      return ProductReadResponseDTO.of(product, rewardDTOList);
+      return ReadProductResponseDTO.of(product, rewardDTOList);
     } else {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
     }
@@ -171,9 +171,9 @@ public class ProductService {
   }
 
   // UPDATE
-  public ProductUpdateResponseDTO updateProduct(
+  public UpdateProductResponseDTO updateProduct(
       Long productId,
-      ProductUpdateRequestDTO req,
+      UpdateProductRequestDTO req,
       User user,
       Long category_id,
       String parentCategory_name) {
@@ -209,7 +209,7 @@ public class ProductService {
 
     productRepository.save(product);
 
-    return ProductUpdateResponseDTO.of(product);
+    return UpdateProductResponseDTO.of(product);
   }
 
   // SEARCH
@@ -235,7 +235,7 @@ public class ProductService {
   }
 
   // DELETE
-  public ProductDeleteResponseDTO deleteProduct(
+  public DeleteProductResponseDTO deleteProduct(
       Long productId, User user, Long category_id, String parentCategory_name) {
 
     Category category = categoryService.getCategory(category_id, parentCategory_name);
@@ -245,7 +245,7 @@ public class ProductService {
     }
 
     productRepository.delete(product);
-    return ProductDeleteResponseDTO.of(product);
+    return DeleteProductResponseDTO.of(product);
   }
 
   // Product 존재여부 확인

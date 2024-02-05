@@ -1,37 +1,27 @@
-package com.example.testypie.domain.product.dto;
+package com.example.testypie.domain.product.dto.response;
 
 import com.example.testypie.domain.product.entity.Product;
-import com.example.testypie.domain.reward.dto.RewardReadResponseDTO;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.List;
 
-public record ProductReadResponseDTO(
+public record SearchProductResponseDTO(
     Long id,
     String account,
     String nickname,
     String title,
     String content,
-    String category,
+    Long childCategoryId,
+    String parentCategoryName,
     Long productLikeCnt,
-    String createAt,
-    String startAt,
-    String closedAt,
-    List<RewardReadResponseDTO> rewardList,
+    LocalDateTime createAt,
+    LocalDateTime startAt,
+    LocalDateTime closedAt,
     String message) {
 
-  public static ProductReadResponseDTO of(
-      Product product, List<RewardReadResponseDTO> rewardDTOList) throws ParseException {
-
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-    String createDate = product.getCreatedAt().format(formatter);
-    String startDate = product.getClosedAt().format(formatter);
-    String endDate = product.getClosedAt().format(formatter);
+  public static SearchProductResponseDTO of(Product product) throws ParseException {
 
     String end = product.getClosedAt().toString();
     String now = LocalDateTime.now().toString();
@@ -54,18 +44,18 @@ public record ProductReadResponseDTO(
       message = "마감 " + diffDays + "일 전";
     }
 
-    return new ProductReadResponseDTO(
+    return new SearchProductResponseDTO(
         product.getId(),
         product.getUser().getAccount(),
         product.getUser().getNickname(),
         product.getTitle(),
         product.getContent(),
-        product.getCategory().getName(),
+        product.getCategory().getId(),
+        product.getCategory().getParent().getName(),
         product.getProductLikeCnt(),
-        createDate,
-        startDate,
-        endDate,
-        rewardDTOList,
+        product.getCreatedAt(),
+        product.getStartedAt(),
+        product.getClosedAt(),
         message);
   }
 }
