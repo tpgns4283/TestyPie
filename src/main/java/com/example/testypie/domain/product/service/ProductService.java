@@ -4,14 +4,7 @@ import static com.example.testypie.domain.product.constant.ProductConstant.DEFAU
 
 import com.example.testypie.domain.category.entity.Category;
 import com.example.testypie.domain.category.service.CategoryService;
-import com.example.testypie.domain.product.dto.ProductCreateRequestDTO;
-import com.example.testypie.domain.product.dto.ProductCreateResponseDTO;
-import com.example.testypie.domain.product.dto.ProductDeleteResponseDTO;
-import com.example.testypie.domain.product.dto.ProductPageResponseDTO;
-import com.example.testypie.domain.product.dto.ProductReadResponseDTO;
-import com.example.testypie.domain.product.dto.ProductUpdateRequestDTO;
-import com.example.testypie.domain.product.dto.ProductUpdateResponseDTO;
-import com.example.testypie.domain.product.dto.SearchProductResponseDTO;
+import com.example.testypie.domain.product.dto.*;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.repository.ProductRepository;
 import com.example.testypie.domain.reward.dto.RewardCreateRequestDTO;
@@ -26,6 +19,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,7 +30,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -46,57 +40,74 @@ public class ProductService {
   private final CategoryService categoryService;
 
   // CREATE
-  @Transactional
   public ProductCreateResponseDTO createProduct(
       User user, ProductCreateRequestDTO req, String parentCategory_name, Long category_id) {
 
     Category category = categoryService.getCategory(category_id, parentCategory_name);
-    validProductCreateRequestDTO(req);
+    validProductCommonCreateRequestDTO(req.commonCreateRequestDTO());
 
-    List<RewardCreateRequestDTO> rewardList = req.rewardList();
+    LocalDateTime startAt = null;
+    LocalDateTime closedAt = null;
+    List<RewardCreateRequestDTO> rewardList = null;
 
-    LocalDate startDate = LocalDate.parse(req.startAt());
-    LocalDate closedDate = LocalDate.parse(req.closedAt());
+    if (Objects.equals(parentCategory_name, "테스트게시판")) {
+      validProductTestCreateRequestDTO(req.testCreateRequestDTO());
 
-    LocalDateTime startAt = startDate.atStartOfDay();
-    LocalDateTime closedAt = closedDate.atStartOfDay();
+      ProductTestCreateRequestDTO testCreateRequestDTO = req.testCreateRequestDTO().get();
+      rewardList = testCreateRequestDTO.rewardList();
 
-    if (closedAt.isBefore(LocalDateTime.now())) {
-      throw new GlobalExceptionHandler.CustomException(ErrorCode.ENDDATE_IS_BEFORE_THAN_NOW);
-    }
-    if (startAt.isAfter(closedAt)) {
-      throw new GlobalExceptionHandler.CustomException(ErrorCode.STARTDATE_IS_AFTER_THAN_ENDDATE);
+      LocalDate startDate = LocalDate.parse(testCreateRequestDTO.startAt());
+      LocalDate closedDate = LocalDate.parse(testCreateRequestDTO.closedAt());
+
+      startAt = startDate.atStartOfDay();
+      closedAt = closedDate.atStartOfDay();
+
+      if (closedAt.isBefore(LocalDateTime.now())) {
+        throw new GlobalExceptionHandler.CustomException(ErrorCode.ENDDATE_IS_BEFORE_THAN_NOW);
+      }
+      if (startAt.isAfter(closedAt)) {
+        throw new GlobalExceptionHandler.CustomException(ErrorCode.STARTDATE_IS_AFTER_THAN_ENDDATE);
+      }
     }
 
     Product product =
         Product.builder()
             .user(user)
-            .title(req.title())
-            .content(req.content())
+            .title(req.commonCreateRequestDTO().title())
+            .content(req.commonCreateRequestDTO().content())
             .category(category)
             .productLikeCnt(DEFAULT_PRODUCT_LIKE_CNT)
             .createAt(LocalDateTime.now())
-            .startedAt(startAt)
-            .closedAt(closedAt)
+            .startedAt(startAt) // 이 값은 Optional을 통해 설정될 수 있음
+            .closedAt(closedAt) // 이 값도 마찬가지
             .build();
 
-    product.setRewardList(RewardMapper.mapToEntityList(rewardList, product));
-    Product saveProduct = productRepository.save(product);
-    return ProductCreateResponseDTO.of(saveProduct);
+    if (rewardList != null && !rewardList.isEmpty()) {
+      product.setRewardList(RewardMapper.mapToEntityList(rewardList, product));
+    }
+
+    Product savedProduct = productRepository.save(product);
+    return ProductCreateResponseDTO.of(savedProduct);
   }
 
-  private void validProductCreateRequestDTO(ProductCreateRequestDTO req) {
+  private void validProductTestCreateRequestDTO(Optional<ProductTestCreateRequestDTO> req) {
+    req.ifPresent(
+        request -> {
+          if (request.startAt().isEmpty()) {
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.STARTDATE_NULL_EXCEPTION);
+          }
+          if (request.closedAt().isEmpty()) {
+            throw new GlobalExceptionHandler.CustomException(ErrorCode.CLOSEDATE_NULL_EXCEPTION);
+          }
+        });
+  }
+
+  private void validProductCommonCreateRequestDTO(ProductCommonCreateRequestDTO req) {
     if (req.title().isEmpty()) {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.TITLE_NULL_EXCEPTION);
     }
     if (req.content().isEmpty()) {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.CONTENT_NULL_EXCEPTION);
-    }
-    if (req.startAt().isEmpty()) {
-      throw new GlobalExceptionHandler.CustomException(ErrorCode.STARTDATE_NULL_EXCEPTION);
-    }
-    if (req.closedAt().isEmpty()) {
-      throw new GlobalExceptionHandler.CustomException(ErrorCode.CLOSEDATE_NULL_EXCEPTION);
     }
   }
 

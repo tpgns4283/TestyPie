@@ -23,25 +23,27 @@ public record ProductPageResponseDTO(
 
   public static ProductPageResponseDTO of(Product product) throws ParseException {
 
-    String end = product.getClosedAt().toString();
-    String now = LocalDateTime.now().toString();
-
-    DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-
-    Date nowFormat = format.parse(now);
-    Date endFormat = format.parse(end);
-
     long diffDays;
-    String message;
+    String message = null;
 
-    if (LocalDateTime.now().isBefore(product.getStartedAt())) {
-      message = "테스트 시작 전입니다.";
-    } else if (LocalDateTime.now().isAfter(product.getClosedAt())) {
-      message = "마감된 테스트 입니다.";
-    } else {
-      long diffSec = (endFormat.getTime() - nowFormat.getTime()) / 1000;
-      diffDays = (diffSec / (24 * 60 * 60));
-      message = "마감 " + diffDays + "일 전";
+    if(product.getClosedAt() != null && product.getStartedAt() != null) {
+      String end = product.getClosedAt().toString();
+      String now = LocalDateTime.now().toString();
+
+      DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+      Date nowFormat = format.parse(now);
+      Date endFormat = format.parse(end);
+
+      if (LocalDateTime.now().isBefore(product.getStartedAt())) {
+        message = "테스트 시작 전입니다.";
+      } else if (LocalDateTime.now().isAfter(product.getClosedAt())) {
+        message = "마감된 테스트 입니다.";
+      } else {
+        long diffSec = (endFormat.getTime() - nowFormat.getTime()) / 1000;
+        diffDays = (diffSec / (24 * 60 * 60));
+        message = "마감 " + diffDays + "일 전";
+      }
     }
 
     return new ProductPageResponseDTO(

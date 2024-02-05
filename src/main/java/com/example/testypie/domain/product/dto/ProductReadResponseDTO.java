@@ -28,30 +28,35 @@ public record ProductReadResponseDTO(
       Product product, List<RewardReadResponseDTO> rewardDTOList) throws ParseException {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
     String createDate = product.getCreatedAt().format(formatter);
-    String startDate = product.getClosedAt().format(formatter);
-    String endDate = product.getClosedAt().format(formatter);
+    String startDate = null;
+    String endDate = null;
+    String message = null;
 
-    String end = product.getClosedAt().toString();
-    String now = LocalDateTime.now().toString();
 
-    DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    if(product.getClosedAt() != null && product.getStartedAt() != null) {
+      startDate = product.getClosedAt().format(formatter);
+      endDate = product.getClosedAt().format(formatter);
 
-    Date nowFormat = format.parse(now);
-    Date endFormat = format.parse(end);
+      String end = product.getClosedAt().toString();
+      String now = LocalDateTime.now().toString();
 
-    long diffDays;
-    String message;
+      DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
-    if (LocalDateTime.now().isBefore(product.getStartedAt())) {
-      message = "테스트 시작 전입니다.";
-    } else if (LocalDateTime.now().isAfter(product.getClosedAt())) {
-      message = "마감된 테스트 입니다.";
-    } else {
-      long diffSec = (endFormat.getTime() - nowFormat.getTime()) / 1000;
-      diffDays = (diffSec / (24 * 60 * 60));
-      message = "마감 " + diffDays + "일 전";
+      Date nowFormat = format.parse(now);
+      Date endFormat = format.parse(end);
+
+      long diffDays;
+
+      if (LocalDateTime.now().isBefore(product.getStartedAt())) {
+        message = "테스트 시작 전입니다.";
+      } else if (LocalDateTime.now().isAfter(product.getClosedAt())) {
+        message = "마감된 테스트 입니다.";
+      } else {
+        long diffSec = (endFormat.getTime() - nowFormat.getTime()) / 1000;
+        diffDays = (diffSec / (24 * 60 * 60));
+        message = "마감 " + diffDays + "일 전";
+      }
     }
 
     return new ProductReadResponseDTO(
