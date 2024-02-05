@@ -26,7 +26,7 @@ public record ProductPageResponseDTO(
     long diffDays;
     String message = null;
 
-    if(product.getClosedAt() != null && product.getStartedAt() != null) {
+    if (product.getClosedAt() != null && product.getStartedAt() != null) {
       String end = product.getClosedAt().toString();
       String now = LocalDateTime.now().toString();
 

@@ -33,8 +33,7 @@ public record ReadProductResponseDTO(
     String endDate = null;
     String message = null;
 
-
-    if(product.getClosedAt() != null && product.getStartedAt() != null) {
+    if (product.getClosedAt() != null && product.getStartedAt() != null) {
       startDate = product.getClosedAt().format(formatter);
       endDate = product.getClosedAt().format(formatter);
 
