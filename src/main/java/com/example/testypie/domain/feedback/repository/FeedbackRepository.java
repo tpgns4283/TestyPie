@@ -25,4 +25,6 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
           + "WHERE p.id = :productId AND f.rating = :rating")
   List<Feedback> findFeedbacksByProductIdAndRating(
       @Param("productId") Long productId, @Param("rating") Double rating);
+
+    Optional<List<Feedback>> findAllFeedbacksByProductId(Long productId);
 }

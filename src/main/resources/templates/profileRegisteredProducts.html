@@ -22,7 +22,9 @@
         </thead>
         <tbody>
         <tr th:each="product : ${myProducts}" class="product-item">
-            <td th:text="${product.title}"></td>
+            <td>
+                <a th:href="@{'/api/users/' + ${account} + '/myProducts/' + ${product.id} + '/feedbacks'}" th:text="${product.title}"></a>
+            </td>
             <td th:text="${product.createdAt}"></td>
             <td th:text="${product.closedAt}"></td>
         </tr>
