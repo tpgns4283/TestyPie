@@ -1,7 +1,7 @@
 package com.example.testypie.domain.reward.controller;
 
-import com.example.testypie.domain.reward.dto.RewardDeleteResponseDTO;
-import com.example.testypie.domain.reward.dto.RewardReadResponseDTO;
+import com.example.testypie.domain.reward.dto.response.DeleteRewardResponseDTO;
+import com.example.testypie.domain.reward.dto.response.ReadRewardResponseDTO;
 import com.example.testypie.domain.reward.service.RewardService;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.service.UserInfoService;
@@ -25,30 +25,30 @@ public class RewardController {
   private final UserInfoService userInfoService;
 
   @GetMapping("/reward")
-  public ResponseEntity<List<RewardReadResponseDTO>> getRewardList(
+  public ResponseEntity<List<ReadRewardResponseDTO>> getRewardList(
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-    List<RewardReadResponseDTO> resList = rewardService.getRewardList(userDetails.getUser());
+    List<ReadRewardResponseDTO> resList = rewardService.getRewardList(userDetails.getUser());
     return ResponseEntity.ok(resList);
   }
 
   @GetMapping("/reward/{account}")
-  public ResponseEntity<List<RewardReadResponseDTO>> getReward(
+  public ResponseEntity<List<ReadRewardResponseDTO>> getReward(
       @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable String account) {
 
     userInfoService.checkSameUser(account, userDetails.getUsername());
-    List<RewardReadResponseDTO> resList = rewardService.getReward(account);
+    List<ReadRewardResponseDTO> resList = rewardService.getReward(account);
     return ResponseEntity.ok(resList);
   }
 
   @DeleteMapping("/reward/{account}/{reward_id}")
-  public ResponseEntity<RewardDeleteResponseDTO> deleteReward(
+  public ResponseEntity<DeleteRewardResponseDTO> deleteReward(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable Long reward_id,
       @PathVariable String account) {
     userInfoService.checkSameUser(account, userDetails.getUsername());
     User user = userDetails.getUser();
-    RewardDeleteResponseDTO res = rewardService.deleteReward(user, reward_id);
+    DeleteRewardResponseDTO res = rewardService.deleteReward(user, reward_id);
     return ResponseEntity.ok().body(res);
   }
 }

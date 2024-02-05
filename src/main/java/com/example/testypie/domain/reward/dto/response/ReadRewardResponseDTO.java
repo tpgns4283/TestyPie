@@ -1,12 +1,12 @@
-package com.example.testypie.domain.reward.dto;
+package com.example.testypie.domain.reward.dto.response;
 
 import com.example.testypie.domain.reward.entity.Reward;
 import com.example.testypie.domain.user.entity.User;
 
-public record RewardReadResponseDTO(
+public record ReadRewardResponseDTO(
     Long id, String rewardItem, Long itemSize, User user, Long productId) {
 
-  public RewardReadResponseDTO(Reward reward) {
+  public ReadRewardResponseDTO(Reward reward) {
     this(
         reward.getId(),
         reward.getRewardItem(),
