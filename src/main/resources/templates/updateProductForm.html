@@ -41,12 +41,12 @@
         <input type="text" id="content" name="content" class="form-control form-control-sm">
     </div>
     <div>
-        <label for="startAt">시작일</label>
+        <label id="startedLabel" for="startAt">시작일자</label>
         <input type="date" id="startAt" name="startAt" class="form-control form-control-sm" required placeholder="YYYY-MM-DD">
     </div>
     <div>
-        <label for="closedAt">마감일</label>
-        <input type="date" id="closedAt" name="closedAt" class="form-control form-control-sm" required placeholder="YYYY-MM-DD">
+        <label id="closedAtLabel" for="closedAt">마감일자</label>
+        <input type="date" id="closedAt" name="startAt" class="form-control form-control-sm" required placeholder="YYYY-MM-DD">
     </div>
 
     <hr class="my-4">
@@ -66,6 +66,16 @@
 
 <script>
     $(document).ready(function () {
+
+        var parentName = $(".container").data("parentname");
+
+        if (parentName === "게시판") {
+            $("#startedLabel").remove(); // 시작일자 레이블과 입력 필드를 제거
+            $("#startAt").remove();
+            $("#closedAtLabel").remove(); // 마감일자 레이블과 입력 필드를 제거
+            $("#closedAt").remove();
+        }
+
         $("#saveBtn").click(function () {
             var title = $("#title").val().trim();
             var content = $("#content").val().trim();

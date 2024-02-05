@@ -82,15 +82,15 @@
     <input type="text" id="created" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.createAt}" disabled>
 </div>
 <div>
-    <label for="started">시작일</label>
+    <label id="startedLabel" for="started">시작일</label>
     <input type="text" id="started" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.startAt}" disabled>
 </div>
 <div>
-    <label for="ended">마감일</label>
+    <label id="endedLabel" for="ended">마감일</label>
     <input type="text" id="ended" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.closedAt}" disabled>
 </div>
 <div>
-    <label for="remain-time">남은기간</label>
+    <label id="remain-timeLabel" for="remain-time">남은기간</label>
     <input type="text" id="remain-time" name="quantity" class="form-control form-control-sm" value="1" th:value="${product.message}" disabled>
 </div>
 
@@ -126,10 +126,10 @@
 </div>
 </body>
 <script>
-    //페이지 로딩 함수 실행 순서
     window.onload = function() {
         checkLoginStatusAndUpdateLink();
         loadProductLikeStatus();
+        setProductUI();
     }
 
     var productId = document.getElementById('productId').value;
@@ -140,6 +140,21 @@
     });
     function getUserFromToken() {
         return localStorage.getItem("account")
+    }
+
+    function setProductUI() {
+        const categoryName = parentName;
+
+        if (categoryName === '게시판') {
+            document.getElementById('started').style.display = 'none';
+            document.getElementById('ended').style.display = 'none';
+            document.getElementById('remain-time').style.display = 'none';
+            document.getElementById('startedLabel').style.display = 'none';
+            document.getElementById('endedLabel').style.display = 'none';
+            document.getElementById('remain-timeLabel').style.display = 'none';
+            document.getElementById('productFeedback').style.display = 'none';
+            document.getElementById('productBugReports').style.display = 'none';
+        }
     }
 
     function loadComments() {

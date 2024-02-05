@@ -40,11 +40,11 @@
             <input type="text" id="content" name="content" class="form-control form-control-sm" required placeholder="내용 입력">
         </div>
         <div>
-            <label for="startAt">시작일자</label>
+            <label id="startedLabel" for="startAt">시작일자</label>
             <input type="date" id="startAt" name="startAt" class="form-control form-control-sm" required placeholder="YYYY-MM-DD">
         </div>
         <div>
-            <label for="closedAt">마감일자</label>
+            <label id="closedAtLabel" for="closedAt">마감일자</label>
             <input type="date" id="closedAt" name="startAt" class="form-control form-control-sm" required placeholder="YYYY-MM-DD">
         </div>
 
@@ -66,6 +66,17 @@
 <script>
     $(document).ready(function () {
         let initialItemFormCount = 1;
+        var parentName = $(".container").data("parentname");
+
+        // 특정 카테고리 이름에 따라 조건을 설정합니다.
+        // 예를 들어, "특정카테고리"가 아닌 경우 시작일자, 마감일자, 보상 아이템 추가 버튼을 제거합니다.
+        if (parentName === "게시판") {
+            $("#startedLabel").remove(); // 시작일자 레이블과 입력 필드를 제거
+            $("#startAt").remove();
+            $("#closedAtLabel").remove(); // 마감일자 레이블과 입력 필드를 제거
+            $("#closedAt").remove();
+            $("#addItemBtn").remove(); // 보상 아이템 추가 버튼을 제거
+        }
 
         // 보상 아이템 입력 폼 추가 버튼 클릭 시
         $("#addItemBtn").click(function () {
@@ -99,28 +110,42 @@
         // 상품 등록 버튼 클릭 시
         $("#submitBtn").click(function () {
             if (confirm("상품을 추가하시겠습니까?")) {
-                // 입력 필드의 값을 읽어와 JSON 객체로 만듭니다.
-                var productData = {
+                // commonCreateRequestDTO 객체를 생성합니다.
+                var commonCreateRequestDTO = {
                     title: $("#title").val(),
-                    content: $("#content").val(),
-                    startAt: $("#startAt").val(),
-                    closedAt: $("#closedAt").val(),
-                    rewardList: [] // 보상 아이템 목록을 초기화합니다.
+                    content: $("#content").val()
                 };
 
-                // 보상 아이템 입력 폼의 값을 읽어와 JSON 객체에 추가합니다.
+                // rewardList 배열을 초기화합니다.
+                var rewardList = [];
+
+                // 보상 아이템 입력 폼의 값을 읽어와 rewardList 배열에 추가합니다.
                 $("#rewardItems .row").each(function () {
-                    var rewardItem = {
-                        rewardItem: $(this).find("input[name='rewardItem']").val(),
-                        itemSize: parseInt($(this).find("input[name='itemSize']").val())
+                    var reward = { // 변수 이름을 reward로 변경하고, 키를 수정합니다.
+                        rewardItem: $(this).find("input[name='rewardItem']").val(), // rewardItem에서 rewardName으로 변경
+                        itemSize: parseInt($(this).find("input[name='itemSize']").val(), 10) // itemSize에서 quantity로 변경
                     };
-                    productData.rewardList.push(rewardItem);
+                    rewardList.push(reward);
                 });
+
+                // testCreateRequestDTO 객체를 생성합니다. 필요시 startAt, closedAt 추가
+                var testCreateRequestDTO = {
+                    rewardList: rewardList, // 수정된 rewardList를 사용합니다.
+                    startAt: $("#startAt").val(),
+                    closedAt: $("#closedAt").val()
+                };
+
+                // 전체 상품 데이터 객체를 생성합니다.
+                var productData = {
+                    commonCreateRequestDTO: commonCreateRequestDTO,
+                    testCreateRequestDTO: testCreateRequestDTO // 이 필드는 선택적으로 처리될 수 있습니다.
+                };
+
+                console.log(productData); // 수정된 데이터 구조 확인
 
                 // 데이터 속성을 통해 값을 가져옵니다.
                 var parentName = $(".container").data("parentname");
                 var childId = $(".container").data("childid");
-                var productId = $(".container").data("productid");
 
                 // URL을 동적으로 생성합니다.
                 var url = "/api/category/" + parentName + "/" + childId + "/products";
@@ -142,10 +167,14 @@
                         // 성공 시 처리
                         console.log("상품 등록 성공:", response);
                         alert("상품이 생성되었습니다.");
-                        // 상품 목록 페이지로 이동
-                        window.location.href = "/api/category/" + parentName + "/" + childId + "/products/" + response.id + "/surveys";
+                        if(parentName === "테스트게시판") {
+                            window.location.href = "/api/category/" + parentName + "/" + childId + "/products/" + response.id + "/surveys";
+                        } else {
+                            window.location.href = "/api/category/" + parentName + "/" + childId;
+                        }
                     },
                     error: function (jqXHR) {
+                        // 오류 응답 처리
                         const errorMessage = jqXHR.responseJSON.errorMessage;
                         alert(errorMessage);
                     }
