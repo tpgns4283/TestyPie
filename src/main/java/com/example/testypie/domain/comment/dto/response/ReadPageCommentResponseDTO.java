@@ -18,7 +18,7 @@ public record ReadPageCommentResponseDTO(
         saveComment.getId(),
         saveComment.getContent(),
         saveComment.getCommentLikeCnt(),
-        saveComment.getCreateAt(),
+        saveComment.getCreatedAt(),
         saveComment.getModifiedAt(),
         saveComment.getUser().getNickname(),
         saveComment.getProduct().getId());

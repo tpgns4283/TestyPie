@@ -4,8 +4,8 @@ import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.survey.entity.Survey;
 import com.example.testypie.domain.user.dto.request.RatingStarRequestDTO;
 import com.example.testypie.domain.user.entity.User;
+import com.example.testypie.global.TimeStamp;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
@@ -15,12 +15,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor
-public class Feedback {
+public class Feedback extends TimeStamp {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
-  @Column private LocalDateTime createdAt;
 
   @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<FeedbackDetails> feedbackDetailsList = new ArrayList<>();
@@ -38,11 +36,9 @@ public class Feedback {
   @Column private Double rating;
 
   @Builder
-  private Feedback(
-      Long id, LocalDateTime createdAt, Double rating, User user, Product product, Survey survey) {
+  private Feedback(Long id, Double rating, User user, Product product, Survey survey) {
     this.id = id;
     this.feedbackDetailsList = new ArrayList<>();
-    this.createdAt = createdAt;
     this.user = user;
     this.product = product;
     this.rating = rating;

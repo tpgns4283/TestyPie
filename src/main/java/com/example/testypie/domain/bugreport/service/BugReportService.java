@@ -14,7 +14,6 @@ import com.example.testypie.domain.util.S3Util;
 import com.example.testypie.domain.util.S3Util.FilePath;
 import com.example.testypie.global.exception.ErrorCode;
 import com.example.testypie.global.exception.GlobalExceptionHandler;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +49,6 @@ public class BugReportService {
             .product(product)
             .user(user)
             .fileUrl(fileUrl)
-            .createdAt(LocalDateTime.now())
             .build();
 
     BugReport saveBugReport = bugReportRepository.save(bugReport);

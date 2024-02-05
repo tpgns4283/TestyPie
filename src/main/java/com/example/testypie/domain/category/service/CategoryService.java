@@ -28,6 +28,7 @@ public class CategoryService {
   }
 
   public Category getCategory(Long categoryId, String parentCategory_name) {
+
     Category childCategory =
         categoryRepository
             .findById(categoryId)

@@ -38,7 +38,7 @@ public class S3Util {
     PROFILE("profile/"),
     BOARD("board/"),
     COMMENT("comment/"),
-    BUGREPORT("reports/");
+    BUGREPORT("bugReportImg/");
     private final String path; // 경로를 저장하는 final 필드
   }
 
