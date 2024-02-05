@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
 
-  boolean existsByUserAndSurvey(User user, Survey survey);
+  Boolean existsByUserAndSurvey(User user, Survey survey);
 
   Optional<Feedback> findByProductIdAndId(Long productId, Long feedbackId);
 
