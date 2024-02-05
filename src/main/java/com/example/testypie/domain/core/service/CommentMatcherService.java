@@ -33,19 +33,19 @@ public class CommentMatcherService {
       Long childCategory_id,
       String parentCategory_name) {
 
-    Product product = productService.findProduct(product_id);
-    Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
+    CategoryAndProduct result =
+        CheckCategoryAndProduct(product_id, childCategory_id, parentCategory_name);
 
-    return commentService.createComment(category, product, user, req);
+    return commentService.createComment(result.category(), result.product(), user, req);
   }
 
   public Page<ReadPageCommentResponseDTO> getComments(
       Pageable pageable, Long product_id, Long childCategory_id, String parentCategory_name) {
 
-    Product product = productService.findProduct(product_id);
-    Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
+    CategoryAndProduct result =
+        CheckCategoryAndProduct(product_id, childCategory_id, parentCategory_name);
 
-    return commentService.getComments(pageable, category, product);
+    return commentService.getComments(pageable, result.category, result.product);
   }
 
   @Transactional
@@ -57,10 +57,10 @@ public class CommentMatcherService {
       Long childCategory_id,
       String parentCategory_name) {
 
-    Product product = productService.findProduct(product_id);
-    Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
+    CategoryAndProduct result =
+        CheckCategoryAndProduct(product_id, childCategory_id, parentCategory_name);
 
-    return commentService.updateComment(category, product, user, comment_id, req);
+    return commentService.updateComment(result.category, result.product, user, comment_id, req);
   }
 
   public void deleteComment(
@@ -70,8 +70,21 @@ public class CommentMatcherService {
       Long childCategory_id,
       String parentCategory_name) {
 
-    Product product = productService.findProduct(product_id);
-    Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
-    commentService.deleteComment(category, product, user, comment_id);
+    CategoryAndProduct result =
+        CheckCategoryAndProduct(product_id, childCategory_id, parentCategory_name);
+
+    commentService.deleteComment(result.category, result.product, user, comment_id);
   }
+
+  private CategoryAndProduct CheckCategoryAndProduct(
+      Long product_id, Long childCategory_id, String parentCategory_name) {
+
+    Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
+    Product product = productService.findProduct(product_id);
+    CategoryAndProduct result = new CategoryAndProduct(category, product);
+
+    return result;
+  }
+
+  private record CategoryAndProduct(Category category, Product product) {}
 }
