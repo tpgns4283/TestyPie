@@ -1,4 +1,4 @@
-package com.example.testypie.domain.commentLike.dto;
+package com.example.testypie.domain.commentLike.dto.response;
 
 public record CommentLikeResponseDto(Boolean isCommentLiked) {
 
