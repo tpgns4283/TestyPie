@@ -96,7 +96,7 @@ public class ProductService {
   }
 
   public Page<ProductPageResponseDTO> getProductPage(Pageable pageable, String parentCategory_name)
-          throws ParseException {
+      throws ParseException {
     int page = pageable.getPageNumber() - 1;
     int pageLimit = 10;
 
@@ -104,8 +104,8 @@ public class ProductService {
     Long parentId = parentCategory.getId();
 
     Page<Product> productPage =
-            productRepository.findByParentCategoryId(
-                    parentId, PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
+        productRepository.findByParentCategoryId(
+            parentId, PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
 
     return getProductReadResponseDTOS(pageable, productPage);
   }
@@ -125,13 +125,13 @@ public class ProductService {
   }
 
   public Page<ProductPageResponseDTO> getProductPageOrderByLikeDesc(Pageable pageable)
-          throws ParseException {
+      throws ParseException {
     int page = pageable.getPageNumber() - 1;
     int pageLimit = 10;
 
     Page<Product> productPage =
-            productRepository.findAllSortedByProductLikeCnt(
-                    PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
+        productRepository.findAllSortedByProductLikeCnt(
+            PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
 
     return getProductReadResponseDTOS(pageable, productPage);
   }
@@ -176,8 +176,7 @@ public class ProductService {
 
   // SEARCH
   public Page<SearchProductResponseDTO> searchProductList(
-      Pageable pageable, String parentCategory_name, Long childCategory_id, String keyword)
-      throws ParseException {
+      Pageable pageable, Long childCategory_id, String keyword) throws ParseException {
 
     int page = pageable.getPageNumber() - 1;
     int pageLimit = 10;
@@ -187,7 +186,6 @@ public class ProductService {
     Page<Product> pagePage =
         productRepository.searchAllByKeyword(
             PageRequest.of(page, pageLimit, Sort.by(Direction.DESC, "id")),
-            parentCategory_name,
             childCategory_id,
             keyword);
 
