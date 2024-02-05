@@ -2,7 +2,7 @@ package com.example.testypie.domain.feedback.entity;
 
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.survey.entity.Survey;
-import com.example.testypie.domain.user.dto.RatingStarRequestDTO;
+import com.example.testypie.domain.user.dto.request.RatingStarRequestDTO;
 import com.example.testypie.domain.user.entity.User;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
