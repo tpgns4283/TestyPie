@@ -2,8 +2,8 @@ package com.example.testypie.domain.survey.entity;
 
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.user.entity.User;
+import com.example.testypie.global.TimeStamp;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
@@ -13,14 +13,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor
-public class Survey {
+public class Survey extends TimeStamp {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Column private String title;
-
-  @Column private LocalDateTime createdAt;
 
   @JoinColumn(name = "survey_id")
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -35,18 +33,10 @@ public class Survey {
   private Product product;
 
   @Builder
-  private Survey(
-      Long id,
-      String title,
-      LocalDateTime createdAt,
-      List<Question> questionList,
-      User user,
-      Product product) {
+  private Survey(Long id, String title, List<Question> questionList, User user, Product product) {
     this.id = id;
     this.title = title;
-    this.createdAt = createdAt;
-    this.questionList = new ArrayList<>();
-    ;
+    this.questionList = questionList;
     this.user = user;
     this.product = product;
   }

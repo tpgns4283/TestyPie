@@ -17,7 +17,6 @@ import com.example.testypie.domain.survey.repository.SurveyRepository;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.global.exception.ErrorCode;
 import com.example.testypie.global.exception.GlobalExceptionHandler;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +49,6 @@ public class SurveyService {
         Survey.builder()
             .user(user)
             .title(req.title().trim()) // 공백 제거 후 설정
-            .createdAt(LocalDateTime.now())
             .product(product)
             .build();
 
