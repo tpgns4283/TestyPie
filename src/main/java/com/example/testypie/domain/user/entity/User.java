@@ -1,7 +1,7 @@
 package com.example.testypie.domain.user.entity;
 
 import com.example.testypie.domain.reward.entity.Reward;
-import com.example.testypie.domain.user.dto.ProfileRequestDTO;
+import com.example.testypie.domain.user.dto.request.UpdateProfileRequestDTO;
 import com.example.testypie.domain.userrole.constant.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -70,7 +70,7 @@ public class User {
     this.kakaoId = kakaoId;
   }
 
-  public void update(ProfileRequestDTO req, String fileUrl) {
+  public void update(UpdateProfileRequestDTO req, String fileUrl) {
     if (req.nickname() != null && !req.nickname().isEmpty()) this.nickname = req.nickname();
     if (req.description() != null && !req.description().isEmpty())
       this.description = req.description();

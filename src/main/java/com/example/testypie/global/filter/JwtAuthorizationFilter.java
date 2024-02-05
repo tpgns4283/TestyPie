@@ -1,6 +1,6 @@
 package com.example.testypie.global.filter;
 
-import com.example.testypie.domain.user.dto.MessageDTO;
+import com.example.testypie.domain.user.dto.response.ResponseMessageDTO;
 import com.example.testypie.global.jwt.JwtUtil;
 import com.example.testypie.global.security.UserDetailsImpl;
 import com.example.testypie.global.security.UserDetailsServiceImpl;
@@ -55,10 +55,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
       } else {
         // 인증정보가 존재하지 않을때
-        MessageDTO messageDTO = new MessageDTO("토큰이 유효하지 않습니다.", HttpStatus.BAD_REQUEST.value());
+        ResponseMessageDTO responseMessageDTO =
+            new ResponseMessageDTO("토큰이 유효하지 않습니다.", HttpStatus.BAD_REQUEST.value());
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         response.setContentType("application/json; charset=UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(messageDTO));
+        response.getWriter().write(objectMapper.writeValueAsString(responseMessageDTO));
         return;
       }
     }

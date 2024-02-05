@@ -1,3 +1,3 @@
-package com.example.testypie.domain.user.dto;
+package com.example.testypie.domain.user.dto.request;
 
 public record RatingStarRequestDTO(Double rating) {}

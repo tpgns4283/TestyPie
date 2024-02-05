@@ -1,7 +1,15 @@
 package com.example.testypie.domain.user.controller;
 
 import com.example.testypie.domain.feedback.entity.Feedback;
-import com.example.testypie.domain.user.dto.*;
+import com.example.testypie.domain.user.dto.request.RatingStarRequestDTO;
+import com.example.testypie.domain.user.dto.request.UpdateProfileRequestDTO;
+import com.example.testypie.domain.user.dto.response.AverageRatingResponseDTO;
+import com.example.testypie.domain.user.dto.response.LottoResponseDTO;
+import com.example.testypie.domain.user.dto.response.ParticipatedProductResponseDTO;
+import com.example.testypie.domain.user.dto.response.ReadProfileResponseDTO;
+import com.example.testypie.domain.user.dto.response.RegisteredProductResponseDTO;
+import com.example.testypie.domain.user.dto.response.ResponseMessageDTO;
+import com.example.testypie.domain.user.dto.response.UpdateProfileResponseDTO;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.service.UserInfoService;
 import com.example.testypie.global.exception.ErrorCode;
@@ -34,7 +42,7 @@ public class ProfileController {
   @GetMapping("/{account}")
   public ModelAndView getProfile(@PathVariable String account, Model model) {
     User user = userInfoService.findProfile(account);
-    ProfileResponseDTO res = ProfileResponseDTO.of(user);
+    ReadProfileResponseDTO res = ReadProfileResponseDTO.of(user);
 
     ModelAndView modelAndView = new ModelAndView();
     modelAndView.setViewName("profile");
@@ -49,16 +57,14 @@ public class ProfileController {
       consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<?> updateProfile(
       @PathVariable String account,
-      @Valid @RequestPart(value = "req", required = false) ProfileRequestDTO req,
+      @Valid @RequestPart(value = "req", required = false) UpdateProfileRequestDTO req,
       @RequestPart(value = "file", required = false) MultipartFile multipartFile,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-    System.out.println(req);
-    System.out.println(multipartFile);
-
     try { // log.info(multipartreq.getFiles("multipartFile").toString());
       User user = userDetails.getUser();
-      ProfileResponseDTO res = userInfoService.updateProfile(account, req, multipartFile, user);
+      UpdateProfileResponseDTO res =
+          userInfoService.updateProfile(account, req, multipartFile, user);
       //            ProfileResponseDTO res = userInfoService.updateProfile(account, req,
       // multipartFile);
       return ResponseEntity.ok(res);
@@ -136,7 +142,7 @@ public class ProfileController {
   // assignRating(RatingStar.THREE) -> rating = 3.0;
   // 4. 별점을 double rating column에 넣습니다.
   @PostMapping("/{account}/ratingStar/{productId}/{feedbackId}")
-  public ResponseEntity<MessageDTO> assignRatingStarToFeedback(
+  public ResponseEntity<ResponseMessageDTO> evaluateFeedback(
       @PathVariable String account,
       @PathVariable Long productId,
       @PathVariable Long feedbackId,
@@ -154,7 +160,7 @@ public class ProfileController {
 
     // 4.
     String message = String.format("별점이 %.1f점 매겨졌습니다.", req.rating());
-    return ResponseEntity.ok().body(new MessageDTO(message, HttpStatus.OK.value()));
+    return ResponseEntity.ok().body(new ResponseMessageDTO(message, HttpStatus.OK.value()));
   }
 
   // 2024-01-17

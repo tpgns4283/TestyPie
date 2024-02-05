@@ -1,4 +1,4 @@
-package com.example.testypie.domain.user.dto;
+package com.example.testypie.domain.user.dto.response;
 
 import java.util.List;
 
