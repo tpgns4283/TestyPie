@@ -1,4 +1,4 @@
-package com.example.testypie.domain.productLike.dto;
+package com.example.testypie.domain.productLike.dto.response;
 
 public record ProductLikeResponseDto(Boolean isProductLiked) {
 
