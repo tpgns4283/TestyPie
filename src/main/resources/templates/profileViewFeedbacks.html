@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Details</title>
+</head>
+<body>
+
+<h1>피드백 세부 정보</h1>
+
+<p>계정: <span th:text="${account}"></span></p>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>생성일</th>
+        <th>유저 ID</th>
+        <th>제품 ID</th>
+        <th>평가</th>
+        <th>세부 정보</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="feedback : ${feedbacks}">
+        <td th:text="${feedback.id}"></td>
+        <td th:text="${feedback.createdAt}"></td>
+        <td th:text="${feedback.userId}"></td>
+        <td th:text="${feedback.productId}"></td>
+        <td th:text="${feedback.rating}"></td>
+        <td>
+            <ul>
+                <li th:each="detail : ${feedback.feedbackDetailsList}">
+                    <span th:text="${detail.response}"></span>
+                </li>
+            </ul>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

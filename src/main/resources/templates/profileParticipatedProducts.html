@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Participated Products</title>
+</head>
+<body>
+
+<h1>내가 피드백을 작성한 테스트 게시글</h1>
+
+<div id="productList">
+    <table>
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Created At</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${participatedProducts}" class="product-item">
+            <td th:text="${product.title}"></td>
+            <td th:text="${product.createdAt}"></td>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    // $(document).ready(function () {
+    //     // 페이지 로드 시, 등록된 제품 목록을 불러오는 함수 호출
+    //     loadRegisteredProducts();
+    // });
+
+    // function loadRegisteredProducts() {
+    //     var account = /*[[${account}]]*/ "";
+    //
+    //     $.ajax({
+    //         type: "GET",
+    //         url: "/api/users/" + account + "/joinProducts",
+    //         success: function (data) {
+    //             var products = $.map(data, function(product) {
+    //                 return {
+    //                     title: product.title,
+    //                     createdAt: product.createdAt
+    //                 };
+    //             });
+    //
+    //             // Thymeleaf에서 사용할 수 있도록 products 변수를 설정
+    //             renderProductList(products);
+    //         },
+    //         error: function (error) {
+    //             console.error("Error fetching participated products:", error);
+    //         }
+    //     });
+    // }
+    //
+    // // Thymeleaf 템플릿을 동적으로 업데이트하는 함수
+    // function renderProductList(products) {
+    //     $("#productList").empty();  // 기존 내용 비우기
+    //
+    //     $.each(products, function (index, product) {
+    //         var productItem = $("<div>").addClass("product-item");
+    //
+    //         // 제품 정보 표시 예시 (커스터마이즈해주세요)
+    //         productItem.append("<p>Title: " + product.title + "</p>");
+    //         productItem.append("<p>Created At: " + product.createdAt + "</p>");
+    //         $("#productList").append(productItem);
+    //     });
+    // }
+</script>
+
+</body>
+</html>

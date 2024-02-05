@@ -110,7 +110,7 @@ public class UserInfoService {
   }
 
   // product 참여 이력 가져오기
-  public List<ParticipatedProductResponseDTO> getUserFeedbacks(String account) {
+  public List<ParticipatedProductResponseDTO> getUserParticipatedProducts(String account) {
     return userRepository.getUserFeedbacksDtoIncludingProductInfo(account);
   }
 
