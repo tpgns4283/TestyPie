@@ -51,15 +51,22 @@ public class ProductService {
       User user, ProductCreateRequestDTO req, String parentCategory_name, Long category_id) {
 
     Category category = categoryService.getCategory(category_id, parentCategory_name);
+    validProductCreateRequestDTO(req);
 
     List<RewardCreateRequestDTO> rewardList = req.rewardList();
 
     LocalDate startDate = LocalDate.parse(req.startAt());
     LocalDate closedDate = LocalDate.parse(req.closedAt());
 
-    // 자정 시간과 함께 LocalDateTime 객체 생성
     LocalDateTime startAt = startDate.atStartOfDay();
     LocalDateTime closedAt = closedDate.atStartOfDay();
+
+    if (closedAt.isBefore(LocalDateTime.now())) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.ENDDATE_IS_BEFORE_THAN_NOW);
+    }
+    if (startAt.isAfter(closedAt)) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.STARTDATE_IS_AFTER_THAN_ENDDATE);
+    }
 
     Product product =
         Product.builder()
@@ -76,6 +83,21 @@ public class ProductService {
     product.setRewardList(RewardMapper.mapToEntityList(rewardList, product));
     Product saveProduct = productRepository.save(product);
     return ProductCreateResponseDTO.of(saveProduct);
+  }
+
+  private void validProductCreateRequestDTO(ProductCreateRequestDTO req) {
+    if (req.title().isEmpty()) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.TITLE_NULL_EXCEPTION);
+    }
+    if (req.content().isEmpty()) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.CONTENT_NULL_EXCEPTION);
+    }
+    if (req.startAt().isEmpty()) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.STARTDATE_NULL_EXCEPTION);
+    }
+    if (req.closedAt().isEmpty()) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.CLOSEDATE_NULL_EXCEPTION);
+    }
   }
 
   // READ
@@ -162,12 +184,28 @@ public class ProductService {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
     }
 
+    if (req.startAt() != null && !req.closedAt().isBlank()) {
+      LocalDate startDate = LocalDate.parse(req.startAt());
+      LocalDate closedDate = LocalDate.parse(req.closedAt());
+
+      LocalDateTime startAt = startDate.atStartOfDay();
+      LocalDateTime closedAt = closedDate.atStartOfDay();
+
+      if (closedAt.isBefore(LocalDateTime.now())) {
+        throw new GlobalExceptionHandler.CustomException(ErrorCode.ENDDATE_IS_BEFORE_THAN_NOW);
+      }
+      if (startAt.isAfter(closedAt)) {
+        throw new GlobalExceptionHandler.CustomException(ErrorCode.STARTDATE_IS_AFTER_THAN_ENDDATE);
+      }
+
+      product.updateStartAt(startAt);
+      product.updateClosedAt(closedAt);
+    }
+
     product.updateTitle(req.title());
     product.updateContent(req.content());
     product.updateCategory(category);
     product.updateModifiedAt(LocalDateTime.now());
-    product.updateStartAt(req.startAt());
-    product.updateClosedAt(req.closedAt());
 
     productRepository.save(product);
 
@@ -224,7 +262,8 @@ public class ProductService {
     Product product = findProduct(productId);
     // RuntimeException으로 변경 예정
     if (!user.getId().equals(product.getUser().getId())) {
-      throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND);
+      throw new GlobalExceptionHandler.CustomException(
+          ErrorCode.PROFILE_USER_INVALID_AUTHORIZATION);
     }
     return product;
   }

@@ -49,23 +49,29 @@ public class SurveyService {
     Survey survey =
         Survey.builder()
             .user(user)
-            .title(req.title())
+            .title(req.title().trim()) // 공백 제거 후 설정
             .createdAt(LocalDateTime.now())
             .product(product)
             .build();
 
     List<Question> questions = new ArrayList<>();
     for (QuestionCreateRequestDTO questionDTO : req.questionList()) {
+
       Question question =
           Question.builder()
-              .text(questionDTO.text())
+              .text(questionDTO.text().trim()) // 공백 제거 후 설정
               .questionType(questionDTO.questionType())
               .survey(survey)
               .build();
 
       if (question.getQuestionType() == QuestionType.MULTI_CHOICE) {
         for (OptionCreateRequestDTO optionDTO : questionDTO.optionList()) {
-          Option option = Option.builder().text(optionDTO.text()).question(question).build();
+
+          Option option =
+              Option.builder()
+                  .text(optionDTO.text().trim())
+                  .question(question)
+                  .build(); // 공백 제거 후 설정
           question.getOptionList().add(option);
         }
       }

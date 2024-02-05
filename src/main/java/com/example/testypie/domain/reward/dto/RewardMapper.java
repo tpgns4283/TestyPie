@@ -2,6 +2,8 @@ package com.example.testypie.domain.reward.dto;
 
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.reward.entity.Reward;
+import com.example.testypie.global.exception.ErrorCode;
+import com.example.testypie.global.exception.GlobalExceptionHandler;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +14,10 @@ public class RewardMapper {
   }
 
   public static Reward mapToEntity(RewardCreateRequestDTO dto, Product product) {
+    if (dto.rewardItem().isEmpty() || dto.itemSize() < 1) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.PRODUCT_REWARD_IS_NOT_NULL);
+    }
+
     return Reward.builder()
         .reward_item(dto.rewardItem())
         .item_size(dto.itemSize())
