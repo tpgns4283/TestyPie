@@ -19,29 +19,26 @@ public class SearchRepositoryImpl implements SearchRepository {
   private final JPQLQueryFactory queryFactory;
 
   @Override
-  public Page<Product> searchAllByKeyword(
-          Pageable pageable, String parentCategoryName, Long childCategoryId, String keyword) {
+  public Page<Product> searchAllByKeyword(Pageable pageable, Long childCategoryId, String keyword) {
 
     QProduct product = QProduct.product;
 
     JPQLQuery<Product> query =
-            queryFactory
-                    .selectFrom(product)
-                    .where(
-                            product
-                                    .category
-                                    .parent
-                                    .name
-                                    .eq(parentCategoryName)
-                                    .and(product.category.id.eq(childCategoryId))
-                                    .and(
-                                            product
-                                                    .title
-                                                    .containsIgnoreCase(keyword)
-                                                    .or(product.user.nickname.containsIgnoreCase(keyword))))
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize() + 1)
-                    .orderBy(product.createdAt.desc());
+        queryFactory
+            .selectFrom(product)
+            .where(
+                product
+                    .category
+                    .id
+                    .eq(childCategoryId)
+                    .and(
+                        product
+                            .title
+                            .containsIgnoreCase(keyword)
+                            .or(product.user.nickname.containsIgnoreCase(keyword))))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize() + 1)
+            .orderBy(product.createdAt.desc());
 
     QueryResults<Product> results = query.fetchResults();
     List<Product> contents = results.getResults();
