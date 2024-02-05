@@ -5,7 +5,12 @@ import com.example.testypie.domain.feedback.service.FeedbackService;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.service.ProductService;
 import com.example.testypie.domain.reward.entity.Reward;
-import com.example.testypie.domain.user.dto.*;
+import com.example.testypie.domain.user.dto.request.RatingStarRequestDTO;
+import com.example.testypie.domain.user.dto.request.UpdateProfileRequestDTO;
+import com.example.testypie.domain.user.dto.response.ParticipatedProductResponseDTO;
+import com.example.testypie.domain.user.dto.response.ProfileResponseDTO;
+import com.example.testypie.domain.user.dto.response.RegisteredProductResponseDTO;
+import com.example.testypie.domain.user.dto.response.UpdateProfileResponseDTO;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.domain.util.S3Util;
@@ -38,8 +43,8 @@ public class UserInfoService {
   private String defaultProfileImageUrl;
 
   @Transactional
-  public ProfileResponseDTO updateProfile(
-      String account, ProfileRequestDTO req, MultipartFile multipartfile, User user) {
+  public UpdateProfileResponseDTO updateProfile(
+      String account, UpdateProfileRequestDTO req, MultipartFile multipartfile, User user) {
 
     User profileUser =
         userRepository
@@ -66,7 +71,7 @@ public class UserInfoService {
     }
 
     profileUser.update(req, fileUrl);
-    return new ProfileResponseDTO(
+    return new UpdateProfileResponseDTO(
         profileUser.getAccount(),
         profileUser.getNickname(),
         profileUser.getEmail(),
@@ -165,7 +170,7 @@ public class UserInfoService {
     Product product = productService.findProduct(productId);
 
     // rewardlist 찾기
-    List<Reward> rewardList = product != null ? product.getRewardList() : null;
+    List<Reward> rewardList = product.getRewardList();
 
     // 빈 목록이나 null일 경우 예외 처리
     if (rewardList == null || rewardList.isEmpty()) {
@@ -177,12 +182,18 @@ public class UserInfoService {
   }
 
   private List<User> getRandomUserList(Long productId, List<Reward> rewardList) {
-    // 전체 reward_size 합산
-    int totalRewardSize =
-        rewardList.stream().mapToInt(reward -> Math.toIntExact(reward.getItemSize())).sum();
 
     // user 리스트 가져오기
     List<User> userList = userRepository.findAllFeedbackUsersByProductId(productId);
+
+    // 전체 reward_size 합산
+
+    for (Reward reward : rewardList) {
+      Integer rewardCnt = Math.toIntExact(reward.getItemSize());
+    }
+
+    int totalRewardSize =
+        rewardList.stream().mapToInt(reward -> Math.toIntExact(reward.getItemSize())).sum();
 
     // 전체 reward_size 만큼의 랜덤 인덱스 선택
     List<Integer> randomIndexes = getRandomIndexes(totalRewardSize, userList.size());

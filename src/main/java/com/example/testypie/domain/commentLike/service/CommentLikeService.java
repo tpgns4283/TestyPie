@@ -4,7 +4,7 @@ import static com.example.testypie.domain.commentLike.constant.CommentLikeConsta
 
 import com.example.testypie.domain.comment.entity.Comment;
 import com.example.testypie.domain.comment.service.CommentService;
-import com.example.testypie.domain.commentLike.dto.CommentLikeResponseDto;
+import com.example.testypie.domain.commentLike.dto.response.CommentLikeResponseDto;
 import com.example.testypie.domain.commentLike.entity.CommentLike;
 import com.example.testypie.domain.commentLike.repository.CommentLikeRepository;
 import com.example.testypie.domain.user.entity.User;
@@ -23,10 +23,7 @@ public class CommentLikeService {
   public CommentLikeResponseDto clickCommentLike(Long commentId, User user) {
 
     Comment comment = commentService.getCommentEntity(commentId);
-    CommentLike commentLike =
-        commentLikeRepository
-            .findByCommentAndUser(comment, user)
-            .orElseGet(() -> saveCommentLike(comment, user));
+    CommentLike commentLike = getCommentLikeOrElseCreateCommentLike(user, comment);
 
     boolean clickCommentLike = commentLike.clickCommentLike();
     comment.updateCommentLikeCnt(clickCommentLike);
@@ -37,10 +34,7 @@ public class CommentLikeService {
   public CommentLikeResponseDto getCommentLike(Long commentId, User user) {
 
     Comment comment = commentService.getCommentEntity(commentId);
-    CommentLike commentLike =
-        commentLikeRepository
-            .findByCommentAndUser(comment, user)
-            .orElseGet(() -> saveCommentLike(comment, user));
+    CommentLike commentLike = getCommentLikeOrElseCreateCommentLike(user, comment);
 
     return CommentLikeResponseDto.of(commentLike.getIsCommentLiked());
   }
@@ -55,5 +49,12 @@ public class CommentLikeService {
             .build();
 
     return commentLikeRepository.save(commentLike);
+  }
+
+  private CommentLike getCommentLikeOrElseCreateCommentLike(User user, Comment comment) {
+
+    return commentLikeRepository
+        .findByCommentAndUser(comment, user)
+        .orElseGet(() -> saveCommentLike(comment, user));
   }
 }

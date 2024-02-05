@@ -2,8 +2,11 @@ package com.example.testypie.domain.core.service;
 
 import com.example.testypie.domain.category.entity.Category;
 import com.example.testypie.domain.category.service.CategoryService;
-import com.example.testypie.domain.comment.dto.CommentRequestDTO;
-import com.example.testypie.domain.comment.dto.CommentResponseDTO;
+import com.example.testypie.domain.comment.dto.request.CreateCommentRequestDTO;
+import com.example.testypie.domain.comment.dto.request.UpdateCommentRequestDTO;
+import com.example.testypie.domain.comment.dto.response.CreateCommentResponseDTO;
+import com.example.testypie.domain.comment.dto.response.ReadPageCommentResponseDTO;
+import com.example.testypie.domain.comment.dto.response.UpdateCommentResponseDTO;
 import com.example.testypie.domain.comment.service.CommentService;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.service.ProductService;
@@ -23,9 +26,9 @@ public class CommentMatcherService {
   private final ProductService productService;
   private final CategoryService categoryService;
 
-  public CommentResponseDTO productComment(
+  public CreateCommentResponseDTO productComment(
       Long product_id,
-      CommentRequestDTO req,
+      CreateCommentRequestDTO req,
       User user,
       Long childCategory_id,
       String parentCategory_name) {
@@ -36,7 +39,7 @@ public class CommentMatcherService {
     return commentService.createComment(category, product, user, req);
   }
 
-  public Page<CommentResponseDTO> getComments(
+  public Page<ReadPageCommentResponseDTO> getComments(
       Pageable pageable, Long product_id, Long childCategory_id, String parentCategory_name) {
 
     Product product = productService.findProduct(product_id);
@@ -46,10 +49,10 @@ public class CommentMatcherService {
   }
 
   @Transactional
-  public CommentResponseDTO updateComment(
+  public UpdateCommentResponseDTO updateComment(
       Long product_id,
       Long comment_id,
-      CommentRequestDTO req,
+      UpdateCommentRequestDTO req,
       User user,
       Long childCategory_id,
       String parentCategory_name) {

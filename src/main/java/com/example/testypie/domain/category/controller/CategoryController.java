@@ -1,8 +1,8 @@
 package com.example.testypie.domain.category.controller;
 
-import com.example.testypie.domain.category.dto.CategoryCreateRequestDTO;
-import com.example.testypie.domain.category.dto.CategoryCreateResponseDTO;
-import com.example.testypie.domain.category.dto.CategoryReadResponseDTO;
+import com.example.testypie.domain.category.dto.request.CreateCategoryRequestDTO;
+import com.example.testypie.domain.category.dto.response.CreateCategoryResponseDTO;
+import com.example.testypie.domain.category.dto.response.ReadCategoryResponseDTO;
 import com.example.testypie.domain.category.repository.CategoryRepository;
 import com.example.testypie.domain.category.service.CategoryService;
 import jakarta.validation.Valid;
@@ -27,16 +27,16 @@ public class CategoryController {
 
   // Category 생성(관리자 권한 추가 예정 / UserRole == Admin)
   @PostMapping
-  public ResponseEntity<CategoryCreateResponseDTO> createCategory(
-      @Valid @RequestBody CategoryCreateRequestDTO req) {
-    CategoryCreateResponseDTO res = categoryService.createCategory(req);
+  public ResponseEntity<CreateCategoryResponseDTO> createCategory(
+      @Valid @RequestBody CreateCategoryRequestDTO req) {
+    CreateCategoryResponseDTO res = categoryService.createCategory(req);
     return ResponseEntity.status(HttpStatus.CREATED).body(res);
   }
 
   @GetMapping
-  public List<CategoryReadResponseDTO> getCategories() {
+  public List<ReadCategoryResponseDTO> getCategories() {
     return categoryRepository.findAll().stream()
-        .map(CategoryReadResponseDTO::of)
+        .map(ReadCategoryResponseDTO::of)
         .collect(Collectors.toList());
   }
 }

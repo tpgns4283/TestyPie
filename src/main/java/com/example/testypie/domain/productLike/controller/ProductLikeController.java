@@ -1,6 +1,6 @@
 package com.example.testypie.domain.productLike.controller;
 
-import com.example.testypie.domain.productLike.dto.ProductLikeResponseDto;
+import com.example.testypie.domain.productLike.dto.response.ProductLikeResponseDto;
 import com.example.testypie.domain.productLike.service.ProductLikeService;
 import com.example.testypie.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;

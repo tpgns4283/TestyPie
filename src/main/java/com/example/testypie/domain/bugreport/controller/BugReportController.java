@@ -1,7 +1,9 @@
 package com.example.testypie.domain.bugreport.controller;
 
-import com.example.testypie.domain.bugreport.dto.BugReportRequestDTO;
-import com.example.testypie.domain.bugreport.dto.BugReportResponseDTO;
+import com.example.testypie.domain.bugreport.dto.request.CreateBugReportRequestDTO;
+import com.example.testypie.domain.bugreport.dto.response.CreateBugReportResponseDTO;
+import com.example.testypie.domain.bugreport.dto.response.ReadBugReportResponseDTO;
+import com.example.testypie.domain.bugreport.dto.response.ReadPageBugReportResponseDTO;
 import com.example.testypie.domain.bugreport.service.BugReportService;
 import com.example.testypie.global.security.UserDetailsImpl;
 import jakarta.validation.constraints.NotNull;
@@ -31,15 +33,15 @@ public class BugReportController {
   @PostMapping(
       value = "/reports",
       consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-  public ResponseEntity<BugReportResponseDTO> createBugReport(
+  public ResponseEntity<CreateBugReportResponseDTO> createBugReport(
       @PathVariable Long product_id,
-      @RequestPart(value = "req", required = false) BugReportRequestDTO req,
+      @RequestPart(value = "req", required = false) CreateBugReportRequestDTO req,
       @RequestPart(value = "file", required = false) @Nullable MultipartFile multipartFile,
       @AuthenticationPrincipal @NotNull UserDetailsImpl userDetails,
       @PathVariable Long childCategory_id,
       @PathVariable String parentCategory_name) {
 
-    BugReportResponseDTO res =
+    CreateBugReportResponseDTO res =
         bugReportService.createBugReport(product_id, req, userDetails.getUser(), multipartFile);
     return ResponseEntity.ok().body(res);
   }
@@ -52,7 +54,7 @@ public class BugReportController {
       @PathVariable Long childCategory_id,
       @PathVariable String parentCategory_name) {
 
-    BugReportResponseDTO res =
+    ReadBugReportResponseDTO res =
         bugReportService.getBugReport(bugReport_id, product_id, userDetails.getUser());
 
     ModelAndView modelAndView = new ModelAndView();
@@ -62,14 +64,14 @@ public class BugReportController {
   }
 
   @GetMapping("/reports")
-  public ResponseEntity<Page<BugReportResponseDTO>> getBugReports(
+  public ResponseEntity<Page<ReadPageBugReportResponseDTO>> getBugReports(
       @PathVariable Long product_id,
       @AuthenticationPrincipal @NotNull UserDetailsImpl userDetails,
       Pageable pageable,
       @PathVariable Long childCategory_id,
       @PathVariable String parentCategory_name) {
 
-    Page<BugReportResponseDTO> res =
+    Page<ReadPageBugReportResponseDTO> res =
         bugReportService.getBugReports(pageable, product_id, userDetails.getUser());
 
     return ResponseEntity.ok().body(res);
