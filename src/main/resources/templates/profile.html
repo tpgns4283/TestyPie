@@ -9,10 +9,20 @@
     <script src="/js/category.js"></script>
     <script src="/js/getNewToken.js"></script>
     <script>
-        checkUserhasAccessToken()
+        function checkUserhasAccessToken() {
+            var jwtToken = localStorage.getItem("jwtToken");
+            return !!jwtToken;
+        }
+
+        if (!checkUserhasAccessToken()) {
+            // 여기에서 로그인 페이지로 리디렉트하거나 경고를 표시할 수 있습니다.
+            alert("로그인 후 이용해주세요.");
+            window.location.href = '/login'; // 로그인 페이지로 리디렉트
+        }
+
     </script>
 </head>
-<body>
+<body th:attr="data-account=${account}">
 <!-- section Start -->
 <div th:replace="fragments/header :: headerFragment"></div>
     <div class="py-5 text-center">
@@ -40,6 +50,12 @@
 <hr class="my-4">
 
 <a th:href="@{/api/users/{account}/update(account=${account})}" class="btn btn-primary">프로필 수정하기</a>
+
+<a th:href="@{/api/users/{account}/myProdcuts(account=${account})}" class="btn btn-primary">내가 쓴 product 보기</a>
+
+<!--<form th:action="@{/users/{account}/myProducts(account=${account})}" method="get">-->
+<!--    <button type="submit">내가 쓴 product 보기</button>-->
+<!--</form>-->
 
 <!-- section END -->
 </body>

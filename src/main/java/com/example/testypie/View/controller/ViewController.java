@@ -2,7 +2,9 @@ package com.example.testypie.View.controller;
 
 import static com.example.testypie.global.jwt.JwtUtil.REFRESH_AUTHORIZATION_HEADER;
 
+import com.example.testypie.domain.user.dto.ParticipatedProductResponseDTO;
 import com.example.testypie.domain.user.dto.ProfileResponseDTO;
+import com.example.testypie.domain.user.dto.RegisteredProductResponseDTO;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.kakao.service.KakaoService;
 import com.example.testypie.domain.user.service.UserInfoService;
@@ -149,5 +151,15 @@ public class ViewController {
     model.addAttribute("childId", childCategory_id);
     model.addAttribute("productId", product_id);
     return "bugreport"; // 이동할 뷰의 이름을 반환
+  }
+
+  @GetMapping("/api/users/{account}/myProducts")
+  public String getMyProducts(
+          @PathVariable String account,
+          Model model) {
+    model.addAttribute("account", account);
+    List<RegisteredProductResponseDTO> res = userInfoService.getUserProducts(account);
+    model.addAttribute("myProducts", res);
+    return "profileRegisteredProducts";
   }
 }

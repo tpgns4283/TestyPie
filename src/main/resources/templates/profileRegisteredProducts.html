@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="/js/category.js"></script>
+    <script src="/js/getNewToken.js"></script>
+    <script>
+        function redirectToLoginPage() {
+            alert("로그인 후 이용해주세요.");
+            window.location.href = '/login'; // 로그인 페이지로 리디렉트
+        }
+
+        function checkUserHasAccessToken() {
+            var jwtToken = localStorage.getItem("jwtToken");
+            return !!jwtToken;
+        }
+
+        $(document).ready(function () {
+            if (!checkUserHasAccessToken()) {
+                redirectToLoginPage();
+            }
+
+            var account = $('body').attr('data-account'); // 사용자 ID 가져오기
+
+            // 등록된 제품을 가져오기 위한 Ajax 요청
+            $.ajax({
+                type: 'GET',
+                url: `/api/users/'${account}'/registeredProducts`,
+                headers: {
+                    "Authorization": localStorage.getItem("jwtToken")
+                },
+                success: function (data) {
+                    displayProducts(data);
+                },
+                error: function (jqXHR) {
+                    const errorMessage = jqXHR.responseJSON.errorMessage;
+                    alert(errorMessage);
+                }
+            });
+
+            function displayProducts(data) {
+                const tableHeader = '<tr><th>제목</th><th>작성일</th><th>마감일</th></tr>';
+                $('#myProducts').append(tableHeader);
+
+                data.forEach(function (product) {
+                    const formattedDate = new Date(product.createdAt).toLocaleDateString(); // 날짜 형식 변경
+                    const formattedEndDate = new Date(product.endedAt).toLocaleDateString(); // 종료 날짜 형식 변경
+
+                    const row = `<tr><td>${product.title}</td><td>${formattedDate}</td><td>${formattedEndDate}</td></tr>`;
+                    $('#myProducts').append(row);
+                });
+            }
+        });
+    </script>
+</head>
+<body th:attr="data-account=${account}">
+
+<!-- 내 등록 제품 테이블 -->
+<table border="1" id="myProducts"></table>
+
+</body>
+</html>
