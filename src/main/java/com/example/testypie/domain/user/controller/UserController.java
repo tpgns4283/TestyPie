@@ -2,9 +2,9 @@ package com.example.testypie.domain.user.controller;
 
 import static com.example.testypie.global.jwt.JwtUtil.*;
 
-import com.example.testypie.domain.user.dto.LoginRequestDTO;
-import com.example.testypie.domain.user.dto.MessageDTO;
-import com.example.testypie.domain.user.dto.SignUpRequestDTO;
+import com.example.testypie.domain.user.dto.request.LoginRequestDTO;
+import com.example.testypie.domain.user.dto.request.SignUpRequestDTO;
+import com.example.testypie.domain.user.dto.response.ResponseMessageDTO;
 import com.example.testypie.domain.user.entity.RefreshToken;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.service.RefreshTokenService;
@@ -41,7 +41,7 @@ public class UserController {
 
   // 회원가입
   @PostMapping("/api/users/signup")
-  public ResponseEntity<MessageDTO> signup(
+  public ResponseEntity<ResponseMessageDTO> signup(
       @RequestBody @Valid SignUpRequestDTO req, BindingResult bindingResult) {
     if (bindingResult.hasErrors()) {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SIGNUP_DUPLICATED_USER_ACCOUNT);
@@ -50,12 +50,12 @@ public class UserController {
     userService.signup(req);
 
     return ResponseEntity.status(HttpStatus.CREATED.value())
-        .body(new MessageDTO("회원가입 성공", HttpStatus.CREATED.value()));
+        .body(new ResponseMessageDTO("회원가입 성공", HttpStatus.CREATED.value()));
   }
 
   // 로그인
   @PostMapping("/api/users/login")
-  public ResponseEntity<MessageDTO> login(
+  public ResponseEntity<ResponseMessageDTO> login(
       @RequestBody @Valid LoginRequestDTO req,
       BindingResult bindingResult,
       HttpServletResponse res) {
@@ -84,7 +84,7 @@ public class UserController {
     // 쿠키 저장
     refreshTokenService.addRefreshToken(refreshToken);
 
-    return ResponseEntity.ok().body(new MessageDTO("로그인 성공", HttpStatus.OK.value()));
+    return ResponseEntity.ok().body(new ResponseMessageDTO("로그인 성공", HttpStatus.OK.value()));
   }
 
   /*localStorage에 있는 JWT토큰을 Header에 실어 서버에서 토큰을 통해 유저의 아이디값을 추출하고 HashMap을 통해
@@ -108,10 +108,11 @@ public class UserController {
   }
 
   @DeleteMapping("/api/users/signout")
-  public ResponseEntity<MessageDTO> signOut(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+  public ResponseEntity<ResponseMessageDTO> signOut(
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
     User user = userDetails.getUser();
     userService.signOut(user);
-    return ResponseEntity.ok(new MessageDTO("유저가 탈퇴했습니다.", 200));
+    return ResponseEntity.ok(new ResponseMessageDTO("유저가 탈퇴했습니다.", 200));
   }
 
   // 1. 토큰으로 refresh token을 찾는다.
@@ -142,7 +143,7 @@ public class UserController {
 
     res.setHeader(AUTHORIZATION_HEADER, jwtUtil.createAccessToken(user.getAccount()));
 
-    return ResponseEntity.ok().body(new MessageDTO("토큰이 성공적으로 생성됐습니다.", 200));
+    return ResponseEntity.ok().body(new ResponseMessageDTO("토큰이 성공적으로 생성됐습니다.", 200));
   }
 
   @DeleteMapping("/api/users/logout")
@@ -157,7 +158,7 @@ public class UserController {
       cookie.setHttpOnly(true);
       cookie.setMaxAge(0); // 쿠키를 즉시 만료시킵니다.
       res.addCookie(cookie);
-      return ResponseEntity.ok().body(new MessageDTO("로그아웃 되었습니다.", 200));
+      return ResponseEntity.ok().body(new ResponseMessageDTO("로그아웃 되었습니다.", 200));
     }
 
     RefreshToken refreshToken = refreshTokenService.findToken(token);
@@ -184,12 +185,12 @@ public class UserController {
     cookie.setMaxAge(0);
     res.addCookie(cookie);
 
-    return ResponseEntity.ok().body(new MessageDTO("토큰이 성공적으로 삭제됐습니다.", 200));
+    return ResponseEntity.ok().body(new ResponseMessageDTO("토큰이 성공적으로 삭제됐습니다.", 200));
   }
 
   @GetMapping("/api/user/token")
   public ResponseEntity<?> getUserAuth(@AuthenticationPrincipal UserDetailsImpl userDetails) {
     userService.findUser(userDetails.getUser().getAccount());
-    return ResponseEntity.ok().body(new MessageDTO("존재하는 유저입니다.", 200));
+    return ResponseEntity.ok().body(new ResponseMessageDTO("존재하는 유저입니다.", 200));
   }
 }

@@ -1,7 +1,7 @@
 package com.example.testypie.domain.user.service;
 
-import com.example.testypie.domain.user.dto.LoginRequestDTO;
-import com.example.testypie.domain.user.dto.SignUpRequestDTO;
+import com.example.testypie.domain.user.dto.request.LoginRequestDTO;
+import com.example.testypie.domain.user.dto.request.SignUpRequestDTO;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.repository.UserRepository;
 import com.example.testypie.global.exception.ErrorCode;

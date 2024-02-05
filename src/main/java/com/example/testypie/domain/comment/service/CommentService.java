@@ -3,8 +3,11 @@ package com.example.testypie.domain.comment.service;
 import static com.example.testypie.domain.comment.constant.CommentConstant.DEFAULT_COMMENT_LIKE_CNT;
 
 import com.example.testypie.domain.category.entity.Category;
-import com.example.testypie.domain.comment.dto.CommentRequestDTO;
-import com.example.testypie.domain.comment.dto.CommentResponseDTO;
+import com.example.testypie.domain.comment.dto.request.CreateCommentRequestDTO;
+import com.example.testypie.domain.comment.dto.request.UpdateCommentRequestDTO;
+import com.example.testypie.domain.comment.dto.response.CreateCommentResponseDTO;
+import com.example.testypie.domain.comment.dto.response.ReadPageCommentResponseDTO;
+import com.example.testypie.domain.comment.dto.response.UpdateCommentResponseDTO;
 import com.example.testypie.domain.comment.entity.Comment;
 import com.example.testypie.domain.comment.repository.CommentRepository;
 import com.example.testypie.domain.product.entity.Product;
@@ -30,8 +33,8 @@ public class CommentService {
 
   private final CommentRepository commentRepository;
 
-  public CommentResponseDTO createComment(
-      Category category, Product product, User user, CommentRequestDTO req) {
+  public CreateCommentResponseDTO createComment(
+      Category category, Product product, User user, CreateCommentRequestDTO req) {
 
     if (category.getId().equals(product.getCategory().getId())) {
       Comment comment =
@@ -43,13 +46,13 @@ public class CommentService {
               .product(product)
               .build();
       Comment saveComment = commentRepository.save(comment);
-      return CommentResponseDTO.of(saveComment);
+      return CreateCommentResponseDTO.of(saveComment);
     } else {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_COMMENT_NOT_MATCH_ORIGIN);
     }
   }
 
-  public Page<CommentResponseDTO> getComments(
+  public Page<ReadPageCommentResponseDTO> getComments(
       Pageable pageable, Category category, Product product) {
     int page = pageable.getPageNumber() - 1;
     int pageLimit = 10;
@@ -59,10 +62,10 @@ public class CommentService {
           commentRepository.findAllByProduct(
               product, PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
 
-      List<CommentResponseDTO> resList = new ArrayList<>();
+      List<ReadPageCommentResponseDTO> resList = new ArrayList<>();
 
       for (Comment comment : commentPage) {
-        CommentResponseDTO res = CommentResponseDTO.of(comment);
+        ReadPageCommentResponseDTO res = ReadPageCommentResponseDTO.of(comment);
         resList.add(res);
       }
       return new PageImpl<>(resList, pageable, commentPage.getTotalElements());
@@ -72,15 +75,15 @@ public class CommentService {
   }
 
   @Transactional
-  public CommentResponseDTO updateComment(
-      Category category, Product product, User user, Long comment_id, CommentRequestDTO req) {
+  public UpdateCommentResponseDTO updateComment(
+      Category category, Product product, User user, Long comment_id, UpdateCommentRequestDTO req) {
 
     if (category.getId().equals(product.getCategory().getId())) {
       Comment comment = getCommentEntity(comment_id);
       checkProduct(comment, product.getId());
       checkUser(comment, user.getId());
       comment.update(req, product);
-      return CommentResponseDTO.of(comment);
+      return UpdateCommentResponseDTO.of(comment);
     } else {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_COMMENT_NOT_MATCH_ORIGIN);
     }

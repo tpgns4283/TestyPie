@@ -4,7 +4,7 @@ import static com.example.testypie.domain.productLike.constant.ProductLikeConsta
 
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.service.ProductService;
-import com.example.testypie.domain.productLike.dto.ProductLikeResponseDto;
+import com.example.testypie.domain.productLike.dto.response.ProductLikeResponseDto;
 import com.example.testypie.domain.productLike.entity.ProductLike;
 import com.example.testypie.domain.productLike.repository.ProductLikeRepository;
 import com.example.testypie.domain.user.entity.User;
@@ -23,10 +23,7 @@ public class ProductLikeService {
   public ProductLikeResponseDto clickProductLike(Long productId, User user) {
 
     Product product = productService.findProduct(productId);
-    ProductLike productLike =
-        productLikeRepository
-            .findByProductAndUser(product, user)
-            .orElseGet(() -> saveProductLike(product, user));
+    ProductLike productLike = getProductLikeOrElseCreateProductLike(user, product);
 
     boolean clickProductLike = productLike.clickProductLike();
     product.updateProductLikeCnt(clickProductLike);
@@ -37,10 +34,7 @@ public class ProductLikeService {
   public ProductLikeResponseDto getProductLike(Long productId, User user) {
 
     Product product = productService.findProduct(productId);
-    ProductLike productLike =
-        productLikeRepository
-            .findByProductAndUser(product, user)
-            .orElseGet(() -> saveProductLike(product, user));
+    ProductLike productLike = getProductLikeOrElseCreateProductLike(user, product);
 
     return ProductLikeResponseDto.of(productLike.getIsProductLiked());
   }
@@ -55,5 +49,11 @@ public class ProductLikeService {
             .build();
 
     return productLikeRepository.save(productLike);
+  }
+
+  private ProductLike getProductLikeOrElseCreateProductLike(User user, Product product) {
+    return productLikeRepository
+        .findByProductAndUser(product, user)
+        .orElseGet(() -> saveProductLike(product, user));
   }
 }

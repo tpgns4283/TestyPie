@@ -1,13 +1,13 @@
 package com.example.testypie.domain.product.controller;
 
-import com.example.testypie.domain.product.dto.ProductCreateRequestDTO;
-import com.example.testypie.domain.product.dto.ProductCreateResponseDTO;
-import com.example.testypie.domain.product.dto.ProductDeleteResponseDTO;
-import com.example.testypie.domain.product.dto.ProductPageResponseDTO;
-import com.example.testypie.domain.product.dto.ProductReadResponseDTO;
-import com.example.testypie.domain.product.dto.ProductUpdateRequestDTO;
-import com.example.testypie.domain.product.dto.ProductUpdateResponseDTO;
-import com.example.testypie.domain.product.dto.SearchProductResponseDTO;
+import com.example.testypie.domain.product.dto.request.CreateProductRequestDTO;
+import com.example.testypie.domain.product.dto.request.UpdateProductRequestDTO;
+import com.example.testypie.domain.product.dto.response.CreateProductResponseDTO;
+import com.example.testypie.domain.product.dto.response.DeleteProductResponseDTO;
+import com.example.testypie.domain.product.dto.response.ProductPageResponseDTO;
+import com.example.testypie.domain.product.dto.response.ReadProductResponseDTO;
+import com.example.testypie.domain.product.dto.response.SearchProductResponseDTO;
+import com.example.testypie.domain.product.dto.response.UpdateProductResponseDTO;
 import com.example.testypie.domain.product.service.ProductService;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.global.security.UserDetailsImpl;
@@ -42,14 +42,14 @@ public class ProductController {
 
   // Product 생성
   @PostMapping("/category/{parentCategory_name}/{childCategory_id}/products")
-  public ResponseEntity<ProductCreateResponseDTO> createPost(
+  public ResponseEntity<CreateProductResponseDTO> createPost(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
-      @Valid @RequestBody ProductCreateRequestDTO req,
+      @Valid @RequestBody CreateProductRequestDTO req,
       @PathVariable Long childCategory_id,
       @PathVariable String parentCategory_name) {
 
     User user = userDetails.getUser();
-    ProductCreateResponseDTO res =
+    CreateProductResponseDTO res =
         productService.createProduct(user, req, parentCategory_name, childCategory_id);
     return ResponseEntity.status(HttpStatus.CREATED).body(res);
   }
@@ -63,7 +63,7 @@ public class ProductController {
       Model model)
       throws ParseException {
 
-    ProductReadResponseDTO res =
+    ReadProductResponseDTO res =
         productService.getProduct(productId, childCategory_id, parentCategory_name);
     ModelAndView modelAndView = new ModelAndView();
     modelAndView.setViewName("product");
@@ -130,14 +130,14 @@ public class ProductController {
 
   // Product 수정
   @PatchMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}/update")
-  public ResponseEntity<ProductUpdateResponseDTO> updateProduct(
+  public ResponseEntity<UpdateProductResponseDTO> updateProduct(
       @PathVariable Long productId,
-      @RequestBody ProductUpdateRequestDTO req,
+      @RequestBody UpdateProductRequestDTO req,
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable Long childCategory_id,
       @PathVariable String parentCategory_name) {
 
-    ProductUpdateResponseDTO res =
+    UpdateProductResponseDTO res =
         productService.updateProduct(
             productId, req, userDetails.getUser(), childCategory_id, parentCategory_name);
     return ResponseEntity.ok().body(res);
@@ -145,13 +145,13 @@ public class ProductController {
 
   // Product 삭제
   @DeleteMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}/delete")
-  public ResponseEntity<ProductDeleteResponseDTO> deleteProduct(
+  public ResponseEntity<DeleteProductResponseDTO> deleteProduct(
       @PathVariable Long productId,
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable Long childCategory_id,
       @PathVariable String parentCategory_name) {
 
-    ProductDeleteResponseDTO res =
+    DeleteProductResponseDTO res =
         productService.deleteProduct(
             productId, userDetails.getUser(), childCategory_id, parentCategory_name);
     return ResponseEntity.ok().body(res);

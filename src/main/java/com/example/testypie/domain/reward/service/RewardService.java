@@ -1,7 +1,7 @@
 package com.example.testypie.domain.reward.service;
 
-import com.example.testypie.domain.reward.dto.RewardDeleteResponseDTO;
-import com.example.testypie.domain.reward.dto.RewardReadResponseDTO;
+import com.example.testypie.domain.reward.dto.response.DeleteRewardResponseDTO;
+import com.example.testypie.domain.reward.dto.response.ReadRewardResponseDTO;
 import com.example.testypie.domain.reward.entity.Reward;
 import com.example.testypie.domain.reward.repository.RewardRepository;
 import com.example.testypie.domain.user.entity.User;
@@ -22,27 +22,27 @@ public class RewardService {
   private final UserInfoService userInfoService;
   private final UserRepository userRepository;
 
-  public List<RewardReadResponseDTO> getReward(String account) {
+  public List<ReadRewardResponseDTO> getReward(String account) {
     User profileUser =
         userRepository.findByAccount(account).orElseThrow(NoSuchElementException::new);
 
     return rewardRepository.findAllByUser(profileUser).stream()
-        .map(RewardReadResponseDTO::new)
+        .map(ReadRewardResponseDTO::new)
         .toList();
   }
 
-  public List<RewardReadResponseDTO> getRewardList(User user) {
+  public List<ReadRewardResponseDTO> getRewardList(User user) {
     userInfoService.findProfile(user.getAccount());
 
-    return rewardRepository.findAll().stream().map(RewardReadResponseDTO::new).toList();
+    return rewardRepository.findAll().stream().map(ReadRewardResponseDTO::new).toList();
   }
 
-  public RewardDeleteResponseDTO deleteReward(User user, Long reward_Id) {
+  public DeleteRewardResponseDTO deleteReward(User user, Long reward_Id) {
 
     Reward reward = getUserReward(user, reward_Id);
     rewardRepository.delete(reward);
 
-    return RewardDeleteResponseDTO.of(reward);
+    return DeleteRewardResponseDTO.of(reward);
   }
 
   private Reward getUserReward(User user, Long rewardId) {

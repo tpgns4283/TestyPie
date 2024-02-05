@@ -2,9 +2,9 @@ package com.example.testypie.domain.feedback.service;
 
 import com.example.testypie.domain.category.entity.Category;
 import com.example.testypie.domain.category.service.CategoryService;
-import com.example.testypie.domain.feedback.dto.FeedbackCreateRequestDTO;
-import com.example.testypie.domain.feedback.dto.FeedbackCreateResponseDTO;
-import com.example.testypie.domain.feedback.dto.FeedbackDetailsCreateRequestDTO;
+import com.example.testypie.domain.feedback.dto.request.CreateFeedbackDetailsRequestDTO;
+import com.example.testypie.domain.feedback.dto.request.CreateFeedbackRequestDTO;
+import com.example.testypie.domain.feedback.dto.response.CreateFeedbackResponseDTO;
 import com.example.testypie.domain.feedback.entity.Feedback;
 import com.example.testypie.domain.feedback.entity.FeedbackDetails;
 import com.example.testypie.domain.feedback.repository.FeedbackRepository;
@@ -12,7 +12,7 @@ import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.service.ProductService;
 import com.example.testypie.domain.survey.entity.Survey;
 import com.example.testypie.domain.survey.service.SurveyService;
-import com.example.testypie.domain.user.dto.RatingStarRequestDTO;
+import com.example.testypie.domain.user.dto.request.RatingStarRequestDTO;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.global.exception.ErrorCode;
 import com.example.testypie.global.exception.GlobalExceptionHandler;
@@ -32,8 +32,8 @@ public class FeedbackService {
   private final CategoryService categoryService;
   private final SurveyService surveyService;
 
-  public FeedbackCreateResponseDTO addFeedback(
-      FeedbackCreateRequestDTO req,
+  public CreateFeedbackResponseDTO addFeedback(
+      CreateFeedbackRequestDTO req,
       Long productId,
       User user,
       Long childCategoryId,
@@ -68,7 +68,7 @@ public class FeedbackService {
             .build();
 
     List<FeedbackDetails> detailslist = new ArrayList<>();
-    for (FeedbackDetailsCreateRequestDTO feedbackDetailsDTO : req.feedbackDetailsList()) {
+    for (CreateFeedbackDetailsRequestDTO feedbackDetailsDTO : req.feedbackDetailsList()) {
       FeedbackDetails feedbackDetails =
           FeedbackDetails.builder()
               .feedback(feedback)
@@ -80,7 +80,7 @@ public class FeedbackService {
 
     feedback.setFeedbackDetailsList(detailslist);
     Feedback savedFeedback = feedbackRepository.save(feedback);
-    return new FeedbackCreateResponseDTO(savedFeedback);
+    return new CreateFeedbackResponseDTO(savedFeedback);
   }
 
   // =======================================================================//

@@ -1,7 +1,9 @@
 package com.example.testypie.domain.bugreport.service;
 
-import com.example.testypie.domain.bugreport.dto.BugReportRequestDTO;
-import com.example.testypie.domain.bugreport.dto.BugReportResponseDTO;
+import com.example.testypie.domain.bugreport.dto.request.CreateBugReportRequestDTO;
+import com.example.testypie.domain.bugreport.dto.response.CreateBugReportResponseDTO;
+import com.example.testypie.domain.bugreport.dto.response.ReadBugReportResponseDTO;
+import com.example.testypie.domain.bugreport.dto.response.ReadPageBugReportResponseDTO;
 import com.example.testypie.domain.bugreport.entity.BugReport;
 import com.example.testypie.domain.bugreport.repository.BugReportRepository;
 import com.example.testypie.domain.product.entity.Product;
@@ -36,8 +38,8 @@ public class BugReportService {
   private final UserInfoService userInfoService;
   private final S3Util s3Util;
 
-  public BugReportResponseDTO createBugReport(
-      Long productId, BugReportRequestDTO req, User user, MultipartFile multipartFile) {
+  public CreateBugReportResponseDTO createBugReport(
+      Long productId, CreateBugReportRequestDTO req, User user, MultipartFile multipartFile) {
     Product product = productService.findProduct(productId);
 
     String fileUrl = s3Util.uploadFile(multipartFile, FilePath.BUGREPORT);
@@ -53,10 +55,10 @@ public class BugReportService {
 
     BugReport saveBugReport = bugReportRepository.save(bugReport);
 
-    return BugReportResponseDTO.of(saveBugReport);
+    return CreateBugReportResponseDTO.of(saveBugReport);
   }
 
-  public BugReportResponseDTO getBugReport(Long bugReportId, Long productId, User user) {
+  public ReadBugReportResponseDTO getBugReport(Long bugReportId, Long productId, User user) {
     Product product = productService.findProduct(productId);
 
     // 해당 제품의 소유자가 아닌 경우
@@ -66,7 +68,7 @@ public class BugReportService {
     }
 
     // 해당 제품에 대한 BugReport 조회 및 응답 DTO 생성
-    return BugReportResponseDTO.of(
+    return ReadBugReportResponseDTO.of(
         bugReportRepository
             .findByProductIdAndId(productId, bugReportId)
             .orElseThrow(
@@ -75,7 +77,8 @@ public class BugReportService {
                         ErrorCode.SELECT_BUGREPORT_NOT_FOUND)));
   }
 
-  public Page<BugReportResponseDTO> getBugReports(Pageable pageable, Long productId, User user) {
+  public Page<ReadPageBugReportResponseDTO> getBugReports(
+      Pageable pageable, Long productId, User user) {
     int page = pageable.getPageNumber() - 1;
     int pageLimit = 10;
     Product product = productService.findProduct(productId);
@@ -85,10 +88,10 @@ public class BugReportService {
           bugReportRepository.findAllByProductId(
               productId, PageRequest.of(page, pageLimit, Sort.by(Direction.DESC, "id")));
 
-      List<BugReportResponseDTO> resList = new ArrayList<>();
+      List<ReadPageBugReportResponseDTO> resList = new ArrayList<>();
 
       for (BugReport bugReport : bugReportPage) {
-        BugReportResponseDTO res = BugReportResponseDTO.of(bugReport);
+        ReadPageBugReportResponseDTO res = ReadPageBugReportResponseDTO.of(bugReport);
         resList.add(res);
       }
       return new PageImpl<>(resList, pageable, bugReportPage.getTotalElements());

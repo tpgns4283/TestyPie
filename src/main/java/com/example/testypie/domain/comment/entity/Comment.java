@@ -1,10 +1,19 @@
 package com.example.testypie.domain.comment.entity;
 
-import com.example.testypie.domain.comment.dto.CommentRequestDTO;
+import com.example.testypie.domain.comment.dto.request.UpdateCommentRequestDTO;
 import com.example.testypie.domain.commentLike.entity.CommentLike;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.user.entity.User;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +72,7 @@ public class Comment {
     this.product = product;
   }
 
-  public void update(CommentRequestDTO req, Product product) {
+  public void update(UpdateCommentRequestDTO req, Product product) {
     this.content = req.content();
     this.product = product;
     this.modifiedAt = LocalDateTime.now();

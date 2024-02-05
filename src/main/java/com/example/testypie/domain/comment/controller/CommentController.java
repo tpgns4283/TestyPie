@@ -1,7 +1,10 @@
 package com.example.testypie.domain.comment.controller;
 
-import com.example.testypie.domain.comment.dto.CommentRequestDTO;
-import com.example.testypie.domain.comment.dto.CommentResponseDTO;
+import com.example.testypie.domain.comment.dto.request.CreateCommentRequestDTO;
+import com.example.testypie.domain.comment.dto.request.UpdateCommentRequestDTO;
+import com.example.testypie.domain.comment.dto.response.CreateCommentResponseDTO;
+import com.example.testypie.domain.comment.dto.response.ReadPageCommentResponseDTO;
+import com.example.testypie.domain.comment.dto.response.UpdateCommentResponseDTO;
 import com.example.testypie.domain.core.service.CommentMatcherService;
 import com.example.testypie.global.security.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -29,27 +32,27 @@ public class CommentController {
   private final CommentMatcherService commentMatcherService;
 
   @PostMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments")
-  public ResponseEntity<CommentResponseDTO> postComment(
+  public ResponseEntity<CreateCommentResponseDTO> createComment(
       @PathVariable Long product_id,
-      @Valid @RequestBody CommentRequestDTO req,
+      @Valid @RequestBody CreateCommentRequestDTO req,
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable Long childCategory_id,
       @PathVariable String parentCategory_name) {
 
-    CommentResponseDTO res =
+    CreateCommentResponseDTO res =
         commentMatcherService.productComment(
             product_id, req, userDetails.getUser(), childCategory_id, parentCategory_name);
     return ResponseEntity.ok(res);
   }
 
   @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments")
-  public ResponseEntity<Page<CommentResponseDTO>> getComments(
+  public ResponseEntity<Page<ReadPageCommentResponseDTO>> getComments(
       @PageableDefault(page = 1, sort = "comment_id", direction = Direction.DESC) Pageable pageable,
       @PathVariable Long product_id,
       @PathVariable Long childCategory_id,
       @PathVariable String parentCategory_name) {
 
-    Page<CommentResponseDTO> resList =
+    Page<ReadPageCommentResponseDTO> resList =
         commentMatcherService.getComments(
             pageable, product_id, childCategory_id, parentCategory_name);
 
@@ -58,15 +61,15 @@ public class CommentController {
 
   @PatchMapping(
       "/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments/{comment_id}")
-  public ResponseEntity<CommentResponseDTO> updateComment(
+  public ResponseEntity<UpdateCommentResponseDTO> updateComment(
       @PathVariable Long product_id,
       @PathVariable Long comment_id,
-      @Valid @RequestBody CommentRequestDTO req,
+      @Valid @RequestBody UpdateCommentRequestDTO req,
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable Long childCategory_id,
       @PathVariable String parentCategory_name) {
 
-    CommentResponseDTO res =
+    UpdateCommentResponseDTO res =
         commentMatcherService.updateComment(
             product_id,
             comment_id,

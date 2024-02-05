@@ -3,8 +3,8 @@ package com.example.testypie.View.controller;
 import static com.example.testypie.global.jwt.JwtUtil.REFRESH_AUTHORIZATION_HEADER;
 
 import com.example.testypie.domain.feedback.service.FeedbackService;
-import com.example.testypie.domain.user.dto.ProfileResponseDTO;
-import com.example.testypie.domain.user.dto.RegisteredProductResponseDTO;
+import com.example.testypie.domain.user.dto.response.ProfileResponseDTO;
+import com.example.testypie.domain.user.dto.response.RegisteredProductResponseDTO;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.kakao.service.KakaoService;
 import com.example.testypie.domain.user.service.UserInfoService;
