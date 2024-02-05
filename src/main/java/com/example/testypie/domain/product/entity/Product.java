@@ -7,6 +7,8 @@ import com.example.testypie.domain.productLike.entity.ProductLike;
 import com.example.testypie.domain.reward.entity.Reward;
 import com.example.testypie.domain.survey.entity.Survey;
 import com.example.testypie.domain.user.entity.User;
+import com.example.testypie.global.exception.ErrorCode;
+import com.example.testypie.global.exception.GlobalExceptionHandler;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -127,13 +129,13 @@ public class Product {
   }
 
   public void updateTitle(String title) {
-    if (title != null) {
+    if (!title.isEmpty()) {
       this.title = title;
     }
   }
 
   public void updateContent(String content) {
-    if (content != null) {
+    if (!content.isEmpty()) {
       this.content = content;
     }
   }
@@ -165,7 +167,7 @@ public class Product {
       this.rewardList = rewardList;
       rewardList.forEach(reward -> reward.setProduct(this));
     } else {
-      throw new IllegalArgumentException("Product에 Reward는 반드시 들어가야 합니다.");
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.PRODUCT_REWARD_IS_NOT_NULL);
     }
   }
 

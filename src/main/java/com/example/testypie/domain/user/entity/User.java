@@ -83,6 +83,6 @@ public class User {
   }
 
   public void updatePassword(String password) {
-    if (password != null && ! password.isEmpty()) this.password = password;
+    if (password != null && !password.isEmpty()) this.password = password;
   }
 }

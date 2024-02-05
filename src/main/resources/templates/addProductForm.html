@@ -28,24 +28,24 @@
 
 
     <div class="py-5 text-center">
-        <h2>게시글 등록</h2>
+        <h2> 게시글 등록</h2>
     </div>
     <form id="productForm" method="post">
         <div>
             <label for="title">제목</label>
-            <input type="text" id="title" name="title" class="form-control form-control-sm" placeholder="제목 입력">
+            <input type="text" id="title" name="title" class="form-control form-control-sm" required placeholder="제목 입력">
         </div>
         <div>
             <label for="content">내용</label>
-            <input type="text" id="content" name="content" class="form-control form-control-sm" placeholder="내용 입력">
+            <input type="text" id="content" name="content" class="form-control form-control-sm" required placeholder="내용 입력">
         </div>
         <div>
             <label for="startAt">시작일자</label>
-            <input type="text" id="startAt" name="startAt" class="form-control form-control-sm" placeholder="YYYY-DD-MM">
+            <input type="date" id="startAt" name="startAt" class="form-control form-control-sm" required placeholder="YYYY-MM-DD">
         </div>
         <div>
             <label for="closedAt">마감일자</label>
-            <input type="text" id="closedAt" name="closedAt" class="form-control form-control-sm" placeholder="YYYY-DD-MM">
+            <input type="date" id="closedAt" name="startAt" class="form-control form-control-sm" required placeholder="YYYY-MM-DD">
         </div>
 
         <div id="rewardItems">
@@ -69,7 +69,7 @@
 
         // 보상 아이템 입력 폼 추가 버튼 클릭 시
         $("#addItemBtn").click(function () {
-            if (initialItemFormCount < 10) { // 최대 10개까지 추가 가능
+            if (initialItemFormCount < 10 && initialItemFormCount > 0) { // 최대 10개까지 추가 가능
                 const newItemForm = `
             <div class="row mb-2">
                 <div class="col">
@@ -146,7 +146,6 @@
                         window.location.href = "/api/category/" + parentName + "/" + childId + "/products/" + response.id + "/surveys";
                     },
                     error: function (jqXHR) {
-                        // 오류 시 처리
                         const errorMessage = jqXHR.responseJSON.errorMessage;
                         alert(errorMessage);
                     }

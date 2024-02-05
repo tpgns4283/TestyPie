@@ -13,7 +13,6 @@ import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.global.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import java.text.ParseException;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -78,8 +77,7 @@ public class ProductController {
   @GetMapping("/category/{parentCategory_name}")
   public ResponseEntity<Page<ProductPageResponseDTO>> getProductPage(
       // (page = 1) => 1페이지부터 시작
-      @PageableDefault(page = 1) Pageable pageable,
-      @PathVariable String parentCategory_name)
+      @PageableDefault(page = 1) Pageable pageable, @PathVariable String parentCategory_name)
       throws ParseException {
 
     Page<ProductPageResponseDTO> res = productService.getProductPage(pageable, parentCategory_name);
@@ -89,14 +87,15 @@ public class ProductController {
 
   @GetMapping("/category/{parentCategory_name}/{childCategory_id}")
   public ModelAndView getProductCategoryPage(
-          // (page = 1) => 1페이지부터 시작
-          @PageableDefault(page = 1) Pageable pageable,
-          @PathVariable(required = false) Long childCategory_id,
-          @PathVariable String parentCategory_name,
-          Model model)
-          throws ParseException {
+      // (page = 1) => 1페이지부터 시작
+      @PageableDefault(page = 1) Pageable pageable,
+      @PathVariable(required = false) Long childCategory_id,
+      @PathVariable String parentCategory_name,
+      Model model)
+      throws ParseException {
 
-    Page<ProductPageResponseDTO> res = productService.getProductCategoryPage(pageable, childCategory_id, parentCategory_name);
+    Page<ProductPageResponseDTO> res =
+        productService.getProductCategoryPage(pageable, childCategory_id, parentCategory_name);
 
     ModelAndView modelAndView = new ModelAndView();
     modelAndView.setViewName("productList");
@@ -113,7 +112,7 @@ public class ProductController {
       throws ParseException {
 
     Page<SearchProductResponseDTO> resList =
-        productService.searchProductList(pageable, parentCategory_name, childCategory_id, keyword);
+        productService.searchProductList(pageable, childCategory_id, keyword);
 
     return ResponseEntity.ok().body(resList);
   }
@@ -121,9 +120,8 @@ public class ProductController {
   // Product 좋아요 순 조회
   @GetMapping("/products/like")
   public ResponseEntity<Page<ProductPageResponseDTO>> getProductPageOrderByLikeDesc(
-          // (page = 1) => 1페이지부터 시작
-          @PageableDefault(page = 1) Pageable pageable)
-          throws ParseException {
+      // (page = 1) => 1페이지부터 시작
+      @PageableDefault(page = 1) Pageable pageable) throws ParseException {
 
     Page<ProductPageResponseDTO> res = productService.getProductPageOrderByLikeDesc(pageable);
 
@@ -158,6 +156,4 @@ public class ProductController {
             productId, userDetails.getUser(), childCategory_id, parentCategory_name);
     return ResponseEntity.ok().body(res);
   }
-
-
 }
