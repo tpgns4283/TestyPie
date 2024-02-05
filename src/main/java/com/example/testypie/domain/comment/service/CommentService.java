@@ -14,7 +14,6 @@ import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.global.exception.ErrorCode;
 import com.example.testypie.global.exception.GlobalExceptionHandler;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +41,6 @@ public class CommentService {
               .user(user)
               .content(req.content())
               .commentLikeCnt(DEFAULT_COMMENT_LIKE_CNT)
-              .createAt(LocalDateTime.now())
               .product(product)
               .build();
       Comment saveComment = commentRepository.save(comment);

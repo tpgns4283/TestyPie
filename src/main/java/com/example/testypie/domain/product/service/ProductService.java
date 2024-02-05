@@ -75,7 +75,6 @@ public class ProductService {
             .content(req.content())
             .category(category)
             .productLikeCnt(DEFAULT_PRODUCT_LIKE_CNT)
-            .createAt(LocalDateTime.now())
             .startedAt(startAt)
             .closedAt(closedAt)
             .build();
@@ -205,7 +204,6 @@ public class ProductService {
     product.updateTitle(req.title());
     product.updateContent(req.content());
     product.updateCategory(category);
-    product.updateModifiedAt(LocalDateTime.now());
 
     productRepository.save(product);
 

@@ -59,13 +59,7 @@ public class FeedbackService {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
     }
 
-    Feedback feedback =
-        Feedback.builder()
-            .createdAt(LocalDateTime.now())
-            .user(user)
-            .product(product)
-            .survey(survey)
-            .build();
+    Feedback feedback = Feedback.builder().user(user).product(product).survey(survey).build();
 
     List<FeedbackDetails> detailslist = new ArrayList<>();
     for (CreateFeedbackDetailsRequestDTO feedbackDetailsDTO : req.feedbackDetailsList()) {

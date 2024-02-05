@@ -7,7 +7,6 @@ import com.example.testypie.domain.survey.entity.Question;
 import com.example.testypie.domain.survey.entity.QuestionType;
 import com.example.testypie.domain.survey.entity.Survey;
 import com.example.testypie.domain.survey.repository.SurveyRepository;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +18,7 @@ public class SurveyCreateTest {
 
   public void createSurveyTest() {
 
-    Survey survey = Survey.builder().title("새 설문조사").createdAt(LocalDateTime.now()).build();
+    Survey survey = Survey.builder().title("새 설문조사").build();
 
     Question question1 =
         Question.builder()
