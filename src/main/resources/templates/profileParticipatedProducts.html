@@ -1,68 +1,75 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity">
 <head>
     <meta charset="UTF-8">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <script th:inline="javascript">
-
-        // 체크 함수에서도 camelCase를 사용하도록 변경
-        function checkUserHasAccessToken() {
-            var jwtToken = localStorage.getItem("jwtToken");
-            return !!jwtToken;
-        }
-
-        // 체크 함수를 먼저 호출하고, 리디렉트 함수를 호출하도록 순서 변경
-        $(document).ready(function () {
-            if (!checkUserHasAccessToken()) {
-                redirectToLoginPage();
-            }
-
-            // Ajax를 이용하여 프로필에 연동된 게시글 조회
-            var account = $('body').attr('data-account'); // 사용자 아이디 가져오기
-            var url = "/api/users/" + account + "/participatedProducts";
-
-            $.ajax({
-                type: 'GET',
-                url: url,
-                beforeSend: function (xhr) {
-                    var token = localStorage.getItem("jwtToken");
-                    if (token) {
-                        xhr.setRequestHeader("Authorization", token);
-                    }
-                },
-                success: function (data) {
-                    // 성공 시 데이터를 테이블에 표시
-                    displayProducts(data);
-                },
-                error: function (jqXHR) {
-                    const errorMessage = jqXHR.responseJSON.errorMessage;
-                    alert(errorMessage);
-                }
-            });
-
-            // 테이블에 데이터를 표시하는 부분을 함수로 분리
-            function displayProducts(data) {
-                const tableHeader = '<tr><th>제목</th><th>마감일</th></tr>';
-                $('#postTable').append(tableHeader);
-
-                data.forEach(function (product) {
-                    $('#postTable').append('<tr><td>' + product.title + '</td><td>' + product.closedAt + '</td></tr>');
-                });
-            }
-        });
-
-        // 리디렉트 함수를 함수 선언 아래로 이동
-        function redirectToLoginPage() {
-            alert("로그인 후 이용해주세요.");
-            window.location.href = '/login'; // 로그인 페이지로 리디렉트
-        }
-    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Participated Products</title>
 </head>
-<body th:attr="data-account=${account}">
+<body>
 
-<!-- 게시글 테이블 -->
-<table border="1" id="postTable">
-    <!-- 테이블 내용은 Ajax 통신 후 JavaScript로 동적으로 추가됩니다. -->
-</table>
+<h1>내가 피드백을 작성한 테스트 게시글</h1>
+
+<div id="productList">
+    <table>
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Created At</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${participatedProducts}" class="product-item">
+            <td th:text="${product.title}"></td>
+            <td th:text="${product.createdAt}"></td>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    // $(document).ready(function () {
+    //     // 페이지 로드 시, 등록된 제품 목록을 불러오는 함수 호출
+    //     loadRegisteredProducts();
+    // });
+
+    // function loadRegisteredProducts() {
+    //     var account = /*[[${account}]]*/ "";
+    //
+    //     $.ajax({
+    //         type: "GET",
+    //         url: "/api/users/" + account + "/joinProducts",
+    //         success: function (data) {
+    //             var products = $.map(data, function(product) {
+    //                 return {
+    //                     title: product.title,
+    //                     createdAt: product.createdAt
+    //                 };
+    //             });
+    //
+    //             // Thymeleaf에서 사용할 수 있도록 products 변수를 설정
+    //             renderProductList(products);
+    //         },
+    //         error: function (error) {
+    //             console.error("Error fetching participated products:", error);
+    //         }
+    //     });
+    // }
+    //
+    // // Thymeleaf 템플릿을 동적으로 업데이트하는 함수
+    // function renderProductList(products) {
+    //     $("#productList").empty();  // 기존 내용 비우기
+    //
+    //     $.each(products, function (index, product) {
+    //         var productItem = $("<div>").addClass("product-item");
+    //
+    //         // 제품 정보 표시 예시 (커스터마이즈해주세요)
+    //         productItem.append("<p>Title: " + product.title + "</p>");
+    //         productItem.append("<p>Created At: " + product.createdAt + "</p>");
+    //         $("#productList").append(productItem);
+    //     });
+    // }
+</script>
+
 </body>
 </html>

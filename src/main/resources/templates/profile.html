@@ -50,13 +50,10 @@
 <hr class="my-4">
 
 <a th:href="@{/api/users/{account}/update(account=${account})}" class="btn btn-primary">프로필 수정하기</a>
+<!-- 추가: 프로필 등록 제품 보기 버튼 -->
+<a th:href="@{/api/users/{account}/myProducts(account=${account})}" class="btn btn-primary">등록한 테스트 게시글 보기</a>
 
-<a th:href="@{/api/users/{account}/myProdcuts(account=${account})}" class="btn btn-primary">내가 쓴 product 보기</a>
-
-<!--<form th:action="@{/users/{account}/myProducts(account=${account})}" method="get">-->
-<!--    <button type="submit">내가 쓴 product 보기</button>-->
-<!--</form>-->
-
+<a th:href="@{/api/users/{account}/joinProducts(account=${account})}" class="btn btn-primary">피드백 작성한 테스트 게시글 보기</a>
 <!-- section END -->
 </body>
 </html>

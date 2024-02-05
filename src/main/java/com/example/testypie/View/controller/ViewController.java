@@ -157,9 +157,18 @@ public class ViewController {
   public String getMyProducts(
           @PathVariable String account,
           Model model) {
+    List<RegisteredProductResponseDTO> myProducts = userInfoService.getUserProducts(account);
     model.addAttribute("account", account);
-    List<RegisteredProductResponseDTO> res = userInfoService.getUserProducts(account);
-    model.addAttribute("myProducts", res);
+    model.addAttribute("myProducts", myProducts);
     return "profileRegisteredProducts";
+  }
+  @GetMapping("/api/users/{account}/joinProducts")
+  public String getParticipatedProducts(
+          @PathVariable String account,
+          Model model) {
+    List<ParticipatedProductResponseDTO> participatedProducts = userInfoService.getUserParticipatedProducts(account);
+    model.addAttribute("account", account);
+    model.addAttribute("participatedProducts", participatedProducts);
+    return "profileParticipatedProducts";
   }
 }
