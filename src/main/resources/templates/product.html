@@ -145,7 +145,7 @@
     function setProductUI() {
         const categoryName = parentName;
 
-        if (categoryName === '게시판') {
+        if (categoryName !== '테스트게시판') {
             document.getElementById('started').style.display = 'none';
             document.getElementById('ended').style.display = 'none';
             document.getElementById('remain-time').style.display = 'none';
@@ -261,7 +261,7 @@
         checkUserhasAccessToken();
         const comment = button.parentNode.parentNode;
         const commentId = comment.getAttribute('data-comment-id'); // 댓글 식별자 가져오기
-        const updatedContent = editInput.value;
+        const updatedContent = editInput.value.trim();
 
         if (!updatedContent) {
             alert('댓글을 입력해주세요.');

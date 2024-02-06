@@ -60,8 +60,10 @@ public class Comment extends TimeStamp {
   }
 
   public void update(UpdateCommentRequestDTO req, Product product) {
-    this.content = req.content();
-    this.product = product;
+    if(!req.content().isEmpty()){
+      this.content = req.content();
+      this.product = product;
+    }
   }
 
   public void updateCommentLikeCnt(boolean clickCommentLike) {
