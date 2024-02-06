@@ -117,7 +117,7 @@ public class UserInfoService {
 
     boolean isProductValid = userRepository.existsProductById(productId);
     if (!isProductValid) {
-      throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_productId_NOT_FOUND);
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_PRODUCT_ID_NOT_FOUND);
     }
   }
 
