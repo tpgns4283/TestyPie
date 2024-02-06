@@ -79,7 +79,12 @@ public class FeedbackService {
 
   public double checkAverageRating(User user) {
 
-    return feedbackRepository.findAverageScoreByUserId(user.getId());
+    return feedbackRepository
+        .findAverageScoreByUserId(user.getId())
+        .orElseThrow(
+            () ->
+                new GlobalExceptionHandler.CustomException(
+                    ErrorCode.PROFILE_AVERAGE_FEEDBACK_RATING_NULL));
   }
 
   public Feedback checkFeedback(Long productId, Long feedbackId) {
@@ -94,5 +99,12 @@ public class FeedbackService {
 
     feedback.assignRating(req);
     feedbackRepository.save(feedback);
+  }
+
+  public List<Feedback> getAllFeedbacksByProductId(Long productId) {
+    return feedbackRepository
+        .findAllFeedbacksByProductId(productId)
+        .orElseThrow(
+            () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_FEEDBACK_NOT_FOUND));
   }
 }

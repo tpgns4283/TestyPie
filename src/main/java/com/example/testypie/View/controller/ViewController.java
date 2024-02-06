@@ -2,6 +2,9 @@ package com.example.testypie.View.controller;
 
 import static com.example.testypie.global.jwt.JwtUtil.REFRESH_AUTHORIZATION_HEADER;
 
+import com.example.testypie.domain.feedback.dto.response.ReadFeedbackResponseDTO;
+import com.example.testypie.domain.feedback.service.FeedbackService;
+import com.example.testypie.domain.user.dto.response.ParticipatedProductResponseDTO;
 import com.example.testypie.domain.user.dto.response.ProfileResponseDTO;
 import com.example.testypie.domain.user.dto.response.RegisteredProductResponseDTO;
 import com.example.testypie.domain.user.entity.User;
@@ -30,6 +33,7 @@ public class ViewController {
 
   private final KakaoService kakaoService;
   private final UserInfoService userInfoService;
+  private final FeedbackService feedbackService;
 
   @GetMapping("/")
   public String home(Model model, HttpServletRequest request) {
@@ -171,5 +175,33 @@ public class ViewController {
     model.addAttribute("account", account);
     model.addAttribute("myProducts", myProducts);
     return "profileRegisteredProducts";
+  }
+
+  @GetMapping("/api/users/{account}/joinProducts")
+  public String getParticipatedProducts(@PathVariable String account, Model model) {
+    List<ParticipatedProductResponseDTO> participatedProducts =
+        userInfoService.getUserParticipatedProducts(account);
+    model.addAttribute("account", account);
+    model.addAttribute("participatedProducts", participatedProducts);
+    return "profileParticipatedProducts";
+  }
+
+  @GetMapping("/api/users/{account}/myProducts/{productId}/feedbacks")
+  public String getFeedbacksFromProductId(
+      @PathVariable String account, @PathVariable Long productId, Model model) {
+    List<ReadFeedbackResponseDTO> feedbackList =
+        feedbackService.getAllFeedbacksByProductId(productId).stream()
+            .map(ReadFeedbackResponseDTO::of)
+            .toList();
+    model.addAttribute("account", account);
+    model.addAttribute("feedbacks", feedbackList);
+    return "profileViewFeedbacks";
+  }
+
+  @GetMapping("/api/users/{account}/averageRate")
+  public String showAverageRatingPage(@PathVariable String account, Model model) {
+    double averageRating = userInfoService.getAverageRating(account);
+    model.addAttribute("averageRating", averageRating);
+    return "profileAverageRating";
   }
 }
