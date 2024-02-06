@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="/css/signup.css">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+  <title>Testy Pie</title>
+</head>
+
+<body>
+  <form id="signupForm">
+    <div class="mb-3">
+      <label for="account" class="form-label">ID</label>
+      <input type="text" class="form-control" id="account" aria-describedby="emailHelp" placeholder="6~12자 사이의 소문자, 숫자">
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password </label>
+      <input type="password" class="form-control" id="password" placeholder="8~16자 사이의 소문자, 대문자, 숫자">
+    </div>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email" placeholder="이메일 형식을 지켜주세요">
+    </div>
+    <div class="mb-3">
+      <label for="nickname" class="form-label">Nick Name</label>
+      <input type="text" class="form-control" id="nickname" placeholder="1~20자 사이의 소문자, 대문자, 숫자">
+    </div>
+    <div class="mb-3">
+      <label for="Description" class="form-label">Description</label>
+      <input type="text" class="form-control" id="description" placeholder="20자 미만의 소문자, 대문자, 숫자">
+    </div>
+    <!-- 저장 버튼을 추가합니다. -->
+    <button class="btn btn-dark" id="submitBtn" type="submit">회원 가입</button>
+  </form>
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    // 폼 제출 이벤트 핸들러를 바인딩합니다.
+    $("#signupForm").submit(function (event) {
+      event.preventDefault();
+
+      var userData = {
+        account: $("#account").val(),
+        password: $("#password").val(),
+        email: $("#email").val(),
+        nickname: $("#nickname").val(),
+        description: $("#description").val()
+      };
+
+      $.ajax({
+        type: "POST",
+        url: "/api/users/signup", // 요청을 보낼 서버의 URL
+        data: JSON.stringify(userData), // JSON 데이터를 문자열로 변환하여 전송
+        contentType: "application/json; charset=utf-8", // Content-Type을 JSON으로 설정
+        dataType: "json", // 응답 데이터 타입을 JSON으로 설정
+        success: function (response) {
+          // 요청이 성공하면 실행될 함수
+          console.log("회원 가입 성공:", response);
+          alert("가입되었습니다.");
+          window.location.href = "/"; // 성공 후 페이지 리디렉션
+        },
+        error: function (jqXHR) {
+          var errorMessage = jqXHR.responseJSON.errorMessage;
+          alert(errorMessage);
+        }
+      });
+    });
+  });
+</script>
+</html>

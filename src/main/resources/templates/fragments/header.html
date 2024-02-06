@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>TestyPie</title>
+  <link rel="stylesheet" type="text/css" href="/css/header.css">
+</head>
+<body>
+<div class="page">
+  <header th:fragment="headerFragment">
+    <h2><a href="/">Testy Pie</a></h2>
+    <nav>
+      <ul>
+        <li><a id="loginLink" href="/login">로그인</a></li>
+        <li><a href="#" id="submitBtn">프로필</a></li>
+        <li id="categoryList"></li>
+      </ul>
+    </nav>
+  </header>
+</div>
+</body>
+</html>

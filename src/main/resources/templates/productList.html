@@ -1,0 +1,142 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>TestyPie</title>
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <link rel="stylesheet" type="text/css" href="/css/productList.css">
+    <link rel="stylesheet" type="text/css" href="/css/modal.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/js/category.js"></script>
+    <script src="/js/getNewToken.js"></script>
+
+    <style>
+        .container {
+            max-width: 800px;
+        }
+    </style>
+</head>
+<div th:replace="fragments/header :: headerFragment"></div>
+<body>	<!-- body 없어도 무방 -->
+<div class="container" th:attr="data-parentname=${parentCategoryName}, data-childid=${childCategoryId}">
+        <div id="search-container">
+            <input type="text" id="search-input" placeholder="검색어 입력" />
+            <button id="search-button">검색</button>
+        </div>
+        <div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>글 번호</th>
+                    <th>제목</th>
+                    <th>좋아요</th>
+                    <th>작성자</th>
+                    <th>기한</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="product : ${productList}">
+                    <td><a th:href="@{/api/category/{parent_name}/{children_id}/products/{productId}
+                                                    (productId=${product.id}, parent_name=${product.parentCategoryName()}
+                                                    , children_id=${product.childCategoryId()})}"
+                           th:text="${product.id}"></a></td>
+                    <td><a th:href="@{/api/category/{parent_name}/{children_id}/products/{productId}
+                                                    (productId=${product.id}, parent_name=${product.parentCategoryName()}
+                                                    , children_id=${product.childCategoryId()})}"
+                           th:text="${product.title}"></a></td>
+
+                    <td th:text="${product.productLikeCnt}"></td>
+                    <td th:text="${product.nickname}" th:attr="onclick='fetchUserProfile(\'' + ${product.account} + '\')'"></td>
+                    <td th:if="${parentCategoryName == '테스트게시판'}" th:text="${product.message}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <ul class="pagination">
+                <li th:each="pageNum : ${#numbers.sequence(1, productList.totalPages)}" class="page-item">
+                    <a th:href="@{/api/category/{parentCategoryName}/{childCategoryId}(parentCategoryName=${parentCategoryName}, childcategoryID=${childCategoryId}, page=${pageNum})}" th:text="${pageNum}" class="page-link">1</a>
+                </li>
+            </ul>
+        </div>
+        <a th:href="@{/api/category/{parentName}/{childId}/products(parentName=${parentCategoryName}, childId=${childCategoryId})}" class="btn btn-primary">게시글 작성</a>
+            <div class="d-grid gap-2 col-6 mx-auto">
+
+            </div>
+        </div>
+<th:block th:replace="fragments/modal.html"></th:block>
+<script src="/js/modal.js"></script>
+</body>
+<script>
+    $(document).ready(function() {
+        // 서버로부터 parentCategory 정보를 가져오는 코드 필요
+        // 예시에서는 parentCategory 값을 직접 설정
+        var parentCategory = $(".container").data("parentname");
+
+        // parentCategory에 따라 컬럼 설정
+        setupTableColumns(parentCategory);
+
+        $('#search-button').click(function() {
+            var searchTerm = $('#search-input').val();
+            var parentName = $(".container").data("parentname");
+            var childId = $(".container").data("childid");
+            var url = "/api/category" + "/" + parentName + "/" + childId +"/search";
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { keyword : searchTerm },
+                success: function(data) {
+                    // 검색 결과 처리
+                    updateTable(data, parentCategory);
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
+        });
+    });
+
+    function setupTableColumns(parentCategory) {
+        var thead = $('.table thead tr');
+        thead.empty(); // 테이블 헤더를 비웁니다.
+
+        // 공통 컬럼 추가
+        thead.append('<th>글 번호</th>');
+        thead.append('<th>제목</th>');
+        thead.append('<th>좋아요</th>');
+        thead.append('<th>작성자</th>');
+
+        // parentCategory에 따라 동적으로 컬럼 추가
+        if (parentCategory === "테스트게시판") {
+            thead.append('<th>기한</th>');
+        }
+    }
+
+    function updateTable(data, parentCategory) {
+        var tableBody = $('.table tbody');
+        tableBody.empty(); // 테이블 내용을 비웁니다.
+
+        console.log(data);
+        data.content.forEach(function(product) {
+            var detailUrl = '/api/category/' + product.parentCategoryName + '/' + product.childCategoryId + '/products/' + product.id; // 상세 페이지 URL 생성
+            var row = '<tr>' +
+                '<td><a href="' + detailUrl + '">' + product.id + '</a></td>' +
+                '<td><a href="' + detailUrl + '">' + product.title + '</a></td>' +
+                '<td>' + product.productLikeCnt + '</td>';
+
+            // parentCategory에 따라 동적으로 컬럼 데이터 추가
+            if (parentCategory === "특정 카테고리 이름") {
+                row += '<td>특정 컬럼 데이터</td>'; // 특정 카테고리에만 추가되는 컬럼 데이터
+            }
+
+            row += '<td onclick="fetchUserProfile(\'' + product.account + '\')">' + product.nickname + '</td>' +
+                '<td>' + product.message + '</td>' +
+                '</tr>';
+            tableBody.append(row);
+        });
+    }
+
+</script>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TestyPie</title>
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <link rel="stylesheet" type="text/css" href="/css/home.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/js/category.js"></script>
+    <script src="/js/getNewToken.js"></script>
+</head>
+<body>
+<div th:replace="fragments/header :: headerFragment"></div>
+<div class="content-container">
+    <h1 class="content-title">최근 핫한 게시물</h1>
+    <div class="card-likecontainer">
+        <!-- AJAX를 통해 동적으로 카드가 삽입될 위치 -->
+    </div>
+</div>
+
+<div class="content-container">
+    <h1 class="content-title">최근 등록된 테스트</h1>
+    <div class="card-testcontainer">
+        <!-- AJAX를 통해 동적으로 카드가 삽입될 위치 -->
+    </div>
+</div>
+
+<div class="content-container">
+    <h1 class="content-title">최근 등록된 게시물</h1>
+    <div class="card-boardcontainer">
+        <!-- AJAX를 통해 동적으로 카드가 삽입될 위치 -->
+    </div>
+</div>
+
+</body>
+<script th:inline="javascript">
+    var accessToken = /*[[${token}]]*/ null;
+    if (accessToken) {
+        // 로컬 스토리지에 accessToken 저장
+        localStorage.setItem("jwtToken", accessToken);
+        window.location.href = "/";
+    }
+
+        $(document).ready(function() {
+        $.ajax({
+            url: '/api/products/like',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                var postsToShow = data.content.slice(0, 4);
+                var container = $('.card-likecontainer');
+                postsToShow.forEach(function(post) {
+                    var parentName = post.parentCategoryName
+                    var childId = post.childCategoryId
+                    var cardHtml = '<div class="card">' +
+                        '<h2><a href="/api/category/'+ parentName +'/' +childId +'/products/' + post.id + '">' + post.title + '</a></h2>' +
+                        '<p>작성자: ' + post.nickname + '</p>' +
+                        '<p>마감 기한: ' + post.message + '</p>' +
+                        '<p>좋아요: ' + post.productLikeCnt + '</p>' +
+                        '</div>';
+                    container.append(cardHtml);
+                });
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log('Error loading posts:', textStatus);
+            }
+        });
+
+        $.ajax({
+            url: '/api/category/일반게시판',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                console.log(data)
+                var postsToShow = data.content.slice(0, 4);
+                var container = $('.card-boardcontainer');
+                postsToShow.forEach(function(post) {
+                    var parentName = post.parentCategoryName
+                    var childId = post.childCategoryId
+                    var cardHtml = '<div class="card">' +
+                        '<h2><a href="/api/category/'+ parentName +'/' +childId +'/products/' + post.id + '">' + post.title + '</a></h2>' +
+                        '<p>작성자: ' + post.nickname + '</p>' +
+                        '<p>좋아요: ' + post.productLikeCnt + '</p>' +
+                        '</div>';
+                    container.append(cardHtml);
+                });
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log('Error loading posts:', textStatus);
+            }
+        });
+
+            $.ajax({
+                url: '/api/category/테스트게시판',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    console.log(data)
+                    var postsToShow = data.content.slice(0, 4);
+                    var container = $('.card-testcontainer');
+                    postsToShow.forEach(function(post) {
+                        var parentName = post.parentCategoryName;
+                        var childId = post.childCategoryId;
+                        // 마감 기한이 null이 아닐 경우에만 마감 기한 정보를 포함하는 HTML 문자열 생성
+                        var deadlineHtml = post.message !== null ? '<p>마감 기한: ' + post.message + '</p>' : '';
+                        var cardHtml = '<div class="card">' +
+                            '<h2><a href="/api/category/'+ parentName +'/' +childId +'/products/' + post.id + '">' + post.title + '</a></h2>' +
+                            '<p>작성자: ' + post.nickname + '</p>' +
+                            deadlineHtml + // 마감 기한 정보를 조건부로 포함
+                            '<p>좋아요: ' + post.productLikeCnt + '</p>' +
+                            '</div>';
+                        container.append(cardHtml);
+                    });
+
+
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log('Error loading posts:', textStatus);
+                }
+            });
+    });
+</script>
+</html>

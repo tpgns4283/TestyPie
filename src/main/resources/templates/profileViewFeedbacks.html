@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Details</title>
+</head>
+<body>
+
+<h1>피드백 세부 정보</h1>
+
+<p>계정: <span th:text="${account}"></span></p>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>생성일</th>
+        <th>유저 ID</th>
+        <th>제품 ID</th>
+        <th>평가</th>
+        <th>세부 정보</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="feedback : ${feedbacks}">
+        <td th:text="${feedback.id}"></td>
+        <td th:text="${feedback.createdAt}"></td>
+        <td th:text="${feedback.userId}"></td>
+        <td th:text="${feedback.productId}"></td>
+        <td th:text="${feedback.rating}"></td>
+        <td>
+            <ul>
+                <li th:each="detail : ${feedback.feedbackDetailsList}">
+                    <span th:text="${detail.response}"></span>
+                </li>
+            </ul>
+        </td>
+        <td>
+            <!-- 평가 입력을 위한 폼 추가 -->
+            <form th:action="@{'/api/users/' + ${account} + '/ratingStar/' + ${feedback.productId} + '/' + ${feedback.id}}"
+                  method="post"
+                  onsubmit="saveRating(`${account}`, `${feedback.productId}`, `${feedback.id}`, this.rating.value); return false;">
+                <select name="rating" th:value="${selectedRating}">
+                    <option value="0">0</option>
+                    <option value="0.5">0.5</option>
+                    <option value="1.0">1.0</option>
+                    <option value="1.5">1.5</option>
+                    <option value="2.0">2.0</option>
+                    <option value="2.5">2.5</option>
+                    <option value="3.0">3.0</option>
+                    <option value="3.5">3.5</option>
+                    <option value="4.0">4.0</option>
+                    <option value="4.5">4.5</option>
+                    <option value="5.0">5.0</option>
+                </select>
+                <button type="submit">평가 저장</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
