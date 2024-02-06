@@ -20,7 +20,7 @@ public class Option {
   private Question question; // 해당 선택지가 속한 질문
 
   @Builder
-  public Option(Long id, String text, Question question) {
+  private Option(Long id, String text, Question question) {
     this.id = id;
     this.text = text;
     this.question = question;
