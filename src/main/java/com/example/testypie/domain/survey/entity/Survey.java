@@ -44,7 +44,7 @@ public class Survey extends TimeStamp {
   public void setQuestionList(List<Question> questionList) {
     if (questionList != null) {
       this.questionList = questionList;
-      questionList.forEach(question -> question.setSurvey(this));
+      questionList.forEach(question -> Question.builder().survey(this).build());
     } else {
       throw new IllegalArgumentException("Feedback에 Question은 반드시 들어가야 합니다.");
     }
