@@ -37,6 +37,26 @@
                 </li>
             </ul>
         </td>
+        <td>
+            <!-- 평가 입력을 위한 폼 추가 -->
+            <form th:action="@{'/api/users/' + ${account} + '/ratingStar/' + ${feedback.productId} + '/' + ${feedback.id}}"
+                  method="post">
+                <select name="rating" th:value="${selectedRating}">
+                    <option value="0">0</option>
+                    <option value="0.5">0.5</option>
+                    <option value="1.0">1.0</option>
+                    <option value="1.5">1.5</option>
+                    <option value="2.0">2.0</option>
+                    <option value="2.5">2.5</option>
+                    <option value="3.0">3.0</option>
+                    <option value="3.5">3.5</option>
+                    <option value="4.0">4.0</option>
+                    <option value="4.5">4.5</option>
+                    <option value="5.0">5.0</option>
+                </select>
+                <button type="submit">평가 저장</button>
+            </form>
+        </td>
     </tr>
     </tbody>
 </table>

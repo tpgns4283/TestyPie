@@ -128,9 +128,9 @@ public class FeedbackService {
   }
 
   public List<Feedback> getAllFeedbacksByProductId(Long productId) {
-    return feedbackRepository.findAllFeedbacksByProductId(productId)
-            .orElseThrow(
-                    () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_FEEDBACK_NOT_FOUND)
-            );
+    return feedbackRepository
+        .findAllFeedbacksByProductId(productId)
+        .orElseThrow(
+            () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_FEEDBACK_NOT_FOUND));
   }
 }
