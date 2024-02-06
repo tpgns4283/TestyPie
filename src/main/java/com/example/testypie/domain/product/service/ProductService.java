@@ -45,18 +45,18 @@ public class ProductService {
 
   // CREATE
   public CreateProductResponseDTO createProduct(
-      User user, CreateProductRequestDTO req, String parentCategory_name, Long category_id) {
+      User user, CreateProductRequestDTO req, String parentCategoryName, Long categoryID) {
 
-    Category category = categoryService.getCategory(category_id, parentCategory_name);
+    Category category = categoryService.checkCategory(categoryID, parentCategoryName);
     validProductCommonCreateRequestDTO(req.commonCreateRequestDTO());
 
     LocalDateTime startAt = null;
     LocalDateTime closedAt = null;
     List<CreateRewardRequestDTO> rewardList = null;
 
-    if (Objects.equals(parentCategory_name, "테스트게시판")) {
-      validProductTestCreateRequestDTO(req.testCreateRequestDTO());
+    if (Objects.equals(parentCategoryName, "테스트게시판")) {
 
+      validProductTestCreateRequestDTO(req.testCreateRequestDTO());
       CreateProductTestRequestDTO testCreateRequestDTO = req.testCreateRequestDTO().get();
       rewardList = testCreateRequestDTO.rewardList();
 
@@ -94,6 +94,7 @@ public class ProductService {
   }
 
   private void validProductTestCreateRequestDTO(Optional<CreateProductTestRequestDTO> req) {
+
     req.ifPresent(
         request -> {
           if (request.startAt().isEmpty()) {
@@ -116,10 +117,10 @@ public class ProductService {
 
   // READ
   public ReadProductResponseDTO getProduct(
-      Long productId, Long category_id, String parentCategory_name) throws ParseException {
+      Long productId, Long categoryID, String parentCategoryName) throws ParseException {
 
-    Category category = categoryService.getCategory(category_id, parentCategory_name);
-    Product product = findProduct(productId);
+    Category category = categoryService.checkCategory(categoryID, parentCategoryName);
+    Product product = checkProduct(productId);
 
     List<Reward> rewardList = product.getRewardList();
     List<ReadRewardResponseDTO> rewardDTOList = RewardMapper.mapToDTOList(rewardList);
@@ -131,12 +132,12 @@ public class ProductService {
     }
   }
 
-  public Page<ProductPageResponseDTO> getProductPage(Pageable pageable, String parentCategory_name)
+  public Page<ProductPageResponseDTO> getProductPage(Pageable pageable, String parentCategoryName)
       throws ParseException {
     int page = pageable.getPageNumber() - 1;
     int pageLimit = 10;
 
-    Category parentCategory = categoryService.getParentCategory(parentCategory_name);
+    Category parentCategory = categoryService.getParentCategory(parentCategoryName);
     Long parentId = parentCategory.getId();
 
     Page<Product> productPage =
@@ -147,11 +148,11 @@ public class ProductService {
   }
 
   public Page<ProductPageResponseDTO> getProductCategoryPage(
-      Pageable pageable, Long childCategory_id, String parentCategory_name) throws ParseException {
+      Pageable pageable, Long childCategoryId, String parentCategoryName) throws ParseException {
     int page = pageable.getPageNumber() - 1;
     int pageLimit = 10;
 
-    Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
+    Category category = categoryService.checkCategory(childCategoryId, parentCategoryName);
 
     Page<Product> productPage =
         productRepository.findAllByCategory_id(
@@ -181,6 +182,7 @@ public class ProductService {
       ProductPageResponseDTO res = ProductPageResponseDTO.of(product);
       resList.add(res);
     }
+
     return new PageImpl<>(resList, pageable, productPage.getTotalElements());
   }
 
@@ -189,11 +191,12 @@ public class ProductService {
       Long productId,
       UpdateProductRequestDTO req,
       User user,
-      Long category_id,
-      String parentCategory_name) {
+      Long categoryID,
+      String parentCategoryName) {
 
     Product product = getUserProduct(productId, user);
-    Category category = categoryService.getCategory(category_id, parentCategory_name);
+    Category category = categoryService.checkCategory(categoryID, parentCategoryName);
+
     if (!category.getId().equals(product.getCategory().getId())) {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
     }
@@ -227,7 +230,7 @@ public class ProductService {
 
   // SEARCH
   public Page<SearchProductResponseDTO> searchProductList(
-      Pageable pageable, Long childCategory_id, String keyword) throws ParseException {
+      Pageable pageable, Long childCategoryId, String keyword) throws ParseException {
 
     int page = pageable.getPageNumber() - 1;
     int pageLimit = 10;
@@ -237,8 +240,7 @@ public class ProductService {
     Page<Product> pagePage =
         productRepository.searchAllByKeyword(
             PageRequest.of(page, pageLimit, Sort.by(Direction.DESC, "id")),
-            childCategory_id,
-            keyword);
+                childCategoryId,keyword);
 
     for (Product product : pagePage) {
       SearchProductResponseDTO res = SearchProductResponseDTO.of(product);
@@ -249,10 +251,11 @@ public class ProductService {
 
   // DELETE
   public DeleteProductResponseDTO deleteProduct(
-      Long productId, User user, Long category_id, String parentCategory_name) {
+      Long productId, User user, Long categoryID, String parentCategoryName) {
 
-    Category category = categoryService.getCategory(category_id, parentCategory_name);
+    Category category = categoryService.checkCategory(categoryID, parentCategoryName);
     Product product = getUserProduct(productId, user);
+
     if (!category.getId().equals(product.getCategory().getId())) {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
     }
@@ -261,23 +264,23 @@ public class ProductService {
     return DeleteProductResponseDTO.of(product);
   }
 
-  // Product 존재여부 확인
-  public Product findProduct(Long productId) {
-    // RuntimeException으로 변경 예정
+  public Product checkProduct(Long productId) {
+
     return productRepository
         .findById(productId)
         .orElseThrow(
             () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_NOT_FOUND));
   }
 
-  // Product 본인 인증
   public Product getUserProduct(Long productId, User user) {
-    Product product = findProduct(productId);
-    // RuntimeException으로 변경 예정
+
+    Product product = checkProduct(productId);
+
     if (!user.getId().equals(product.getUser().getId())) {
       throw new GlobalExceptionHandler.CustomException(
           ErrorCode.PROFILE_USER_INVALID_AUTHORIZATION);
     }
+
     return product;
   }
 }
