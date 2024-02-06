@@ -4,6 +4,27 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script th:inline="javascript">
+        function saveRating(account, productId, feedbackId, selectedRating) {
+            var url = '/' + account + '/ratingStar/' + productId + '/' + feedbackId;
+
+            // Ajax로 서버에 데이터 전송
+            $.ajax({
+                type: 'POST',
+                url: url,
+                contentType: 'application/json',
+                data: JSON.stringify({ rating: selectedRating }),
+                success: function (response) {
+                    console.log(response);
+                    // 성공적으로 저장되었을 때 필요한 로직 추가 (예: 화면 갱신)
+                },
+                error: function (error) {
+                    console.error(error);
+                    // 에러 발생 시 필요한 로직 추가
+                }
+            });
+        }
+    </script>
     <title>Feedback Details</title>
 </head>
 <body>
@@ -39,8 +60,9 @@
         </td>
         <td>
             <!-- 평가 입력을 위한 폼 추가 -->
-            <form th:action="@{'/api/users/' + ${account} + '/ratingStar/' + ${feedback.productId} + '/' + ${feedback.id}}"
-                  method="post">
+            <form th:action="@{'/' + ${account} + '/ratingStar/' + ${feedback.productId} + '/' + ${feedback.id}}"
+                  method="post"
+                  onsubmit="saveRating('${account}', '${feedback.productId}', '${feedback.id}', this.rating.value); return false;">
                 <select name="rating" th:value="${selectedRating}">
                     <option value="0">0</option>
                     <option value="0.5">0.5</option>
