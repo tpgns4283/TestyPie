@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Average Star Rating</title>
+</head>
+<body>
+
+<h1>유저 평균 평점</h1>
+
+<!-- Thymeleaf 표현식을 사용하여 API를 호출하고 결과를 표시 -->
+<div>
+    <p>계정: <span th:text="${account}"></span></p>
+
+    <div id="averageRatingDisplay">
+        <!-- Thymeleaf 표현식을 사용하여 모델에서 가져온 평균 점수를 표시 -->
+        <p th:text="${averageRating}"></p>
+    </div>
+</div>
+
+</body>
+</html>

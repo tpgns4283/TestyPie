@@ -106,29 +106,14 @@ public class UserInfoService {
 
   public Feedback checkFeedback(Long productId, Long feedbackId) {
 
-    checkProduct(productId);
     Feedback feedback = checkAndGetFeedback(productId, feedbackId);
     checkFeedbackLocation(feedback, productId);
 
     return feedback;
   }
 
-  private void checkProduct(Long productId) {
-
-    boolean isProductValid = userRepository.existsProductById(productId);
-    if (!isProductValid) {
-      throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_PRODUCT_ID_NOT_FOUND);
-    }
-  }
-
   private Feedback checkAndGetFeedback(Long productId, Long feedbackId) {
-    Feedback feedback = feedbackService.checkFeedback(productId, feedbackId);
-
-    if (feedback == null) {
-      throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_FEEDBACK_ID_NOT_FOUND);
-    }
-
-    return feedback;
+      return feedbackService.checkFeedback(productId, feedbackId);
   }
 
   private void checkFeedbackLocation(Feedback feedback, Long productId) {

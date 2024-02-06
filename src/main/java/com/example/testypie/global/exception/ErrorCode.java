@@ -56,6 +56,7 @@ public enum ErrorCode {
   PROFILE_PRODUCT_ID_NOT_FOUND(404, "해당 product는 존재하지 않습니다."),
   PROFILE_FEEDBACK_ID_NOT_FOUND(404, "해당 피드백은 존재하지 않습니다."),
   PROFILE_PRODUCT_FEEDBACK_ID_NOT_FOUND(404, "해당 product나 피드백은 찾을 수 없습니다."),
+  PROFILE_AVERAGE_FEEDBACK_RATING_NULL(404, "한번도 평가받지 않으면 확인할수 없습니다."),
 
   /* CommentLike */
 

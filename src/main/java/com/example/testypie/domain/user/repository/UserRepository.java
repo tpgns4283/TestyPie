@@ -22,8 +22,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
       "SELECT new com.example.testypie.domain.user.dto.response.ParticipatedProductResponseDTO(f.product.title, f.createdAt) FROM Feedback f LEFT JOIN f.product p WHERE f.user.account = :account ORDER BY f.createdAt DESC")
   List<ParticipatedProductResponseDTO> getUserFeedbacksDtoIncludingProductInfo(String account);
 
-  boolean existsProductById(Long productId);
-
   // 랜덤로직
   //  @Query("SELECT DISTINCT f.user FROM Feedback f WHERE f.product.id = :productId")
   //  List<User> findAllFeedbackUsersByProductId(@Param("productId") Long productId);
