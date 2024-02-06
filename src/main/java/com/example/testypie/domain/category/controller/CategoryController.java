@@ -29,12 +29,15 @@ public class CategoryController {
   @PostMapping
   public ResponseEntity<CreateCategoryResponseDTO> createCategory(
       @Valid @RequestBody CreateCategoryRequestDTO req) {
+
     CreateCategoryResponseDTO res = categoryService.createCategory(req);
+
     return ResponseEntity.status(HttpStatus.CREATED).body(res);
   }
 
   @GetMapping
-  public List<ReadCategoryResponseDTO> getCategories() {
+  public List<ReadCategoryResponseDTO> getCategoryList() {
+
     return categoryRepository.findAll().stream()
         .map(ReadCategoryResponseDTO::of)
         .collect(Collectors.toList());

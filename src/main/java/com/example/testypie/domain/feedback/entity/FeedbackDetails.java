@@ -4,12 +4,10 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@NoArgsConstructor
 @Getter
-@Setter
 @Entity
+@NoArgsConstructor
 public class FeedbackDetails {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +20,7 @@ public class FeedbackDetails {
   @Column private String response;
 
   @Builder
-  public FeedbackDetails(Long id, Feedback feedback, String response) {
+  private FeedbackDetails(Long id, Feedback feedback, String response) {
     this.id = id;
     this.feedback = feedback;
     this.response = response;

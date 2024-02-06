@@ -41,61 +41,61 @@ public class ProductController {
   private final ProductService productService;
 
   // Product 생성
-  @PostMapping("/category/{parentCategory_name}/{childCategory_id}/products")
-  public ResponseEntity<CreateProductResponseDTO> createPost(
+  @PostMapping("/category/{parentCategoryName}/{childCategoryId}/products")
+  public ResponseEntity<CreateProductResponseDTO> createProduct(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @Valid @RequestBody CreateProductRequestDTO req,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name) {
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName) {
 
     User user = userDetails.getUser();
     CreateProductResponseDTO res =
-        productService.createProduct(user, req, parentCategory_name, childCategory_id);
+        productService.createProduct(user, req, parentCategoryName, childCategoryId);
     return ResponseEntity.status(HttpStatus.CREATED).body(res);
   }
 
   // Product 단일 조회
-  @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}")
+  @GetMapping("/category/{parentCategoryName}/{childCategoryId}/products/{productId}")
   public ModelAndView getProduct(
       @PathVariable Long productId,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name,
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName,
       Model model)
       throws ParseException {
 
     ReadProductResponseDTO res =
-        productService.getProduct(productId, childCategory_id, parentCategory_name);
+        productService.getProduct(productId, childCategoryId, parentCategoryName);
     ModelAndView modelAndView = new ModelAndView();
     modelAndView.setViewName("product");
-    model.addAttribute("parentCategory_name", parentCategory_name);
-    model.addAttribute("childCategory_id", childCategory_id);
+    model.addAttribute("parentCategoryName", parentCategoryName);
+    model.addAttribute("childCategoryId", childCategoryId);
     model.addAttribute("product", res);
     return modelAndView;
   }
 
   // Product 전체 조회 및 카테고리 조회(페이징)
-  @GetMapping("/category/{parentCategory_name}")
+  @GetMapping("/category/{parentCategoryName}")
   public ResponseEntity<Page<ProductPageResponseDTO>> getProductPage(
       // (page = 1) => 1페이지부터 시작
-      @PageableDefault(page = 1) Pageable pageable, @PathVariable String parentCategory_name)
+      @PageableDefault(page = 1) Pageable pageable, @PathVariable String parentCategoryName)
       throws ParseException {
 
-    Page<ProductPageResponseDTO> res = productService.getProductPage(pageable, parentCategory_name);
+    Page<ProductPageResponseDTO> res = productService.getProductPage(pageable, parentCategoryName);
 
     return ResponseEntity.ok().body(res);
   }
 
-  @GetMapping("/category/{parentCategory_name}/{childCategory_id}")
+  @GetMapping("/category/{parentCategoryName}/{childCategoryId}")
   public ModelAndView getProductCategoryPage(
       // (page = 1) => 1페이지부터 시작
       @PageableDefault(page = 1) Pageable pageable,
-      @PathVariable(required = false) Long childCategory_id,
-      @PathVariable String parentCategory_name,
+      @PathVariable(required = false) Long childCategoryId,
+      @PathVariable String parentCategoryName,
       Model model)
       throws ParseException {
 
     Page<ProductPageResponseDTO> res =
-        productService.getProductCategoryPage(pageable, childCategory_id, parentCategory_name);
+        productService.getProductCategoryPage(pageable, childCategoryId, parentCategoryName);
 
     ModelAndView modelAndView = new ModelAndView();
     modelAndView.setViewName("productList");
@@ -103,16 +103,16 @@ public class ProductController {
     return modelAndView;
   }
 
-  @GetMapping("/category/{parentCategory_name}/{childCategory_id}/search")
+  @GetMapping("/category/{parentCategoryName}/{childCategoryId}/search")
   public ResponseEntity<Page<SearchProductResponseDTO>> searchProduct(
       @PageableDefault(page = 1, sort = "productId", direction = Direction.DESC) Pageable pageable,
-      @PathVariable String parentCategory_name,
-      @PathVariable Long childCategory_id,
+      @PathVariable String parentCategoryName,
+      @PathVariable Long childCategoryId,
       @RequestParam String keyword)
       throws ParseException {
 
     Page<SearchProductResponseDTO> resList =
-        productService.searchProductList(pageable, childCategory_id, keyword);
+        productService.searchProductList(pageable, childCategoryId, keyword);
 
     return ResponseEntity.ok().body(resList);
   }
@@ -129,31 +129,31 @@ public class ProductController {
   }
 
   // Product 수정
-  @PatchMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}/update")
+  @PatchMapping("/category/{parentCategoryName}/{childCategoryId}/products/{productId}/update")
   public ResponseEntity<UpdateProductResponseDTO> updateProduct(
       @PathVariable Long productId,
       @RequestBody UpdateProductRequestDTO req,
       @AuthenticationPrincipal UserDetailsImpl userDetails,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name) {
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName) {
 
     UpdateProductResponseDTO res =
         productService.updateProduct(
-            productId, req, userDetails.getUser(), childCategory_id, parentCategory_name);
+            productId, req, userDetails.getUser(), childCategoryId, parentCategoryName);
     return ResponseEntity.ok().body(res);
   }
 
   // Product 삭제
-  @DeleteMapping("/category/{parentCategory_name}/{childCategory_id}/products/{productId}/delete")
+  @DeleteMapping("/category/{parentCategoryName}/{childCategoryId}/products/{productId}/delete")
   public ResponseEntity<DeleteProductResponseDTO> deleteProduct(
       @PathVariable Long productId,
       @AuthenticationPrincipal UserDetailsImpl userDetails,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name) {
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName) {
 
     DeleteProductResponseDTO res =
         productService.deleteProduct(
-            productId, userDetails.getUser(), childCategory_id, parentCategory_name);
+            productId, userDetails.getUser(), childCategoryId, parentCategoryName);
     return ResponseEntity.ok().body(res);
   }
 }

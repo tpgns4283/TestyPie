@@ -6,13 +6,12 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @Entity
 public class Question {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -31,7 +30,7 @@ public class Question {
   private Survey survey;
 
   @Builder
-  public Question(Long id, String text, QuestionType questionType, Survey survey) {
+  private Question(Long id, String text, QuestionType questionType, Survey survey) {
     this.id = id;
     this.text = text;
     this.questionType = questionType;

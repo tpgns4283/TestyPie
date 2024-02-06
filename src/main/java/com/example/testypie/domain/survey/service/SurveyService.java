@@ -34,13 +34,14 @@ public class SurveyService {
   @Transactional
   public CreateSurveyResponseDTO addSurvey(
       CreateSurveyRequestDTO req,
-      Long product_id,
+      Long productId,
       User user,
-      Long childCategory_id,
-      String parentCategory_name) {
+      Long childCategoryId,
+      String parentCategoryName) {
 
-    Product product = productService.getUserProduct(product_id, user);
-    Category category = categoryService.getCategory(childCategory_id, parentCategory_name);
+    Category category = categoryService.checkCategory(childCategoryId, parentCategoryName);
+    Product product = productService.getUserProduct(productId, user);
+
     if (!category.getId().equals(product.getCategory().getId())) {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_NOT_FOUND);
     }
@@ -88,8 +89,9 @@ public class SurveyService {
   public ReadSurveyResponseDTO getSurvey(
       Long productId, Long childCategoryId, String parentCategoryName) {
 
-    Product product = productService.findProduct(productId);
-    Category category = categoryService.getCategory(childCategoryId, parentCategoryName);
+    Category category = categoryService.checkCategory(childCategoryId, parentCategoryName);
+    Product product = productService.checkProduct(productId);
+
     if (!category.getId().equals(product.getCategory().getId())) {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
     }
@@ -100,15 +102,15 @@ public class SurveyService {
   }
 
   @Transactional(readOnly = true)
-  public Survey getSurveyById(Long id) {
+  public Survey checkSurveyById(Long id) {
     return surveyRepository
         .findById(id)
         .orElseThrow(
             () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_SURVEY_NOT_FOUND));
   }
 
-  public void checkSurveyUser(Survey survey, Long product_id) {
-    if (!survey.getProduct().getId().equals(product_id)) { // product 생성자와 유저가 일치하지 않으면
+  public void checkSurveyUser(Survey survey, Long productId) {
+    if (!survey.getProduct().getId().equals(productId)) { // product 생성자와 유저가 일치하지 않으면
       throw new GlobalExceptionHandler.CustomException(
           ErrorCode.SELECT_SURVEY_INVALID_AUTHORIZATION);
     }

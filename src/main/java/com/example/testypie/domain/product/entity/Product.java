@@ -25,14 +25,12 @@ import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
 public class Product extends TimeStamp {
 
@@ -154,7 +152,7 @@ public class Product extends TimeStamp {
   public void setRewardList(List<Reward> rewardList) {
     if (rewardList != null) {
       this.rewardList = rewardList;
-      rewardList.forEach(reward -> reward.setProduct(this));
+      rewardList.forEach(reward -> Reward.builder().product(this).build());
     } else {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.PRODUCT_REWARD_IS_NOT_NULL);
     }

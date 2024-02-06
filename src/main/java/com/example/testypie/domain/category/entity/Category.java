@@ -2,7 +2,6 @@ package com.example.testypie.domain.category.entity;
 
 import jakarta.persistence.*;
 import java.util.Objects;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +10,6 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
 public class Category {
 
@@ -21,8 +19,8 @@ public class Category {
 
   @Column private String name;
 
-  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_id")
+  @ManyToOne(fetch = FetchType.LAZY)
   @OnDelete(action = OnDeleteAction.CASCADE)
   private Category parent;
 

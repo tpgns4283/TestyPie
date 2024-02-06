@@ -31,66 +31,64 @@ public class CommentController {
 
   private final CommentMatcherService commentMatcherService;
 
-  @PostMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments")
+  @PostMapping("/category/{parentCategoryName}/{childCategoryId}/products/{productId}/comments")
   public ResponseEntity<CreateCommentResponseDTO> createComment(
-      @PathVariable Long product_id,
+      @PathVariable Long productId,
       @Valid @RequestBody CreateCommentRequestDTO req,
       @AuthenticationPrincipal UserDetailsImpl userDetails,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name) {
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName) {
 
     CreateCommentResponseDTO res =
         commentMatcherService.productComment(
-            product_id, req, userDetails.getUser(), childCategory_id, parentCategory_name);
+            productId, req, userDetails.getUser(), childCategoryId, parentCategoryName);
+
     return ResponseEntity.ok(res);
   }
 
-  @GetMapping("/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments")
-  public ResponseEntity<Page<ReadPageCommentResponseDTO>> getComments(
+  @GetMapping("/category/{parentCategoryName}/{childCategoryId}/products/{productId}/comments")
+  public ResponseEntity<Page<ReadPageCommentResponseDTO>> getCommentPage(
       @PageableDefault(page = 1, sort = "comment_id", direction = Direction.DESC) Pageable pageable,
-      @PathVariable Long product_id,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name) {
+      @PathVariable Long productId,
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName) {
 
     Page<ReadPageCommentResponseDTO> resList =
-        commentMatcherService.getComments(
-            pageable, product_id, childCategory_id, parentCategory_name);
+        commentMatcherService.getCommentPage(
+            pageable, productId, childCategoryId, parentCategoryName);
 
     return ResponseEntity.ok().body(resList);
   }
 
   @PatchMapping(
-      "/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments/{comment_id}")
+      "/category/{parentCategoryName}/{childCategoryId}/products/{productId}/comments/{comment_id}")
   public ResponseEntity<UpdateCommentResponseDTO> updateComment(
-      @PathVariable Long product_id,
+      @PathVariable Long productId,
       @PathVariable Long comment_id,
       @Valid @RequestBody UpdateCommentRequestDTO req,
       @AuthenticationPrincipal UserDetailsImpl userDetails,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name) {
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName) {
 
     UpdateCommentResponseDTO res =
         commentMatcherService.updateComment(
-            product_id,
-            comment_id,
-            req,
-            userDetails.getUser(),
-            childCategory_id,
-            parentCategory_name);
+            productId, comment_id, req, userDetails.getUser(), childCategoryId, parentCategoryName);
+
     return ResponseEntity.ok(res);
   }
 
   @DeleteMapping(
-      "/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/comments/{comment_id}")
+      "/category/{parentCategoryName}/{childCategoryId}/products/{productId}/comments/{comment_id}")
   public ResponseEntity<Void> deleteComment(
-      @PathVariable Long product_id,
+      @PathVariable Long productId,
       @PathVariable Long comment_id,
       @AuthenticationPrincipal UserDetailsImpl userDetails,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name) {
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName) {
 
     commentMatcherService.deleteComment(
-        product_id, comment_id, userDetails.getUser(), childCategory_id, parentCategory_name);
+        productId, comment_id, userDetails.getUser(), childCategoryId, parentCategoryName);
+
     return ResponseEntity.noContent().build();
   }
 }

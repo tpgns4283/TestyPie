@@ -14,32 +14,32 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/category/{parentCategory_name}/{childCategory_id}/products")
+@RequestMapping("/api/category/{parentCategoryName}/{childCategoryId}/products")
 public class ProductLikeController {
 
   private final ProductLikeService productLikeService;
 
-  @PatchMapping("/{product_id}/product_like")
+  @PatchMapping("/{productId}/product_like")
   public ResponseEntity<ProductLikeResponseDto> clickProductLike(
-      @PathVariable String parentCategory_name,
-      @PathVariable Long childCategory_id,
-      @PathVariable Long product_id,
+      @PathVariable String parentCategoryName,
+      @PathVariable Long childCategoryId,
+      @PathVariable Long productId,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
     ProductLikeResponseDto res =
-        productLikeService.clickProductLike(product_id, userDetails.getUser());
+        productLikeService.clickProductLike(productId, userDetails.getUser());
     return ResponseEntity.ok().body(res);
   }
 
-  @GetMapping("/{product_id}/product_like/status")
+  @GetMapping("/{productId}/product_like/status")
   public ResponseEntity<ProductLikeResponseDto> getProductLike(
-      @PathVariable String parentCategory_name,
-      @PathVariable Long childCategory_id,
-      @PathVariable Long product_id,
+      @PathVariable String parentCategoryName,
+      @PathVariable Long childCategoryId,
+      @PathVariable Long productId,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
     ProductLikeResponseDto res =
-        productLikeService.getProductLike(product_id, userDetails.getUser());
+        productLikeService.getProductLike(productId, userDetails.getUser());
     return ResponseEntity.ok().body(res);
   }
 }

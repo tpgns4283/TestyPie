@@ -108,29 +108,27 @@ public class ViewController {
     return "updateProfileForm";
   }
 
-  @GetMapping(
-      "/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/surveys")
+  @GetMapping("/api/category/{parentCategoryName}/{childCategoryId}/products/{productId}/surveys")
   public String addSurvey(
-      @PathVariable Long product_id,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name,
+      @PathVariable Long productId,
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName,
       Model model) {
-    model.addAttribute("parentName", parentCategory_name);
-    model.addAttribute("childId", childCategory_id);
-    model.addAttribute("productId", product_id);
+    model.addAttribute("parentName", parentCategoryName);
+    model.addAttribute("childId", childCategoryId);
+    model.addAttribute("productId", productId);
     return "addSurvey"; // 이동할 뷰의 이름을 반환
   }
 
-  @GetMapping(
-      "/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/feedback")
+  @GetMapping("/api/category/{parentCategoryName}/{childCategoryId}/products/{productId}/feedback")
   public String addFeedback(
-      @PathVariable Long product_id,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name,
+      @PathVariable Long productId,
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName,
       Model model) {
-    model.addAttribute("parentName", parentCategory_name);
-    model.addAttribute("childId", childCategory_id);
-    model.addAttribute("productId", product_id);
+    model.addAttribute("parentName", parentCategoryName);
+    model.addAttribute("childId", childCategoryId);
+    model.addAttribute("productId", productId);
     return "addFeedback"; // 이동할 뷰의 이름을 반환
   }
 
@@ -142,15 +140,15 @@ public class ViewController {
   }
 
   @GetMapping(
-      "/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/bugreports")
+      "/api/category/{parentCategoryName}/{childCategoryId}/products/{productId}/bugreports")
   public String addBugReports(
-      @PathVariable Long product_id,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name,
+      @PathVariable Long productId,
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName,
       Model model) {
-    model.addAttribute("parentName", parentCategory_name);
-    model.addAttribute("childId", childCategory_id);
-    model.addAttribute("productId", product_id);
+    model.addAttribute("parentName", parentCategoryName);
+    model.addAttribute("childId", childCategoryId);
+    model.addAttribute("productId", productId);
     return "bugreport"; // 이동할 뷰의 이름을 반환
   }
 

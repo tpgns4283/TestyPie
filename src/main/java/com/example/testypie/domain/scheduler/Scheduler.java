@@ -27,6 +27,7 @@ public class Scheduler {
   @Transactional
   @Scheduled(cron = "0 0 0 * * *")
   public void autoDelete() {
+
     LocalDateTime now = LocalDateTime.now();
 
     List<Product> productList = productRepository.findAll();
@@ -66,6 +67,7 @@ public class Scheduler {
 
   @Scheduled(cron = "0 0 0 * * *")
   public void deleteProductsWithoutSurveyId() {
+
     List<Product> products = productRepository.findBySurveyIdIsNull();
     productRepository.deleteAll(products);
   }

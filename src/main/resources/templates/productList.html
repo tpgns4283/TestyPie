@@ -20,7 +20,7 @@
 </head>
 <div th:replace="fragments/header :: headerFragment"></div>
 <body>	<!-- body 없어도 무방 -->
-<div class="container" th:attr="data-parentname=${parentCategory_name}, data-childid=${childCategory_id}">
+<div class="container" th:attr="data-parentname=${parentCategoryName}, data-childid=${childCategoryId}">
         <div id="search-container">
             <input type="text" id="search-input" placeholder="검색어 입력" />
             <button id="search-button">검색</button>
@@ -49,7 +49,7 @@
 
                     <td th:text="${product.productLikeCnt}"></td>
                     <td th:text="${product.nickname}" th:attr="onclick='fetchUserProfile(\'' + ${product.account} + '\')'"></td>
-                    <td th:if="${parentCategory_name == '테스트게시판'}" th:text="${product.message}"></td>
+                    <td th:if="${parentCategoryName == '테스트게시판'}" th:text="${product.message}"></td>
                 </tr>
                 </tbody>
             </table>
@@ -57,11 +57,11 @@
         <div>
             <ul class="pagination">
                 <li th:each="pageNum : ${#numbers.sequence(1, productList.totalPages)}" class="page-item">
-                    <a th:href="@{/api/category/{parentCategory_name}/{childCategory_id}(parentCategory_name=${parentCategory_name}, childCategory_id=${childCategory_id}, page=${pageNum})}" th:text="${pageNum}" class="page-link">1</a>
+                    <a th:href="@{/api/category/{parentCategoryName}/{childCategoryId}(parentCategoryName=${parentCategoryName}, childcategoryID=${childCategoryId}, page=${pageNum})}" th:text="${pageNum}" class="page-link">1</a>
                 </li>
             </ul>
         </div>
-        <a th:href="@{/api/category/{parentName}/{childId}/products(parentName=${parentCategory_name}, childId=${childCategory_id})}" class="btn btn-primary">게시글 작성</a>
+        <a th:href="@{/api/category/{parentName}/{childId}/products(parentName=${parentCategoryName}, childId=${childCategoryId})}" class="btn btn-primary">게시글 작성</a>
             <div class="d-grid gap-2 col-6 mx-auto">
 
             </div>

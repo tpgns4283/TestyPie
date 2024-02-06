@@ -23,9 +23,11 @@ public class FeedbackController {
       @PathVariable Long productId,
       @PathVariable Long childCategoryId,
       @PathVariable String parentCategoryName) {
+
     CreateFeedbackResponseDTO res =
-        feedbackService.addFeedback(
+        feedbackService.createFeedback(
             req, productId, userDetails.getUser(), childCategoryId, parentCategoryName);
+
     return ResponseEntity.status(HttpStatus.CREATED).body(res);
   }
 }
