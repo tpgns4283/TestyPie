@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 public class Feedback extends TimeStamp {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -28,7 +29,7 @@ public class Feedback extends TimeStamp {
   private User user;
 
   @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(name = "product_id")
+  @JoinColumn(name = "productId")
   private Product product;
 
   @ManyToOne @JoinColumn private Survey survey;
@@ -37,6 +38,7 @@ public class Feedback extends TimeStamp {
 
   @Builder
   private Feedback(Long id, Double rating, User user, Product product, Survey survey) {
+
     this.id = id;
     this.feedbackDetailsList = new ArrayList<>();
     this.user = user;
@@ -50,9 +52,10 @@ public class Feedback extends TimeStamp {
   }
 
   public void setFeedbackDetailsList(List<FeedbackDetails> detailslist) {
+
     if (detailslist != null) {
       this.feedbackDetailsList = detailslist;
-      detailslist.forEach(feedbackDetails -> feedbackDetails.setFeedback(this));
+      detailslist.forEach(feedbackDetails -> FeedbackDetails.builder().feedback(this).build());
     } else {
       throw new IllegalArgumentException("Feedback에 Question은 반드시 들어가야 합니다.");
     }
