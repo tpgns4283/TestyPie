@@ -22,21 +22,19 @@ public class ProductLikeService {
   @Transactional
   public ProductLikeResponseDto clickProductLike(Long productId, User user) {
 
-    Product product = productService.findProduct(productId);
-    ProductLike productLike = getProductLikeOrElseCreateProductLike(user, product);
+    ProductAndLike result = CheckProductAndLike(productId, user);
 
-    boolean clickProductLike = productLike.clickProductLike();
-    product.updateProductLikeCnt(clickProductLike);
+    boolean clickProductLike = result.productLike().clickProductLike();
+    result.product().updateProductLikeCnt(clickProductLike);
 
-    return ProductLikeResponseDto.of(productLike.getIsProductLiked());
+    return ProductLikeResponseDto.of(result.productLike().getIsProductLiked());
   }
 
   public ProductLikeResponseDto getProductLike(Long productId, User user) {
 
-    Product product = productService.findProduct(productId);
-    ProductLike productLike = getProductLikeOrElseCreateProductLike(user, product);
+    ProductAndLike result = CheckProductAndLike(productId, user);
 
-    return ProductLikeResponseDto.of(productLike.getIsProductLiked());
+    return ProductLikeResponseDto.of(result.productLike().getIsProductLiked());
   }
 
   private ProductLike saveProductLike(Product product, User user) {
@@ -56,4 +54,15 @@ public class ProductLikeService {
         .findByProductAndUser(product, user)
         .orElseGet(() -> saveProductLike(product, user));
   }
+
+  private ProductAndLike CheckProductAndLike(Long productId, User user) {
+
+    Product product = productService.checkProduct(productId);
+    ProductLike productLike = getProductLikeOrElseCreateProductLike(user, product);
+    ProductAndLike result = new ProductAndLike(product, productLike);
+
+    return result;
+  }
+
+  private record ProductAndLike(Product product, ProductLike productLike) {}
 }
