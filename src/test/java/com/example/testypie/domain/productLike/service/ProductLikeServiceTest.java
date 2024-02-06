@@ -53,7 +53,7 @@ class ProductLikeServiceTest {
 
     Optional<ProductLike> optionalProductLike = Optional.empty();
 
-    given(productService.findProduct(anyLong())).willReturn(product);
+    given(productService.checkProduct(anyLong())).willReturn(product);
 
     given(productLikeRepository.findByProductAndUser(any(Product.class), any(User.class)))
         .willReturn(optionalProductLike);
@@ -79,7 +79,7 @@ class ProductLikeServiceTest {
     ProductLike productLike =
         ProductLike.builder().id(1L).isProductLiked(true).product(product).user(user).build();
 
-    given(productService.findProduct(anyLong())).willReturn(product);
+    given(productService.checkProduct(anyLong())).willReturn(product);
 
     given(productLikeRepository.findByProductAndUser(any(Product.class), any(User.class)))
         .willReturn(Optional.ofNullable(productLike));

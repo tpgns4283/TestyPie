@@ -108,12 +108,11 @@ public class ViewController {
     return "updateProfileForm";
   }
 
-  @GetMapping(
-      "/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/surveys")
+  @GetMapping("/api/category/{parentCategoryName}/{childCategoryId}/products/{productId}/surveys")
   public String addSurvey(
-      @PathVariable Long product_id,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name,
+      @PathVariable Long productId,
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName,
       Model model) {
     if ("테스트게시판".equals(parentCategory_name)) {
       model.addAttribute("parentName", parentCategory_name);
@@ -126,13 +125,13 @@ public class ViewController {
     }
   }
 
-  @GetMapping(
-      "/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/feedback")
+  @GetMapping("/api/category/{parentCategoryName}/{childCategoryId}/products/{productId}/feedback")
   public String addFeedback(
-      @PathVariable Long product_id,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name,
+      @PathVariable Long productId,
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName,
       Model model) {
+    
     if ("테스트게시판".equals(parentCategory_name)) {
       model.addAttribute("parentName", parentCategory_name);
       model.addAttribute("childId", childCategory_id);
@@ -152,12 +151,13 @@ public class ViewController {
   }
 
   @GetMapping(
-      "/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}/bugreports")
+      "/api/category/{parentCategoryName}/{childCategoryId}/products/{productId}/bugreports")
   public String addBugReports(
-      @PathVariable Long product_id,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name,
+      @PathVariable Long productId,
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName,
       Model model) {
+
     if ("테스트게시판".equals(parentCategory_name)) {
       model.addAttribute("parentName", parentCategory_name);
       model.addAttribute("childId", childCategory_id);

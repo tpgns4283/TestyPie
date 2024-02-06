@@ -1,20 +1,19 @@
 package com.example.testypie.domain.user.entity;
 
 import com.example.testypie.domain.reward.entity.Reward;
+import com.example.testypie.domain.user.constant.UserRole;
 import com.example.testypie.domain.user.dto.request.UpdateProfileRequestDTO;
-import com.example.testypie.domain.userrole.constant.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Table(name = "users")
 public class User {
 

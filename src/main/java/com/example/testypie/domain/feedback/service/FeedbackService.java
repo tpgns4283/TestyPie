@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,23 +31,19 @@ public class FeedbackService {
   private final CategoryService categoryService;
   private final SurveyService surveyService;
 
-  public CreateFeedbackResponseDTO addFeedback(
+  public CreateFeedbackResponseDTO createFeedback(
       CreateFeedbackRequestDTO req,
       Long productId,
       User user,
       Long childCategoryId,
       String parentCategoryName) {
-    // 해당 product 존재 여부 검증
-    Product product = productService.findProduct(productId);
+
+    Category category = categoryService.checkCategory(childCategoryId, parentCategoryName);
+    Product product = productService.checkProduct(productId);
+    Survey survey = surveyService.checkSurveyById(product.getSurvey().getId());
+
     if (product.getUser().getId().equals(user.getId())) {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.CREATE_FEEDBACK_NOT_ALLOWED);
-    }
-    Category category = categoryService.getCategory(childCategoryId, parentCategoryName);
-    Survey survey = surveyService.getSurveyById(product.getSurvey().getId());
-
-    boolean hasSubmitted = feedbackRepository.existsByUserAndSurvey(user, survey);
-    if (hasSubmitted) {
-      throw new GlobalExceptionHandler.CustomException(ErrorCode.CREATE_FEEDBACK_ALREADY_SUBMITTED);
     }
 
     if (LocalDateTime.now().isAfter(product.getClosedAt())) {
@@ -57,6 +52,11 @@ public class FeedbackService {
 
     if (!category.getId().equals(product.getCategory().getId())) {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_PRODUCT_CATEGORY_NOT_FOUND);
+    }
+
+    boolean hasSubmitted = feedbackRepository.existsByUserAndSurvey(user, survey);
+    if (hasSubmitted) {
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.CREATE_FEEDBACK_ALREADY_SUBMITTED);
     }
 
     Feedback feedback = Feedback.builder().user(user).product(product).survey(survey).build();
@@ -77,54 +77,22 @@ public class FeedbackService {
     return new CreateFeedbackResponseDTO(savedFeedback);
   }
 
-  // =======================================================================//
-  //    에러클래스 수정함
-  // =======================================================================//
+  public double checkAverageRating(User user) {
 
-  // feedback_id로 feedback 조회
-  @Transactional(readOnly = true)
-  public Feedback getFeedbackById(Long id) {
-    return feedbackRepository
-        .findById(id)
-        .orElseThrow(
-            () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_FEEDBACK_NOT_FOUND));
-  }
-
-  // product의 feedback인지 확인
-  public void checkFeedback(Feedback feedback, Long product_id) {
-    if (!feedback.getProduct().getId().equals(product_id)) {
-      throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_FEEDBACK_NOT_FOUND);
-    }
-  }
-
-  public double getAverageRating(User user) {
     return feedbackRepository.findAverageScoreByUserId(user.getId());
   }
 
-  // productId와 feedbackId로 유효한 feedback 검색
-  public Feedback getValidFeedback(Long productId, Long feedbackId) {
-    // findByProductIdAndId를 사용하여 특정 prodcutId와 feedbackId에 해당하는 feedback검색
+  public Feedback checkFeedback(Long productId, Long feedbackId) {
+
     return feedbackRepository
         .findByProductIdAndId(productId, feedbackId)
-        // 검색된 feedback 없으면 예외발생
         .orElseThrow(
             () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_FEEDBACK_NOT_FOUND));
   }
 
-  public void setFeedbackRatingStar(Feedback feedback, RatingStarRequestDTO req) {
+  public void assignFeedbackRatingStar(Feedback feedback, RatingStarRequestDTO req) {
+
     feedback.assignRating(req);
     feedbackRepository.save(feedback);
-  }
-
-  // 5점을 받은 피드백의 리스트를 가져오는 메서드
-  public List<Feedback> findFiveStarFeedbacksByProduct(Long productId) {
-    return feedbackRepository.findFeedbacksByProductIdAndRating(productId, 5.0);
-  }
-
-  public List<Feedback> getAllFeedbacksByProductId(Long productId) {
-    return feedbackRepository
-        .findAllFeedbacksByProductId(productId)
-        .orElseThrow(
-            () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_FEEDBACK_NOT_FOUND));
   }
 }

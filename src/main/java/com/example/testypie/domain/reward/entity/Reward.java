@@ -6,10 +6,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
 @NoArgsConstructor
 public class Reward {
@@ -32,7 +30,7 @@ public class Reward {
   @Column String fileUrl;
 
   @Builder
-  public Reward(
+  private Reward(
       Long id, String reward_item, Long item_size, User user, Product product, String fileUrl) {
     this.id = id;
     this.rewardItem = reward_item;

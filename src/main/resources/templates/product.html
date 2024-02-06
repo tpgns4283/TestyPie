@@ -57,7 +57,7 @@
 <div th:replace="fragments/header :: headerFragment"></div>
 <!-- section Start -->
 
-<div class="container" th:attr="data-parentname=${parentCategory_name}, data-childid=${childCategory_id}, data-productid=${productId}">
+<div class="container" th:attr="data-parentname=${parentCategoryName}, data-childid=${childCategoryId}, data-productid=${productId}">
     <h2 th:text="${product.title}"> </h2>
 </div>
 <div>
@@ -99,17 +99,17 @@
 <div class="row">
     <div class="d-grid gap-2 col-6 mx-auto">
         <button class="btn btn-dark"
-                th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/update(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
+                th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/update(parentName=${parentCategoryName}, childId=${childCategoryId}, productId=${product.id})}'|"
                 type="button" id="productEdit">게시글 수정</button>
 
         <button class="btn btn-secondary"
-                th:onclick="|location.href='@{/api/category/{parentName}/{childId}(parentName=${parentCategory_name}, childId=${childCategory_id})}'|"
+                th:onclick="|location.href='@{/api/category/{parentName}/{childId}(parentName=${parentCategoryName}, childId=${childCategoryId})}'|"
                 type="button">게시글 목록</button>
         <button class="btn btn-secondary"
-                th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/feedback(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
+                th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/feedback(parentName=${parentCategoryName}, childId=${childCategoryId}, productId=${product.id})}'|"
                 type="button" id="productFeedback">피드백 등록</button>
         <button class="btn btn-secondary"
-                th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/bugreports(parentName=${parentCategory_name}, childId=${childCategory_id}, productId=${product.id})}'|"
+                th:onclick="|location.href='@{/api/category/{parentName}/{childId}/products/{productId}/bugreports(parentName=${parentCategoryName}, childId=${childCategoryId}, productId=${product.id})}'|"
                 type="button" id="productBugReports">버그리포트 등록</button>
         <button id="product-like-button" type="button" onclick="likeProduct()">좋아요</button>
     </div>

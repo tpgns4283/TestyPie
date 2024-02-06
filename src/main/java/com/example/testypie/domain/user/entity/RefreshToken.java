@@ -14,7 +14,7 @@ public class RefreshToken {
   String tokenValue;
 
   @Builder
-  public RefreshToken(String account, String tokenValue) {
+  private RefreshToken(String account, String tokenValue) {
     this.account = account;
     this.tokenValue = tokenValue;
   }
