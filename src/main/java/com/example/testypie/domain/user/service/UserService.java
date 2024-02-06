@@ -21,8 +21,6 @@ public class UserService {
 
   private final UserRepository userRepository;
 
-  //    private final S3Uploader s3Uploader;
-
   @Value("${default.image.address}")
   private String defaultProfileImageUrl;
 
@@ -81,16 +79,8 @@ public class UserService {
             () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
   }
 
-  public User findUserByUserId(Long userId) {
-    return userRepository
-        .findById(userId)
-        .orElseThrow(
-            () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_USER_NOT_FOUND));
-  }
-
   public void signOut(User user) {
     Long userId = user.getId();
-
     deleteUser(userId);
   }
 

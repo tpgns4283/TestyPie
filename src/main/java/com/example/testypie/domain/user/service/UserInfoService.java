@@ -4,11 +4,9 @@ import com.example.testypie.domain.feedback.entity.Feedback;
 import com.example.testypie.domain.feedback.service.FeedbackService;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.service.ProductService;
-import com.example.testypie.domain.reward.entity.Reward;
 import com.example.testypie.domain.user.dto.request.RatingStarRequestDTO;
 import com.example.testypie.domain.user.dto.request.UpdateProfileRequestDTO;
 import com.example.testypie.domain.user.dto.response.ParticipatedProductResponseDTO;
-import com.example.testypie.domain.user.dto.response.ProfileResponseDTO;
 import com.example.testypie.domain.user.dto.response.RegisteredProductResponseDTO;
 import com.example.testypie.domain.user.dto.response.UpdateProfileResponseDTO;
 import com.example.testypie.domain.user.entity.User;
@@ -59,7 +57,7 @@ public class UserInfoService {
       profileUser.updatePassword(password);
     }
 
-    String fileUrl = profileUser.getFileUrl(); // 사용자가 가진 기존 파일
+    String fileUrl = profileUser.getFileUrl();
 
     if (multipartfile != null && !multipartfile.isEmpty()) {
       if (!fileUrl.equals(defaultProfileImageUrl)) {
@@ -79,16 +77,6 @@ public class UserInfoService {
         profileUser.getFileUrl());
   }
 
-  public ProfileResponseDTO getProfile(String account) {
-    User user = findProfile(account);
-    return new ProfileResponseDTO(
-        user.getAccount(),
-        user.getNickname(),
-        user.getEmail(),
-        user.getDescription(),
-        user.getFileUrl());
-  }
-
   public User findProfile(String account) {
     return userRepository
         .findByAccount(account)
@@ -98,7 +86,6 @@ public class UserInfoService {
                     ErrorCode.SELECT_PROFILE_USER_NOT_FOUND));
   }
 
-  // 프로필 작성자와 사이트 이용자가 일치하는 메서드
   public void checkSameUser(String profileAccount, String userAccount) {
     User profileUser = findProfile(profileAccount);
     User user = findProfile(userAccount);
@@ -108,39 +95,34 @@ public class UserInfoService {
     }
   }
 
-  // product 등록 이력 가져오기
   public List<RegisteredProductResponseDTO> getUserProducts(String account) {
     List<Product> productList = userRepository.getUserProductsOrderByCreatedAtDesc(account);
     return productList.stream().map(RegisteredProductResponseDTO::of).collect(Collectors.toList());
   }
 
-  // product 참여 이력 가져오기
   public List<ParticipatedProductResponseDTO> getUserParticipatedProducts(String account) {
     return userRepository.getUserFeedbacksDtoIncludingProductInfo(account);
   }
 
-  public Feedback getValidFeedback(Long productId, Long feedbackId) {
-    // 제품 유효성 확인
-    validateProduct(productId);
+  public Feedback checkFeedback(Long productId, Long feedbackId) {
 
-    // 피드백 검색 및 유효성 확인
-    Feedback feedback = validateAndGetFeedback(productId, feedbackId);
-
-    // feedback과 product의 연관성 확인
-    validateFeedbackProductAssociation(feedback, productId);
+    checkProduct(productId);
+    Feedback feedback = checkAndGetFeedback(productId, feedbackId);
+    checkFeedbackLocation(feedback, productId);
 
     return feedback;
   }
 
-  private void validateProduct(Long productId) {
+  private void checkProduct(Long productId) {
+
     boolean isProductValid = userRepository.existsProductById(productId);
     if (!isProductValid) {
-      throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_PRODUCT_ID_NOT_FOUND);
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_productId_NOT_FOUND);
     }
   }
 
-  private Feedback validateAndGetFeedback(Long productId, Long feedbackId) {
-    Feedback feedback = feedbackService.getValidFeedback(productId, feedbackId);
+  private Feedback checkAndGetFeedback(Long productId, Long feedbackId) {
+    Feedback feedback = feedbackService.checkFeedback(productId, feedbackId);
 
     if (feedback == null) {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_FEEDBACK_ID_NOT_FOUND);
@@ -149,7 +131,8 @@ public class UserInfoService {
     return feedback;
   }
 
-  private void validateFeedbackProductAssociation(Feedback feedback, Long productId) {
+  private void checkFeedbackLocation(Feedback feedback, Long productId) {
+
     if (!feedback.getProduct().getId().equals(productId)) {
       throw new GlobalExceptionHandler.CustomException(
           ErrorCode.PROFILE_PRODUCT_FEEDBACK_ID_NOT_FOUND);
@@ -157,54 +140,47 @@ public class UserInfoService {
   }
 
   public void assignRatingStarAtFeedback(Feedback feedback, RatingStarRequestDTO req) {
-    feedbackService.setFeedbackRatingStar(feedback, req);
+
+    feedbackService.assignFeedbackRatingStar(feedback, req);
   }
 
   public double getAverageRating(String account) {
+
     User user = findProfile(account);
-    return feedbackService.getAverageRating(user);
+
+    return feedbackService.checkAverageRating(user);
   }
 
-  public List<User> drawUsers(Long productId) {
-    // product 찾기
-    Product product = productService.findProduct(productId);
-
-    // rewardlist 찾기
-    List<Reward> rewardList = product.getRewardList();
-
-    // 빈 목록이나 null일 경우 예외 처리
-    if (rewardList == null || rewardList.isEmpty()) {
-      return List.of(); // 빈 리스트 반환
-    }
-
-    // 선택된 랜덤 인덱스에 해당하는 User 가져오기 (중복 방지)
-    return getRandomUserList(productId, rewardList);
-  }
-
-  private List<User> getRandomUserList(Long productId, List<Reward> rewardList) {
-
-    // user 리스트 가져오기
-    List<User> userList = userRepository.findAllFeedbackUsersByProductId(productId);
-
-    // 전체 reward_size 합산
-
-    for (Reward reward : rewardList) {
-      Integer rewardCnt = Math.toIntExact(reward.getItemSize());
-    }
-
-    int totalRewardSize =
-        rewardList.stream().mapToInt(reward -> Math.toIntExact(reward.getItemSize())).sum();
-
-    // 전체 reward_size 만큼의 랜덤 인덱스 선택
-    List<Integer> randomIndexes = getRandomIndexes(totalRewardSize, userList.size());
-
-    // 선택된 랜덤 인덱스에 해당하는 User 가져오기 (중복 방지)
-    return randomIndexes.stream().distinct().map(userList::get).collect(Collectors.toList());
-  }
-
-  private List<Integer> getRandomIndexes(int totalSize, int maxSize) {
-    return random.ints(totalSize, 0, maxSize).boxed().toList();
-  }
+  // 랜덤로직
+  //  public List<User> drawUsers(Long productId) {
+  //
+  //    Product product = productService.checkProduct(productId);
+  //    List<Reward> rewardList = product.getRewardList();
+  //
+  //    if (rewardList == null || rewardList.isEmpty()) {
+  //      return List.of();
+  //    }
+  //
+  //    return getRandomUserList(productId, rewardList);
+  //  }
+  //  private List<User> getRandomUserList(Long productId, List<Reward> rewardList) {
+  //
+  //    List<User> userList = userRepository.findAllFeedbackUsersByProductId(productId);
+  //
+  //    for (Reward reward : rewardList) {
+  //      Integer rewardCnt = Math.toIntExact(reward.getItemSize());
+  //    }
+  //
+  //    int totalRewardSize =
+  //        rewardList.stream().mapToInt(reward -> Math.toIntExact(reward.getItemSize())).sum();
+  //    List<Integer> randomIndexes = getRandomIndexes(totalRewardSize, userList.size());
+  //
+  //    return randomIndexes.stream().distinct().map(userList::get).collect(Collectors.toList());
+  //  }
+  //
+  //  private List<Integer> getRandomIndexes(int totalSize, int maxSize) {
+  //    return random.ints(totalSize, 0, maxSize).boxed().toList();
+  //  }
 
   private void getUserValid(User profileUser, User user) {
     if (!profileUser.getId().equals(user.getId())) {
