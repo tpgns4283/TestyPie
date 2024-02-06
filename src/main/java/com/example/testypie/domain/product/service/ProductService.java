@@ -240,7 +240,8 @@ public class ProductService {
     Page<Product> pagePage =
         productRepository.searchAllByKeyword(
             PageRequest.of(page, pageLimit, Sort.by(Direction.DESC, "id")),
-                childCategoryId,keyword);
+            childCategoryId,
+            keyword);
 
     for (Product product : pagePage) {
       SearchProductResponseDTO res = SearchProductResponseDTO.of(product);
