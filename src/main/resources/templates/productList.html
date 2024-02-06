@@ -106,14 +106,12 @@
         thead.append('<th>글 번호</th>');
         thead.append('<th>제목</th>');
         thead.append('<th>좋아요</th>');
+        thead.append('<th>작성자</th>');
 
         // parentCategory에 따라 동적으로 컬럼 추가
         if (parentCategory === "테스트게시판") {
             thead.append('<th>기한</th>');
         }
-
-        // 공통 컬럼 추가
-        thead.append('<th>작성자</th>');
     }
 
     function updateTable(data, parentCategory) {

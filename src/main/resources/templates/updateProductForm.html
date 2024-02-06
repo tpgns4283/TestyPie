@@ -69,18 +69,18 @@
 
         var parentName = $(".container").data("parentname");
 
-        if (parentName === "게시판") {
-            $("#startedLabel").remove(); // 시작일자 레이블과 입력 필드를 제거
+        if (parentName !== "테스트게시판") {
+            $("#startedLabel").remove();
             $("#startAt").remove();
-            $("#closedAtLabel").remove(); // 마감일자 레이블과 입력 필드를 제거
+            $("#closedAtLabel").remove();
             $("#closedAt").remove();
         }
 
         $("#saveBtn").click(function () {
             var title = $("#title").val().trim();
             var content = $("#content").val().trim();
-            var startAt = $("#startAt").val().trim();
-            var closedAt = $("#closedAt").val().trim();
+            var startAt = $("#startAt").val()
+            var closedAt = $("#closedAt").val()
 
             if (confirm("게시글을 수정하시겠습니까?")) {
                 var productData = {

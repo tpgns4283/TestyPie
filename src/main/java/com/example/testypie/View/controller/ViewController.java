@@ -114,10 +114,15 @@ public class ViewController {
       @PathVariable Long childCategoryId,
       @PathVariable String parentCategoryName,
       Model model) {
-    model.addAttribute("parentName", parentCategoryName);
-    model.addAttribute("childId", childCategoryId);
-    model.addAttribute("productId", productId);
-    return "addSurvey"; // 이동할 뷰의 이름을 반환
+    if ("테스트게시판".equals(parentCategory_name)) {
+      model.addAttribute("parentName", parentCategory_name);
+      model.addAttribute("childId", childCategory_id);
+      model.addAttribute("productId", product_id);
+      return "addSurvey"; // 이동할 뷰의 이름을 반환
+    } else {
+      // 부모 카테고리 이름이 "테스트게시판"이 아닐 경우 처리
+      return "errorPage"; // 에러 페이지나 다른 뷰 이름을 반환
+    }
   }
 
   @GetMapping("/api/category/{parentCategoryName}/{childCategoryId}/products/{productId}/feedback")
@@ -126,10 +131,16 @@ public class ViewController {
       @PathVariable Long childCategoryId,
       @PathVariable String parentCategoryName,
       Model model) {
-    model.addAttribute("parentName", parentCategoryName);
-    model.addAttribute("childId", childCategoryId);
-    model.addAttribute("productId", productId);
-    return "addFeedback"; // 이동할 뷰의 이름을 반환
+    
+    if ("테스트게시판".equals(parentCategory_name)) {
+      model.addAttribute("parentName", parentCategory_name);
+      model.addAttribute("childId", childCategory_id);
+      model.addAttribute("productId", product_id);
+      return "addFeedback"; // 이동할 뷰의 이름을 반환
+    } else {
+      // 부모 카테고리 이름이 "테스트게시판"이 아닐 경우 처리
+      return "errorPage"; // 에러 페이지나 다른 뷰 이름을 반환
+    }
   }
 
   @GetMapping("/api/user/{account}")
@@ -146,10 +157,15 @@ public class ViewController {
       @PathVariable Long childCategoryId,
       @PathVariable String parentCategoryName,
       Model model) {
-    model.addAttribute("parentName", parentCategoryName);
-    model.addAttribute("childId", childCategoryId);
-    model.addAttribute("productId", productId);
-    return "bugreport"; // 이동할 뷰의 이름을 반환
+
+    if ("테스트게시판".equals(parentCategory_name)) {
+      model.addAttribute("parentName", parentCategory_name);
+      model.addAttribute("childId", childCategory_id);
+      model.addAttribute("productId", product_id);
+      return "bugreport"; // 이동할 뷰의 이름을 반환
+    } else{
+      return "errorPage";
+    }
   }
 
   @GetMapping("/api/users/{account}/myProducts")
