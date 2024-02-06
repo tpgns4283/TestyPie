@@ -43,15 +43,18 @@ public class CommentService {
               .commentLikeCnt(DEFAULT_COMMENT_LIKE_CNT)
               .product(product)
               .build();
+
       Comment saveComment = commentRepository.save(comment);
+
       return CreateCommentResponseDTO.of(saveComment);
     } else {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_COMMENT_NOT_MATCH_ORIGIN);
     }
   }
 
-  public Page<ReadPageCommentResponseDTO> getComments(
+  public Page<ReadPageCommentResponseDTO> getCommentPage(
       Pageable pageable, Category category, Product product) {
+
     int page = pageable.getPageNumber() - 1;
     int pageLimit = 10;
 
@@ -77,10 +80,11 @@ public class CommentService {
       Category category, Product product, User user, Long comment_id, UpdateCommentRequestDTO req) {
 
     if (category.getId().equals(product.getCategory().getId())) {
-      Comment comment = getCommentEntity(comment_id);
-      checkProduct(comment, product.getId());
-      checkUser(comment, user.getId());
+      Comment comment = checkComment(comment_id);
+      checkCommentLocation(comment, product.getId());
+      checkCommentUser(comment, user.getId());
       comment.update(req, product);
+
       return UpdateCommentResponseDTO.of(comment);
     } else {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_COMMENT_NOT_MATCH_ORIGIN);
@@ -90,34 +94,34 @@ public class CommentService {
   public void deleteComment(Category category, Product product, User user, Long comment_id) {
 
     if (category.getId().equals(product.getCategory().getId())) {
-      Comment comment = getCommentEntity(comment_id);
-      checkProduct(comment, product.getId());
-      checkUser(comment, user.getId());
+      Comment comment = checkComment(comment_id);
+      checkCommentLocation(comment, product.getId());
+      checkCommentUser(comment, user.getId());
       commentRepository.delete(comment);
     } else {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_COMMENT_NOT_MATCH_ORIGIN);
     }
   }
 
-  // comment id로 댓글 조회
   @Transactional(readOnly = true)
-  public Comment getCommentEntity(Long comment_id) {
+  public Comment checkComment(Long comment_id) {
+
     return commentRepository
         .findById(comment_id)
         .orElseThrow(
             () -> new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_COMMENT_NOT_EXIST));
   }
 
-  // 게시글에 달린 댓글이 맞는지 확인
-  public void checkProduct(Comment comment, Long product_id) {
-    if (!comment.getProduct().getId().equals(product_id)) {
+  public void checkCommentLocation(Comment comment, Long productId) {
+
+    if (!comment.getProduct().getId().equals(productId)) {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_COMMENT_NOT_MATCH_ORIGIN);
     }
   }
 
-  // 수정 삭제 user 일치 확인
-  public void checkUser(Comment comment, Long user_id) {
-    if (!comment.getUser().getId().equals(user_id)) {
+  public void checkCommentUser(Comment comment, Long userId) {
+
+    if (!comment.getUser().getId().equals(userId)) {
       throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_COMMENT_INVALID_USER);
     }
   }
