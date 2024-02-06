@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 @RestController
-@RequestMapping("/api/category/{parentCategory_name}/{childCategory_id}/products/{product_id}")
+@RequestMapping("/api/category/{parentCategoryName}/{childCategoryId}/products/{productId}")
 @RequiredArgsConstructor
 public class BugReportController {
 
@@ -34,28 +34,28 @@ public class BugReportController {
       value = "/reports",
       consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<CreateBugReportResponseDTO> createBugReport(
-      @PathVariable Long product_id,
+      @PathVariable Long productId,
       @RequestPart(value = "req", required = false) CreateBugReportRequestDTO req,
       @RequestPart(value = "file", required = false) @Nullable MultipartFile multipartFile,
       @AuthenticationPrincipal @NotNull UserDetailsImpl userDetails,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name) {
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName) {
 
     CreateBugReportResponseDTO res =
-        bugReportService.createBugReport(product_id, req, userDetails.getUser(), multipartFile);
+        bugReportService.createBugReport(productId, req, userDetails.getUser(), multipartFile);
     return ResponseEntity.ok().body(res);
   }
 
-  @GetMapping("/reports/{bugReport_id}") // 경로 중괄호가 잘못 닫혔습니다.
-  public ModelAndView getProductBugReports(
+  @GetMapping("/reports/{bugReport_id}")
+  public ModelAndView getProductBugReport(
       @PathVariable Long bugReport_id,
-      @PathVariable Long product_id,
+      @PathVariable Long productId,
       @AuthenticationPrincipal @NotNull UserDetailsImpl userDetails,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name) {
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName) {
 
     ReadBugReportResponseDTO res =
-        bugReportService.getBugReport(bugReport_id, product_id, userDetails.getUser());
+        bugReportService.getBugReport(bugReport_id, productId, userDetails.getUser());
 
     ModelAndView modelAndView = new ModelAndView();
     modelAndView.setViewName("bugReport");
@@ -64,15 +64,15 @@ public class BugReportController {
   }
 
   @GetMapping("/reports")
-  public ResponseEntity<Page<ReadPageBugReportResponseDTO>> getBugReports(
-      @PathVariable Long product_id,
+  public ResponseEntity<Page<ReadPageBugReportResponseDTO>> getBugReportPage(
+      @PathVariable Long productId,
       @AuthenticationPrincipal @NotNull UserDetailsImpl userDetails,
       Pageable pageable,
-      @PathVariable Long childCategory_id,
-      @PathVariable String parentCategory_name) {
+      @PathVariable Long childCategoryId,
+      @PathVariable String parentCategoryName) {
 
     Page<ReadPageBugReportResponseDTO> res =
-        bugReportService.getBugReports(pageable, product_id, userDetails.getUser());
+        bugReportService.getBugReportPage(pageable, productId, userDetails.getUser());
 
     return ResponseEntity.ok().body(res);
   }

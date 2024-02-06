@@ -9,7 +9,6 @@ import com.example.testypie.domain.bugreport.repository.BugReportRepository;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.service.ProductService;
 import com.example.testypie.domain.user.entity.User;
-import com.example.testypie.domain.user.service.UserInfoService;
 import com.example.testypie.domain.util.S3Util;
 import com.example.testypie.domain.util.S3Util.FilePath;
 import com.example.testypie.global.exception.ErrorCode;
@@ -34,15 +33,13 @@ public class BugReportService {
 
   private final BugReportRepository bugReportRepository;
   private final ProductService productService;
-  private final UserInfoService userInfoService;
   private final S3Util s3Util;
 
   public CreateBugReportResponseDTO createBugReport(
       Long productId, CreateBugReportRequestDTO req, User user, MultipartFile multipartFile) {
-    Product product = productService.findProduct(productId);
 
+    Product product = productService.checkProduct(productId);
     String fileUrl = s3Util.uploadFile(multipartFile, FilePath.BUGREPORT);
-
     BugReport bugReport =
         BugReport.builder()
             .content(req.content())
@@ -57,15 +54,13 @@ public class BugReportService {
   }
 
   public ReadBugReportResponseDTO getBugReport(Long bugReportId, Long productId, User user) {
-    Product product = productService.findProduct(productId);
 
-    // 해당 제품의 소유자가 아닌 경우
+    Product product = productService.checkProduct(productId);
+
     if (!product.getUser().getId().equals(user.getId())) {
-      throw new GlobalExceptionHandler.CustomException(
-          ErrorCode.SELECT_BUGREPORT_NOT_FOUND); // -> 권한이 없습니ㅏㄷ.
+      throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_BUGREPORT_NOT_FOUND);
     }
 
-    // 해당 제품에 대한 BugReport 조회 및 응답 DTO 생성
     return ReadBugReportResponseDTO.of(
         bugReportRepository
             .findByProductIdAndId(productId, bugReportId)
@@ -75,11 +70,12 @@ public class BugReportService {
                         ErrorCode.SELECT_BUGREPORT_NOT_FOUND)));
   }
 
-  public Page<ReadPageBugReportResponseDTO> getBugReports(
+  public Page<ReadPageBugReportResponseDTO> getBugReportPage(
       Pageable pageable, Long productId, User user) {
+
     int page = pageable.getPageNumber() - 1;
     int pageLimit = 10;
-    Product product = productService.findProduct(productId);
+    Product product = productService.checkProduct(productId);
 
     if (product.getUser().getId().equals(user.getId())) {
       Page<BugReport> bugReportPage =
@@ -92,8 +88,10 @@ public class BugReportService {
         ReadPageBugReportResponseDTO res = ReadPageBugReportResponseDTO.of(bugReport);
         resList.add(res);
       }
+
       return new PageImpl<>(resList, pageable, bugReportPage.getTotalElements());
     }
+
     throw new GlobalExceptionHandler.CustomException(ErrorCode.SELECT_BUGREPORT_INVALID);
   }
 }
