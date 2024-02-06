@@ -50,7 +50,7 @@ class CommentLikeServiceTest {
 
     Optional<CommentLike> optionalCommentLike = Optional.empty();
 
-    given(commentService.getCommentEntity(anyLong())).willReturn(comment);
+    given(commentService.checkComment(anyLong())).willReturn(comment);
 
     given(commentLikeRepository.findByCommentAndUser(any(Comment.class), any(User.class)))
         .willReturn(optionalCommentLike);
@@ -75,7 +75,7 @@ class CommentLikeServiceTest {
     CommentLike commentLike =
         CommentLike.builder().id(1L).isCommentLiked(true).comment(comment).user(user).build();
 
-    given(commentService.getCommentEntity(anyLong())).willReturn(comment);
+    given(commentService.checkComment(anyLong())).willReturn(comment);
 
     given(commentLikeRepository.findByCommentAndUser(any(Comment.class), any(User.class)))
         .willReturn(Optional.ofNullable(commentLike));

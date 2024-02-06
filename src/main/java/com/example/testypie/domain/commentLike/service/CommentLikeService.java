@@ -58,7 +58,7 @@ public class CommentLikeService {
 
   private CommentAndLike CheckCommentAndLike(Long commentId, User user) {
 
-    Comment comment = commentService.getCommentEntity(commentId);
+    Comment comment = commentService.checkComment(commentId);
     CommentLike commentLike = getCommentLikeOrElseCreateCommentLike(user, comment);
     CommentAndLike result = new CommentAndLike(comment, commentLike);
 
