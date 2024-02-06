@@ -4,7 +4,7 @@ import static com.example.testypie.domain.commentLike.constant.CommentLikeConsta
 
 import com.example.testypie.domain.comment.entity.Comment;
 import com.example.testypie.domain.comment.service.CommentService;
-import com.example.testypie.domain.commentLike.dto.CommentLikeResponseDto;
+import com.example.testypie.domain.commentLike.dto.response.CommentLikeResponseDto;
 import com.example.testypie.domain.commentLike.entity.CommentLike;
 import com.example.testypie.domain.commentLike.repository.CommentLikeRepository;
 import com.example.testypie.domain.user.entity.User;
@@ -22,27 +22,19 @@ public class CommentLikeService {
   @Transactional
   public CommentLikeResponseDto clickCommentLike(Long commentId, User user) {
 
-    Comment comment = commentService.getCommentEntity(commentId);
-    CommentLike commentLike =
-        commentLikeRepository
-            .findByCommentAndUser(comment, user)
-            .orElseGet(() -> saveCommentLike(comment, user));
+    CommentAndLike result = CheckCommentAndLike(commentId, user);
 
-    boolean clickCommentLike = commentLike.clickCommentLike();
-    comment.updateCommentLikeCnt(clickCommentLike);
+    boolean clickCommentLike = result.commentLike().clickCommentLike();
+    result.comment().updateCommentLikeCnt(clickCommentLike);
 
-    return CommentLikeResponseDto.of(commentLike.getIsCommentLiked());
+    return CommentLikeResponseDto.of(result.commentLike().getIsCommentLiked());
   }
 
   public CommentLikeResponseDto getCommentLike(Long commentId, User user) {
 
-    Comment comment = commentService.getCommentEntity(commentId);
-    CommentLike commentLike =
-        commentLikeRepository
-            .findByCommentAndUser(comment, user)
-            .orElseGet(() -> saveCommentLike(comment, user));
+    CommentAndLike result = CheckCommentAndLike(commentId, user);
 
-    return CommentLikeResponseDto.of(commentLike.getIsCommentLiked());
+    return CommentLikeResponseDto.of(result.commentLike.getIsCommentLiked());
   }
 
   private CommentLike saveCommentLike(Comment comment, User user) {
@@ -56,4 +48,22 @@ public class CommentLikeService {
 
     return commentLikeRepository.save(commentLike);
   }
+
+  private CommentLike getCommentLikeOrElseCreateCommentLike(User user, Comment comment) {
+
+    return commentLikeRepository
+        .findByCommentAndUser(comment, user)
+        .orElseGet(() -> saveCommentLike(comment, user));
+  }
+
+  private CommentAndLike CheckCommentAndLike(Long commentId, User user) {
+
+    Comment comment = commentService.getCommentEntity(commentId);
+    CommentLike commentLike = getCommentLikeOrElseCreateCommentLike(user, comment);
+    CommentAndLike result = new CommentAndLike(comment, commentLike);
+
+    return result;
+  }
+
+  private record CommentAndLike(Comment comment, CommentLike commentLike) {}
 }

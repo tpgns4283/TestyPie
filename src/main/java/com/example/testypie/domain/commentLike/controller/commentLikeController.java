@@ -1,6 +1,6 @@
 package com.example.testypie.domain.commentLike.controller;
 
-import com.example.testypie.domain.commentLike.dto.CommentLikeResponseDto;
+import com.example.testypie.domain.commentLike.dto.response.CommentLikeResponseDto;
 import com.example.testypie.domain.commentLike.service.CommentLikeService;
 import com.example.testypie.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;

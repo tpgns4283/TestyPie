@@ -41,12 +41,12 @@
         <input type="text" id="content" name="content" class="form-control form-control-sm">
     </div>
     <div>
-        <label for="startAt">시작일</label>
-        <input type="text" id="startAt" name="startAt" class="form-control form-control-sm">
+        <label id="startedLabel" for="startAt">시작일자</label>
+        <input type="date" id="startAt" name="startAt" class="form-control form-control-sm" required placeholder="YYYY-MM-DD">
     </div>
     <div>
-        <label for="closedAt">마감일</label>
-        <input type="text" id="closedAt" name="closedAt" class="form-control form-control-sm">
+        <label id="closedAtLabel" for="closedAt">마감일자</label>
+        <input type="date" id="closedAt" name="startAt" class="form-control form-control-sm" required placeholder="YYYY-MM-DD">
     </div>
 
     <hr class="my-4">
@@ -66,17 +66,21 @@
 
 <script>
     $(document).ready(function () {
+
+        var parentName = $(".container").data("parentname");
+
+        if (parentName === "게시판") {
+            $("#startedLabel").remove(); // 시작일자 레이블과 입력 필드를 제거
+            $("#startAt").remove();
+            $("#closedAtLabel").remove(); // 마감일자 레이블과 입력 필드를 제거
+            $("#closedAt").remove();
+        }
+
         $("#saveBtn").click(function () {
             var title = $("#title").val().trim();
             var content = $("#content").val().trim();
             var startAt = $("#startAt").val().trim();
             var closedAt = $("#closedAt").val().trim();
-
-            // 입력 필드 검증
-            if (title === '' || content === '' || startAt === '' || closedAt === '') {
-                alert("모든 필드를 채워주세요.");
-                return; // 함수 실행 중지
-            }
 
             if (confirm("게시글을 수정하시겠습니까?")) {
                 var productData = {
@@ -149,8 +153,9 @@
                         // 상품 목록 페이지로 이동
                         window.location.href = "/api/category/" + parentName + "/" + childId;
                     },
-                    error: function (error) {
-                        alert("본인만 삭제가 가능합니다.");
+                    error: function (jqXHR) {
+                        const errorMessage = jqXHR.responseJSON.errorMessage;
+                        alert(errorMessage);
                     }
                 });
             }

@@ -69,6 +69,13 @@ public enum ErrorCode {
   SELECT_PRODUCT_NOT_FOUND(404, "찾으시는 product는 존재하지 않습니다."),
   SELECT_PRODUCT_INVALID_AUTHORIZATION(403, "해당 product의 접근 권한이 없습니다."),
   SELECT_PRODUCT_CATEGORY_NOT_FOUND(404, "찾으시는 product의 카테고리가 일치하지 않습니다."),
+  ENDDATE_IS_BEFORE_THAN_NOW(400, "마감일은 현재 시간보다 이전일 수 없습니다."),
+  STARTDATE_IS_AFTER_THAN_ENDDATE(400, "시작일은 마감일보다 이후일 수 없습니다."),
+  PRODUCT_REWARD_IS_NOT_NULL(400, "테스트에 보상은 반드시 들어가야 합니다."),
+  TITLE_NULL_EXCEPTION(400, "제목은 빈 값이 들어갈 수 없습니다."),
+  CONTENT_NULL_EXCEPTION(400, "내용은 빈 값이 들어갈 수 없습니다."),
+  STARTDATE_NULL_EXCEPTION(400, "시작일에는 빈 값이 들어갈 수 없습니다."),
+  CLOSEDATE_NULL_EXCEPTION(400, "마감일에는 빈 값이 들어갈 수 없습니다."),
 
   /* ProductLike */
 

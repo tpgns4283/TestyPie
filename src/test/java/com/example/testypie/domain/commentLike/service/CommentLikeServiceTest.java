@@ -9,7 +9,7 @@ import static org.mockito.BDDMockito.*;
 import com.example.testypie.domain.comment.entity.Comment;
 import com.example.testypie.domain.comment.repository.CommentRepository;
 import com.example.testypie.domain.comment.service.CommentService;
-import com.example.testypie.domain.commentLike.dto.CommentLikeResponseDto;
+import com.example.testypie.domain.commentLike.dto.response.CommentLikeResponseDto;
 import com.example.testypie.domain.commentLike.entity.CommentLike;
 import com.example.testypie.domain.commentLike.repository.CommentLikeRepository;
 import com.example.testypie.domain.user.entity.User;

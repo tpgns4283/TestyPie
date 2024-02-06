@@ -4,11 +4,11 @@ import com.example.testypie.domain.category.entity.Category;
 import com.example.testypie.domain.category.service.CategoryService;
 import com.example.testypie.domain.product.entity.Product;
 import com.example.testypie.domain.product.service.ProductService;
-import com.example.testypie.domain.survey.dto.OptionCreateRequestDTO;
-import com.example.testypie.domain.survey.dto.QuestionCreateRequestDTO;
-import com.example.testypie.domain.survey.dto.SurveyCreateRequestDTO;
-import com.example.testypie.domain.survey.dto.SurveyCreateResponseDTO;
-import com.example.testypie.domain.survey.dto.SurveyReadResponseDTO;
+import com.example.testypie.domain.survey.dto.request.CreateOptionRequestDTO;
+import com.example.testypie.domain.survey.dto.request.CreateQuestionRequestDTO;
+import com.example.testypie.domain.survey.dto.request.CreateSurveyRequestDTO;
+import com.example.testypie.domain.survey.dto.response.CreateSurveyResponseDTO;
+import com.example.testypie.domain.survey.dto.response.ReadSurveyResponseDTO;
 import com.example.testypie.domain.survey.entity.Option;
 import com.example.testypie.domain.survey.entity.Question;
 import com.example.testypie.domain.survey.entity.QuestionType;
@@ -17,7 +17,6 @@ import com.example.testypie.domain.survey.repository.SurveyRepository;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.global.exception.ErrorCode;
 import com.example.testypie.global.exception.GlobalExceptionHandler;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +32,8 @@ public class SurveyService {
   private final CategoryService categoryService;
 
   @Transactional
-  public SurveyCreateResponseDTO addSurvey(
-      SurveyCreateRequestDTO req,
+  public CreateSurveyResponseDTO addSurvey(
+      CreateSurveyRequestDTO req,
       Long product_id,
       User user,
       Long childCategory_id,
@@ -49,23 +48,28 @@ public class SurveyService {
     Survey survey =
         Survey.builder()
             .user(user)
-            .title(req.title())
-            .createdAt(LocalDateTime.now())
+            .title(req.title().trim()) // 공백 제거 후 설정
             .product(product)
             .build();
 
     List<Question> questions = new ArrayList<>();
-    for (QuestionCreateRequestDTO questionDTO : req.questionList()) {
+    for (CreateQuestionRequestDTO questionDTO : req.questionList()) {
+
       Question question =
           Question.builder()
-              .text(questionDTO.text())
+              .text(questionDTO.text().trim()) // 공백 제거 후 설정
               .questionType(questionDTO.questionType())
               .survey(survey)
               .build();
 
       if (question.getQuestionType() == QuestionType.MULTI_CHOICE) {
-        for (OptionCreateRequestDTO optionDTO : questionDTO.optionList()) {
-          Option option = Option.builder().text(optionDTO.text()).question(question).build();
+        for (CreateOptionRequestDTO optionDTO : questionDTO.optionList()) {
+
+          Option option =
+              Option.builder()
+                  .text(optionDTO.text().trim())
+                  .question(question)
+                  .build(); // 공백 제거 후 설정
           question.getOptionList().add(option);
         }
       }
@@ -77,11 +81,11 @@ public class SurveyService {
 
     product.setSurvey(savedSurvey);
 
-    return new SurveyCreateResponseDTO(savedSurvey);
+    return new CreateSurveyResponseDTO(savedSurvey);
   }
 
   @Transactional(readOnly = true)
-  public SurveyReadResponseDTO getSurvey(
+  public ReadSurveyResponseDTO getSurvey(
       Long productId, Long childCategoryId, String parentCategoryName) {
 
     Product product = productService.findProduct(productId);
@@ -92,7 +96,7 @@ public class SurveyService {
 
     checkSurveyUser(product.getSurvey(), productId);
 
-    return SurveyReadResponseDTO.of(product.getSurvey());
+    return ReadSurveyResponseDTO.of(product.getSurvey());
   }
 
   @Transactional(readOnly = true)

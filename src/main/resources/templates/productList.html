@@ -46,10 +46,10 @@
                                                     (productId=${product.id}, parent_name=${product.parentCategoryName()}
                                                     , children_id=${product.childCategoryId()})}"
                            th:text="${product.title}"></a></td>
+
                     <td th:text="${product.productLikeCnt}"></td>
                     <td th:text="${product.nickname}" th:attr="onclick='fetchUserProfile(\'' + ${product.account} + '\')'"></td>
-
-                    <td th:text="${product.message}"></td>
+                    <td th:if="${parentCategory_name == '테스트게시판'}" th:text="${product.message}"></td>
                 </tr>
                 </tbody>
             </table>
@@ -71,21 +71,25 @@
 </body>
 <script>
     $(document).ready(function() {
+        // 서버로부터 parentCategory 정보를 가져오는 코드 필요
+        // 예시에서는 parentCategory 값을 직접 설정
+        var parentCategory = $(".container").data("parentname");
+
+        // parentCategory에 따라 컬럼 설정
+        setupTableColumns(parentCategory);
+
         $('#search-button').click(function() {
             var searchTerm = $('#search-input').val();
             var parentName = $(".container").data("parentname");
             var childId = $(".container").data("childid");
-            var url = "/api/category" + "/" + parentName + "/" + childId +"/search"
+            var url = "/api/category" + "/" + parentName + "/" + childId +"/search";
             $.ajax({
                 url: url,
                 type: 'GET',
-                data: {
-                    keyword : searchTerm
-                },
+                data: { keyword : searchTerm },
                 success: function(data) {
                     // 검색 결과 처리
-                    // 예: 검색 결과로 테이블 업데이트
-                    updateTable(data);
+                    updateTable(data, parentCategory);
                 },
                 error: function(error) {
                     console.log('Error:', error);
@@ -93,21 +97,46 @@
             });
         });
     });
-    function updateTable(data) {
+
+    function setupTableColumns(parentCategory) {
+        var thead = $('.table thead tr');
+        thead.empty(); // 테이블 헤더를 비웁니다.
+
+        // 공통 컬럼 추가
+        thead.append('<th>글 번호</th>');
+        thead.append('<th>제목</th>');
+        thead.append('<th>좋아요</th>');
+
+        // parentCategory에 따라 동적으로 컬럼 추가
+        if (parentCategory === "테스트게시판") {
+            thead.append('<th>기한</th>');
+        }
+
+        // 공통 컬럼 추가
+        thead.append('<th>작성자</th>');
+    }
+
+    function updateTable(data, parentCategory) {
         var tableBody = $('.table tbody');
         tableBody.empty(); // 테이블 내용을 비웁니다.
-        console.log(data)
+
+        console.log(data);
         data.content.forEach(function(product) {
             var detailUrl = '/api/category/' + product.parentCategoryName + '/' + product.childCategoryId + '/products/' + product.id; // 상세 페이지 URL 생성
-            tableBody.append(
-                '<tr>' +
+            var row = '<tr>' +
                 '<td><a href="' + detailUrl + '">' + product.id + '</a></td>' +
                 '<td><a href="' + detailUrl + '">' + product.title + '</a></td>' +
-                '<td>' + product.productLikeCnt + '</td>' +
-                '<td onclick="fetchUserProfile(\'' + product.account + '\')">' + product.nickname + '</td>' +
+                '<td>' + product.productLikeCnt + '</td>';
+
+            // parentCategory에 따라 동적으로 컬럼 데이터 추가
+            if (parentCategory === "특정 카테고리 이름") {
+                row += '<td>특정 컬럼 데이터</td>'; // 특정 카테고리에만 추가되는 컬럼 데이터
+            }
+
+            row += '<td onclick="fetchUserProfile(\'' + product.account + '\')">' + product.nickname + '</td>' +
                 '<td>' + product.message + '</td>' +
-                '</tr>'
-            );
+                '</tr>';
+            tableBody.append(row);
         });
     }
 
