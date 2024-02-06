@@ -98,7 +98,10 @@ public class FeedbackService {
   }
 
   public double getAverageRating(User user) {
-    return feedbackRepository.findAverageScoreByUserId(user.getId());
+    return feedbackRepository.findAverageScoreByUserId(user.getId())
+            .orElseThrow(
+                    () -> new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_AVERAGE_FEEDBACK_RATING_NULL)
+            );
   }
 
   // productId와 feedbackId로 유효한 feedback 검색

@@ -1,58 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        function checkUserhasAccessToken() {
-            var jwtToken = localStorage.getItem("jwtToken");
-            return !!jwtToken;
-        }
-        if (!checkUserhasAccessToken()) {
-            // 여기에서 로그인 페이지로 리디렉트하거나 경고를 표시할 수 있습니다.
-            alert("로그인 후 이용해주세요.");
-            window.location.href = '/login'; // 로그인 페이지로 리디렉트
-        }
-
-        $(document).ready(function () {
-            if (!checkUserhasAccessToken()) {
-                // 여기에서 로그인 페이지로 리디렉트하거나 경고를 표시할 수 있습니다.
-                alert("로그인 후 이용해주세요.");
-                window.location.href = '/login'; // 로그인 페이지로 리다이렉트
-            }
-            function saveRating(account, productId, feedbackId, selectedRating) {
-                var url = '/api/users/' + account + '/ratingStar/' + productId + '/' + feedbackId;
-
-                // Ajax로 서버에 데이터 전송
-                $.ajax({
-                    type: 'POST',
-                    url: url,
-
-                    contentType: "application/json; charset=utf-8", // Content-Type을 명시적으로 설정
-                    data: JSON.stringify({ rating: parseFloat(selectedRating) }), // parseFloat로 형변환
-                    beforeSend: function (xhr) {
-                        var token = localStorage.getItem("jwtToken");
-                        if (token) {
-                            xhr.setRequestHeader("Authorization", token);
-                        }
-                    },
-                    success: function (response) {
-                        console.log("점수가 매겨졌습니다.", response);
-                        // 성공적으로 저장되었을 때 필요한 로직 추가 (예: 화면 갱신)
-                        alert(response.message); // 서버로부터 받은 메시지를 alert로 표시
-                        window.location.href = '/api/users/' + account + '/myProducts/' + productId + '/feedbacks';
-                    },
-                    error: function (jqXHR) {
-                        const errorMessage = jqXHR.responseJSON.errorMessage;
-                        console.error(errorMessage);
-                        // 에러 발생 시 필요한 로직 추가
-                        alert(errorMessage);
-                    }
-                });
-            }
-
-        })
-    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feedback Details</title>
 </head>
 <body>
@@ -90,7 +41,7 @@
             <!-- 평가 입력을 위한 폼 추가 -->
             <form th:action="@{'/api/users/' + ${account} + '/ratingStar/' + ${feedback.productId} + '/' + ${feedback.id}}"
                   method="post"
-                  onsubmit="saveRating('${account}', '${feedback.productId}', '${feedback.id}', this.rating.value); return false;">
+                  onsubmit="saveRating(`${account}`, `${feedback.productId}`, `${feedback.id}`, this.rating.value); return false;">
                 <select name="rating" th:value="${selectedRating}">
                     <option value="0">0</option>
                     <option value="0.5">0.5</option>
@@ -111,5 +62,5 @@
     </tbody>
 </table>
 
-</body>\
+</body>
 </html>

@@ -17,7 +17,7 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
 
   // account ID를 기준으로 해당 Tester가 작성한 모든 Feedback의 평균 점수를 구하는 메서드
   @Query("SELECT AVG(f.rating) FROM Feedback f WHERE f.user.id = :userId")
-  Double findAverageScoreByUserId(@Param("userId") Long userId);
+  Optional<Double> findAverageScoreByUserId(@Param("userId") Long userId);
 
   @Query(
       "SELECT f FROM Feedback f "
