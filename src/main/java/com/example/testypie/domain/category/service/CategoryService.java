@@ -16,6 +16,7 @@ public class CategoryService {
   private final CategoryRepository categoryRepository;
 
   public CreateCategoryResponseDTO createCategory(CreateCategoryRequestDTO req) {
+
     Category parentName = categoryRepository.findByName(req.parent());
     Category category =
         Category.builder().name(req.name()).depth((long) 1).parent(parentName).build();
@@ -23,11 +24,12 @@ public class CategoryService {
     return CreateCategoryResponseDTO.of(saveCategory);
   }
 
-  public Category getParentCategory(String parentCategory_name) {
-    return categoryRepository.findByName(parentCategory_name);
+  public Category getParentCategory(String parentCategoryName) {
+
+    return categoryRepository.findByName(parentCategoryName);
   }
 
-  public Category getCategory(Long categoryId, String parentCategory_name) {
+  public Category checkCategory(Long categoryId, String parentCategoryName) {
 
     Category childCategory =
         categoryRepository
@@ -37,7 +39,7 @@ public class CategoryService {
                     new GlobalExceptionHandler.CustomException(
                         ErrorCode.SELECT_CATEGORY_NOT_FOUND));
 
-    Category parentCategory = categoryRepository.findByName(parentCategory_name);
+    Category parentCategory = categoryRepository.findByName(parentCategoryName);
 
     if (childCategory.getParent() == parentCategory) {
       return childCategory;
