@@ -120,9 +120,6 @@ public class UserInfoService {
   }
 
   public Feedback getValidFeedback(Long productId, Long feedbackId) {
-    // 제품 유효성 확인
-    validateProduct(productId);
-
     // 피드백 검색 및 유효성 확인
     Feedback feedback = validateAndGetFeedback(productId, feedbackId);
 
@@ -130,13 +127,6 @@ public class UserInfoService {
     validateFeedbackProductAssociation(feedback, productId);
 
     return feedback;
-  }
-
-  private void validateProduct(Long productId) {
-    boolean isProductValid = userRepository.existsProductById(productId);
-    if (!isProductValid) {
-      throw new GlobalExceptionHandler.CustomException(ErrorCode.PROFILE_PRODUCT_ID_NOT_FOUND);
-    }
   }
 
   private Feedback validateAndGetFeedback(Long productId, Long feedbackId) {

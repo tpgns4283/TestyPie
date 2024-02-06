@@ -5,13 +5,21 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script th:inline="javascript">
+        function getJwtToken() {
+            return localStorage.getItem('jwtToken');
+        }
+        const jwtToken = getJwtToken();
+        console.log('JWT Token:', jwtToken);
         function saveRating(account, productId, feedbackId, selectedRating) {
-            var url = '/' + account + '/ratingStar/' + productId + '/' + feedbackId;
+            var url = '/api/users' + account + '/ratingStar/' + productId + '/' + feedbackId;
 
             // Ajax로 서버에 데이터 전송
             $.ajax({
                 type: 'POST',
                 url: url,
+                headers: {
+                    'Authorization': '${jwtToken}',
+                },
                 contentType: 'application/json',
                 data: JSON.stringify({ rating: selectedRating }),
                 success: function (response) {
@@ -60,7 +68,7 @@
         </td>
         <td>
             <!-- 평가 입력을 위한 폼 추가 -->
-            <form th:action="@{'/' + ${account} + '/ratingStar/' + ${feedback.productId} + '/' + ${feedback.id}}"
+            <form th:action="@{'/api/users/' + ${account} + '/ratingStar/' + ${feedback.productId} + '/' + ${feedback.id}}"
                   method="post"
                   onsubmit="saveRating('${account}', '${feedback.productId}', '${feedback.id}', this.rating.value); return false;">
                 <select name="rating" th:value="${selectedRating}">
