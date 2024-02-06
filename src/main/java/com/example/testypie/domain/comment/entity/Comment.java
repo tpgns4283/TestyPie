@@ -60,7 +60,7 @@ public class Comment extends TimeStamp {
   }
 
   public void update(UpdateCommentRequestDTO req, Product product) {
-    if(!req.content().isEmpty()){
+    if (!req.content().isEmpty()) {
       this.content = req.content();
       this.product = product;
     }

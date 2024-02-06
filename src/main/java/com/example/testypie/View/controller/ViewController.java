@@ -2,13 +2,11 @@ package com.example.testypie.View.controller;
 
 import static com.example.testypie.global.jwt.JwtUtil.REFRESH_AUTHORIZATION_HEADER;
 
-import com.example.testypie.domain.feedback.service.FeedbackService;
 import com.example.testypie.domain.user.dto.response.ProfileResponseDTO;
 import com.example.testypie.domain.user.dto.response.RegisteredProductResponseDTO;
 import com.example.testypie.domain.user.entity.User;
 import com.example.testypie.domain.user.kakao.service.KakaoService;
 import com.example.testypie.domain.user.service.UserInfoService;
-import com.example.testypie.global.jwt.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,10 +27,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping
 @RequiredArgsConstructor
 public class ViewController {
+
   private final KakaoService kakaoService;
   private final UserInfoService userInfoService;
-  private final FeedbackService feedbackService;
-  private final JwtUtil jwtUtil;
 
   @GetMapping("/")
   public String home(Model model, HttpServletRequest request) {
@@ -114,10 +111,10 @@ public class ViewController {
       @PathVariable Long childCategoryId,
       @PathVariable String parentCategoryName,
       Model model) {
-    if ("테스트게시판".equals(parentCategory_name)) {
-      model.addAttribute("parentName", parentCategory_name);
-      model.addAttribute("childId", childCategory_id);
-      model.addAttribute("productId", product_id);
+    if ("테스트게시판".equals(parentCategoryName)) {
+      model.addAttribute("parentName", parentCategoryName);
+      model.addAttribute("childId", childCategoryId);
+      model.addAttribute("productId", productId);
       return "addSurvey"; // 이동할 뷰의 이름을 반환
     } else {
       // 부모 카테고리 이름이 "테스트게시판"이 아닐 경우 처리
@@ -131,11 +128,11 @@ public class ViewController {
       @PathVariable Long childCategoryId,
       @PathVariable String parentCategoryName,
       Model model) {
-    
-    if ("테스트게시판".equals(parentCategory_name)) {
-      model.addAttribute("parentName", parentCategory_name);
-      model.addAttribute("childId", childCategory_id);
-      model.addAttribute("productId", product_id);
+
+    if ("테스트게시판".equals(parentCategoryName)) {
+      model.addAttribute("parentName", parentCategoryName);
+      model.addAttribute("childId", childCategoryId);
+      model.addAttribute("productId", productId);
       return "addFeedback"; // 이동할 뷰의 이름을 반환
     } else {
       // 부모 카테고리 이름이 "테스트게시판"이 아닐 경우 처리
@@ -158,12 +155,12 @@ public class ViewController {
       @PathVariable String parentCategoryName,
       Model model) {
 
-    if ("테스트게시판".equals(parentCategory_name)) {
-      model.addAttribute("parentName", parentCategory_name);
-      model.addAttribute("childId", childCategory_id);
-      model.addAttribute("productId", product_id);
+    if ("테스트게시판".equals(parentCategoryName)) {
+      model.addAttribute("parentName", parentCategoryName);
+      model.addAttribute("childId", childCategoryId);
+      model.addAttribute("productId", productId);
       return "bugreport"; // 이동할 뷰의 이름을 반환
-    } else{
+    } else {
       return "errorPage";
     }
   }
