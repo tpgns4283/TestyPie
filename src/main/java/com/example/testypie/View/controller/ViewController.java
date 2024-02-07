@@ -169,44 +169,44 @@ public class ViewController {
     }
   }
 
-    @GetMapping("/api/users/{account}/myProducts")
-    public String getMyProducts(@PathVariable String account, Model model) {
-        List<RegisteredProductResponseDTO> myProducts = userInfoService.getUserProducts(account);
-        model.addAttribute("account", account);
-        model.addAttribute("myProducts", myProducts);
-        return "profileRegisteredProducts";
-    }
+  @GetMapping("/api/users/{account}/myProducts")
+  public String getMyProducts(@PathVariable String account, Model model) {
+    List<RegisteredProductResponseDTO> myProducts = userInfoService.getUserProducts(account);
+    model.addAttribute("account", account);
+    model.addAttribute("myProducts", myProducts);
+    return "profileRegisteredProducts";
+  }
 
-    @GetMapping("/api/users/{account}/joinProducts")
-    public String getParticipatedProducts(@PathVariable String account, Model model) {
-        List<ParticipatedProductResponseDTO> participatedProducts =
-                userInfoService.getUserParticipatedProducts(account);
-        model.addAttribute("account", account);
-        model.addAttribute("participatedProducts", participatedProducts);
-        return "profileParticipatedProducts";
-    }
+  @GetMapping("/api/users/{account}/joinProducts")
+  public String getParticipatedProducts(@PathVariable String account, Model model) {
+    List<ParticipatedProductResponseDTO> participatedProducts =
+        userInfoService.getUserParticipatedProducts(account);
+    model.addAttribute("account", account);
+    model.addAttribute("participatedProducts", participatedProducts);
+    return "profileParticipatedProducts";
+  }
 
-    @GetMapping("/api/users/{account}/myProducts/{productId}/feedbacks")
-    public String getFeedbacksFromProductId(
-            @PathVariable String account, @PathVariable Long productId, Model model) {
-        List<ReadFeedbackResponseDTO> feedbackList =
-                feedbackService.getAllFeedbacksByProductId(productId).stream()
-                        .map(ReadFeedbackResponseDTO::of)
-                        .toList();
-        model.addAttribute("account", account);
-        model.addAttribute("feedbacks", feedbackList);
-        return "profileViewFeedbacks";
-    }
+  @GetMapping("/api/users/{account}/myProducts/{productId}/feedbacks")
+  public String getFeedbacksFromProductId(
+      @PathVariable String account, @PathVariable Long productId, Model model) {
+    List<ReadFeedbackResponseDTO> feedbackList =
+        feedbackService.getAllFeedbacksByProductId(productId).stream()
+            .map(ReadFeedbackResponseDTO::of)
+            .toList();
+    model.addAttribute("account", account);
+    model.addAttribute("feedbacks", feedbackList);
+    return "profileViewFeedbacks";
+  }
 
-    @GetMapping("/api/users/{account}/averageRate")
-    public String showAverageRatingPage(@PathVariable String account, Model model) {
-      // 여기서 필요한 작업 수행 (평균 점수 계산 등)
-      double averageRating = userInfoService.getAverageRating(account);
+  @GetMapping("/api/users/{account}/averageRate")
+  public String showAverageRatingPage(@PathVariable String account, Model model) {
+    // 여기서 필요한 작업 수행 (평균 점수 계산 등)
+    double averageRating = userInfoService.getAverageRating(account);
 
-      // 모델에 평균 점수를 추가하여 Thymeleaf에서 사용할 수 있도록 함
-      model.addAttribute("averageRating", averageRating);
+    // 모델에 평균 점수를 추가하여 Thymeleaf에서 사용할 수 있도록 함
+    model.addAttribute("averageRating", averageRating);
 
-      // 해당하는 Thymeleaf 템플릿을 반환 (평균 점수를 표시하는 페이지)
-      return "profileAverageRating";
-    }
+    // 해당하는 Thymeleaf 템플릿을 반환 (평균 점수를 표시하는 페이지)
+    return "profileAverageRating";
+  }
 }

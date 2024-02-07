@@ -113,7 +113,7 @@ public class UserInfoService {
   }
 
   private Feedback checkAndGetFeedback(Long productId, Long feedbackId) {
-      return feedbackService.checkFeedback(productId, feedbackId);
+    return feedbackService.checkFeedback(productId, feedbackId);
   }
 
   private void checkFeedbackLocation(Feedback feedback, Long productId) {

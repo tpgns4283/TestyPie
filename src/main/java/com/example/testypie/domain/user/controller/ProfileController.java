@@ -109,9 +109,9 @@ public class ProfileController {
       @PathVariable Long productId,
       @PathVariable Long feedbackId,
       @Valid @RequestBody RatingStarRequestDTO req
-      /*@AuthenticationPrincipal UserDetailsImpl userDetails*/) {
+      /*@AuthenticationPrincipal UserDetailsImpl userDetails*/ ) {
 
-//    userInfoService.checkSameUser(account, userDetails.getUsername());
+    //    userInfoService.checkSameUser(account, userDetails.getUsername());
     Feedback feedback = userInfoService.checkFeedback(productId, feedbackId);
     userInfoService.assignRatingStarAtFeedback(feedback, req);
     String message = String.format("별점이 %.1f점 매겨졌습니다.", req.rating());
