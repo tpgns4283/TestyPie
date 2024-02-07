@@ -108,7 +108,7 @@ public class ProfileController {
       @PathVariable String account,
       @PathVariable Long productId,
       @PathVariable Long feedbackId,
-      @Valid @RequestBody RatingStarRequestDTO req
+      @ModelAttribute RatingStarRequestDTO req
       /*@AuthenticationPrincipal UserDetailsImpl userDetails*/ ) {
 
     //    userInfoService.checkSameUser(account, userDetails.getUsername());

@@ -200,13 +200,8 @@ public class ViewController {
 
   @GetMapping("/api/users/{account}/averageRate")
   public String showAverageRatingPage(@PathVariable String account, Model model) {
-    // 여기서 필요한 작업 수행 (평균 점수 계산 등)
     double averageRating = userInfoService.getAverageRating(account);
-
-    // 모델에 평균 점수를 추가하여 Thymeleaf에서 사용할 수 있도록 함
     model.addAttribute("averageRating", averageRating);
-
-    // 해당하는 Thymeleaf 템플릿을 반환 (평균 점수를 표시하는 페이지)
     return "profileAverageRating";
   }
 }
