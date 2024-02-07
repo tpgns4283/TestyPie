@@ -19,13 +19,13 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
   @Query("SELECT AVG(f.rating) FROM Feedback f WHERE f.user.id = :userId")
   Optional<Double> findAverageScoreByUserId(@Param("userId") Long userId);
 
-  //프론트 미구현
-//  @Query(
-//      "SELECT f FROM Feedback f "
-//          + "JOIN f.product p "
-//          + "WHERE p.id = :productId AND f.rating = :rating")
-//  List<Feedback> findFeedbacksByProductIdAndRating(
-//      @Param("productId") Long productId, @Param("rating") Double rating);
+  // 프론트 미구현
+  //  @Query(
+  //      "SELECT f FROM Feedback f "
+  //          + "JOIN f.product p "
+  //          + "WHERE p.id = :productId AND f.rating = :rating")
+  //  List<Feedback> findFeedbacksByProductIdAndRating(
+  //      @Param("productId") Long productId, @Param("rating") Double rating);
 
   Optional<List<Feedback>> findAllFeedbacksByProductId(Long productId);
 }
