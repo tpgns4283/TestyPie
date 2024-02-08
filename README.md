@@ -29,12 +29,12 @@
 * GitHub
 * GitHub Action
 
+# 팀 노션 페이지(ERD)
+https://teamsparta.notion.site/TestyPie-18f9ac07c30f420994e9f9c7d640df57
+
 # API
 Swagger : https://testypie.link/swagger-ui/index.html
----
-# ERD
-ERD : https://www.erdcloud.com/d/FweJm3j69pNJgkM5t
----
+
 # Directory
 ```bash
 testypie
@@ -138,3 +138,4 @@ testypie
  │  └─validator
  └─View
      └─controller
+```
