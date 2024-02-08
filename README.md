@@ -31,8 +31,10 @@
   * LoadBalancer
 * ubuntu 22.04
 * Docker
+  * Docker
   * DockerHub
 * Git
+  * Git
   * GitHub
   * GitHub Action
 
