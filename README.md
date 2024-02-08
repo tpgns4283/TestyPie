@@ -5,8 +5,8 @@
 ### BackEnd
 * java 17
 * Spring Boot 3.2.1
-  * thymeleaf
-  * validation
+* thymeleaf
+* validation
 * JWT
 * Spring Data JPA
 * QureyDsl 5.0.0
@@ -31,10 +31,10 @@
   * LoadBalancer
 * ubuntu 22.04
 * Docker
-* DockerHub
+  * DockerHub
 * Git
-* GitHub
-* GitHub Action
+  * GitHub
+  * GitHub Action
 
 # 팀 노션 페이지(ERD)
 https://teamsparta.notion.site/TestyPie-18f9ac07c30f420994e9f9c7d640df57
