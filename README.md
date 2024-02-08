@@ -1,4 +1,4 @@
-## main : 배포용 develop : 통합용 feature : 각자 기능 개발
+#### main : 배포용 develop : 통합용 feature : 각자 기능 개발
 
 # 주요 기술
 
