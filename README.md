@@ -34,6 +34,9 @@ feature : 각자 기능 개발
 # API
 Swagger : https://testypie.link/swagger-ui/index.html
 ---
+# ERD
+ERD : https://www.erdcloud.com/d/FweJm3j69pNJgkM5t
+---
 # Directory
 ```bash
 testypie
