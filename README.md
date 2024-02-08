@@ -7,23 +7,29 @@
 * Spring Boot 3.2.1
   * thymeleaf
   * validation
+* JWT
 * Spring Data JPA
+* QureyDsl 5.0.0
 * Spring Security
 * OAuth 2
+* Swagger 2.2.0
 
 ### FrontEnd
 * HTML
 * CSS
+* Ajax
 
 ### DB
 * MySQL
 
 ### Infra
 * AWS
-  * EC2
+  * EC2 
   * RDS
   * S3
   * Route53
+  * LoadBalancer
+* ubuntu 22.04
 * Docker
 * DockerHub
 * Git
