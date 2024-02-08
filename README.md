@@ -25,6 +25,7 @@
   * S3
   * Route53
 * Docker
+* DockerHub
 * Git
 * GitHub
 * GitHub Action
