@@ -32,4 +32,4 @@ feature : 각자 기능 개발
 * GitHub Action
 ---
 # API
-Link : https://testypie.link/swagger-ui/index.html
+Swagger : https://testypie.link/swagger-ui/index.html
